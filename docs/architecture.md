@@ -154,6 +154,9 @@ Editing screens (used with no time pressure, e.g. the evening before a visit):
 - From any list or history: copy or move a sentence to another list (one per-row ⋮ sheet, same everywhere). There is no "save free text" button on the speaking screen: spoken free text is in history, and is saved from there.
 - Conversation lists: "reset" (clear `said`) for reuse; carry unsaid sentences over to the next conversation.
 
+## Loudness (T28, 2026-11-08)
+`lib/speech/loudness.dart`, applied to Piper output (`boostLoudness`) and system-TTS WAVs (`boostWavFile`) when Hangosítás is on. Chain: (1) 2nd-order Butterworth high-pass at 120 Hz (`speechHighPassHz`): phone speakers can't play it, it only eats headroom; (2) peak-normalize + `speechGainDb`; (3) look-ahead limiter `limitPeaks` (~5 ms look-ahead, needed gain = sliding-window minimum, smoothed by a 5 ms moving average so it never exceeds the needed gain, ~80 ms release, final clamp to `speechCeilingDb`). The earlier per-sample `tanh` waveshaper bent every sample separately and so made harmonic distortion ("overdriven speakers"); the limiter scales whole stretches of the waveform instead. All time constants derive from the sample rate. No expander: it would pump breathing noise. Trade-off: a true limiter is a little less loud than the tanh on peaky voices (it can't win level by squashing peaks).
+
 ## Alarm (decided 2026-11-05)
 Replaces the planned bell button and the 112/SMS emergency feature (dropped, see `docs/TODO.md` "Emergency"). No new button on the speaking screen: alarms are rows in a normal list.
 - **Two independent row properties.** *What plays*: `recordingPath` (message banking, later) > `soundKey` (built-in sound) > TTS of the text. *How it plays*: `alarm` flag. So a built-in siren, a typed "Segítség!" and (later) an own recording can each be an alarm, and a bell can also be a non-alarm row.

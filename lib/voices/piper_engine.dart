@@ -230,7 +230,9 @@ void _isolateMain(_InitMessage init) {
         final synthMs = sw.elapsedMilliseconds;
         final ok = sherpa.writeWave(
           filename: msg.path,
-          samples: msg.boost ? boostLoudness(audio.samples) : audio.samples,
+          samples: msg.boost
+              ? boostLoudness(audio.samples, sampleRate: audio.sampleRate)
+              : audio.samples,
           sampleRate: audio.sampleRate,
         );
         if (!ok) throw FileSystemException('Failed to write WAV', msg.path);

@@ -247,7 +247,9 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     final scheme = Theme.of(context).colorScheme;
     // Same corner radius as the sentence rows and the banner, not the
     // default circular IconButton shape.
-    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(12));
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    );
     return IconButton(
       iconSize: 32,
       tooltip: l10n.loadSentence,

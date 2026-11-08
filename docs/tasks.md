@@ -7,42 +7,6 @@ Mark tasks done by changing `[ ]` to `[x]`. When a phase is finished, move it to
 
 ---
 
-## Phase 5: Cleaner loudness
-
-Goal: keep the loudness gained in T26, but remove the overdriven sound it brought (human's description, 2026-11-08: "as if the loudspeakers were overdriven"; a speakerphone call sounds a bit like that too, so this is polish, not a blocker).
-
-Findings (2026-11-08, `voices/samples`, after today's `boostLoudness`): the limiter is a per-sample `tanh` waveshaper, and 5–19% of samples land above its knee, with peaks squashed by up to 7 dB. Reshaping each sample separately is what creates harmonic distortion. The total gain is 8.5–18.8 dB (berta most), and it lifts the noise in the pauses by the same amount.
-
-| voice | gain dB | speech level dBFS (75th pct of 20 ms frame RMS) | pause floor dBFS (10th pct) |
-|---|---|---|---|
-| imre | 8.5 | -14.6 | -51.7 |
-| berta | 18.8 | -9.4 | -48.5 |
-| anna | 10.5 | -9.3 | -41.2 |
-| alma | 10.6 | -6.1 | -44.2 |
-| nst | 8.7 | -8.5 | -42.7 |
-
-The Piper `noiseScale` / `noiseW` sliders are **not** coming back. They change how the voice varies (latent sampling, phoneme durations), not background hiss. T3 found them inaudible (`docs/measurements.md`), and families shouldn't have to tune model parameters.
-
-### [ ] T28 (Agent): Replace the waveshaper with a look-ahead limiter
-All in `lib/speech/loudness.dart`; `boostLoudness` gets a required `sampleRate` (update the callers in `piper_engine.dart` and `boostWavFile`). The chain, in order:
-1. **High-pass**: 2nd-order Butterworth biquad at about 120 Hz (`speechHighPassHz`). Phone speakers can't reproduce that range; it only eats headroom and makes the speaker buzz.
-2. **Gain**: unchanged (normalize the peak, then `speechGainDb`).
-3. **Look-ahead limiter** replacing the `tanh` knee: ~5 ms look-ahead, gain = the minimum needed over the look-ahead window so no sample exceeds `speechCeilingDb`, smoothed, ~80 ms release. O(n) (e.g. monotonic deque, no window rescans). A final clamp to the ceiling guards rounding. Expose it as a reusable function (T30 uses it too).
-
-All time constants derive from `sampleRate` (Piper is 22050, system TTS varies). Remove `_tanh` and `_kneeLinear` if unused. Add a "Loudness" section to `docs/architecture.md` (the chain and why).
-- **Acceptance:** a test reads `voices/samples/*.wav` and prints speech level and pause floor (definitions in the table above). Speech level within 1 dB of the table (`speechGainDb` may go up to 8 if needed); pause floor no higher than the table. Put the numbers in the summary.
-- Tests: existing ones (ceiling, silence, quiet sine gets louder, WAV round-trip), plus: the limiter never exceeds the ceiling on a sine at +12 dB; a 1 kHz sine with 6 dB of limiting has its 3rd harmonic at least 35 dB below the fundamental (Goertzel); a 50 Hz sine is attenuated.
-- **Checks:** `flutter analyze`, `flutter test`.
-
-### [ ] T29 (You): Listen on the Pixel 6a
-Compare with imre and berta, at the volume you usually use: the same sentences with Hangosítás on and off, and against the previous build if you still have it.
-1. Is the overdriven, crackly sound on loud syllables gone or reduced? Does it still sound as loud?
-2. If hiss between words bothers you, note it. A pause expander was left out of T28 because the complaint was distortion, not hiss.
-3. If loud syllables still buzz at high phone volume with Hangosítás off too, that's the phone's speaker reaching its limit, and no processing will fix it. Note it.
-Done → commit.
-
----
-
 ## Phase 6: Message banking
 
 Goal: record your own voice for any sentence, played instead of TTS. Design: `docs/architecture.md` "Message banking" (read it first). No schema change: `sentences.recordingPath` already exists.
