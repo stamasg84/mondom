@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../speech/alarm_volume.dart';
 import '../speech/loudness.dart';
 import '../speech/speaker.dart';
+import '../storage/backup.dart';
 
 /// Small sound settings: speech boost, and the alarm volume (the phone's own
 /// level, or Mondom's own level raised while an alarm plays, restored after).
@@ -13,10 +14,14 @@ class SettingsScreen extends StatefulWidget {
     super.key,
     required this.alarmVolume,
     required this.speaker,
+    this.backup,
   });
 
   final AlarmVolume alarmVolume;
   final Speaker speaker;
+
+  /// Null hides the backup section.
+  final BackupService? backup;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -26,6 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   AlarmVolumeMode? _mode;
   double _level = 1.0;
   bool _boost = true;
+  bool _busy = false;
 
   @override
   void initState() {
@@ -70,6 +76,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(speechBoostKey, v);
     } catch (_) {}
+  }
+
+  Future<void> _run(Future<String?> Function() job, String failed) async {
+    final l10n = AppLocalizations.of(context);
+    setState(() => _busy = true);
+    String? message;
+    try {
+      message = await job();
+    } on BackupException catch (e) {
+      message = e.code == 'version'
+          ? l10n.restoreErrorVersion
+          : l10n.restoreErrorFormat;
+    } catch (_) {
+      message = failed;
+    }
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (message != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
+  }
+
+  Future<void> _export() {
+    final l10n = AppLocalizations.of(context);
+    return _run(() async {
+      final n = await widget.backup!.export();
+      return n == null ? null : l10n.backupDone(n);
+    }, l10n.backupFailed);
+  }
+
+  Future<void> _restore() {
+    final l10n = AppLocalizations.of(context);
+    return _run(() async {
+      final r = await widget.backup!.restore();
+      return r == null
+          ? null
+          : l10n.restoreDone(r.listsAdded, r.listsSkipped, r.recordingsCopied);
+    }, l10n.restoreFailed);
   }
 
   void _test() {
@@ -154,11 +200,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                     ),
                   ),
+                  if (widget.backup != null) ..._backupSection(l10n),
                 ],
               ),
       ),
     );
   }
+
+  List<Widget> _backupSection(AppLocalizations l10n) => [
+    _header(l10n.backupSection),
+    if (_busy)
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const LinearProgressIndicator(),
+            const SizedBox(height: 8),
+            Text(l10n.backupWorking, style: const TextStyle(fontSize: 18)),
+          ],
+        ),
+      ),
+    ListTile(
+      enabled: !_busy,
+      leading: const Icon(Icons.save_alt, size: 32),
+      title: Text(l10n.backupCreate, style: const TextStyle(fontSize: 22)),
+      subtitle: Text(
+        l10n.backupCreateHelp,
+        style: const TextStyle(fontSize: 16),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      onTap: _export,
+    ),
+    ListTile(
+      enabled: !_busy,
+      leading: const Icon(Icons.restore, size: 32),
+      title: Text(l10n.backupRestore, style: const TextStyle(fontSize: 22)),
+      subtitle: Text(
+        l10n.backupRestoreHelp,
+        style: const TextStyle(fontSize: 16),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      onTap: _restore,
+    ),
+  ];
 
   Widget _header(String text) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),

@@ -41,7 +41,7 @@ Voice and energy are limited, so recording many sentences must not mean opening 
 - ARB (hu + en). Tests: rows with recordings/sounds are skipped; Mentés advances; Kihagyom saves nothing; the summary count.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T33 (Agent): Backup to a file
+### [x] T33 (Agent): Backup to a file
 Recordings can't be made again once the voice is gone, and a lost phone must not mean losing them. Android's auto-backup caps at 25 MB, so it isn't enough.
 - Beállítások, new section "Mentés": "Biztonsági mentés készítése" and "Visszaállítás fájlból".
 - Export: in an isolate, write a zip (`archive`, streaming to disk, no full read into memory) to temp: `backup.json` (`version`; all non-history lists with sentences, including `recording` file names, `soundKey`, `alarm`, colors, kind, pinned) plus `recordings/*.wav`. Hand it to Android's file picker (`ACTION_CREATE_DOCUMENT`, default name `mondom-mentes-<date>.zip`) via a small channel in `MainActivity.kt`, streaming the copy. No permission; Google Drive shows up in the picker, with no Drive code on our side.

@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../speech/alarm_volume.dart';
 import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
+import '../storage/backup.dart';
 import '../storage/lists_repository.dart';
 import '../voices/language_names.dart';
 import '../voices/voice.dart';
@@ -23,7 +24,10 @@ class MainDrawer extends StatelessWidget {
     required this.alarmVolume,
     required this.speaker,
     required this.recorderFactory,
+    this.backup,
   });
+
+  final BackupService? backup;
 
   final VoiceRecorder Function() recorderFactory;
   final AlarmVolume alarmVolume;
@@ -89,6 +93,7 @@ class MainDrawer extends StatelessWidget {
                     builder: (_) => SettingsScreen(
                       alarmVolume: alarmVolume,
                       speaker: speaker,
+                      backup: backup,
                     ),
                   ),
                 );

@@ -393,6 +393,148 @@ class ListsRepository {
     return false;
   }
 
+  // ---- Backup ----
+
+  /// Every permanent (non-history) list with its sentences, as plain JSON
+  /// data for the backup file. `said` is not saved: a restored conversation
+  /// starts fresh.
+  Future<Map<String, Object?>> exportBackupData() async {
+    final lists =
+        await (_db.select(_lists)
+              ..where((l) => l.kind.equalsValue(ListKind.history).not())
+              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+            .get();
+    final out = <Map<String, Object?>>[];
+    for (final l in lists) {
+      final rows =
+          await (_db.select(_sentences)
+                ..where((s) => s.listId.equals(l.id))
+                ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+              .get();
+      out.add({
+        'title': l.title,
+        'kind': l.kind.name,
+        'pinned': l.pinned,
+        'color': l.color,
+        'seedKey': l.seedKey,
+        'seedLanguage': l.seedLanguage,
+        'sentences': [
+          for (final s in rows)
+            {
+              'text': s.body,
+              'recording': s.recordingPath,
+              'sound': s.soundKey,
+              'alarm': s.alarm,
+              'seedKey': s.seedKey,
+            },
+        ],
+      });
+    }
+    return {'lists': out};
+  }
+
+  /// Adds the lists of a backup after the existing ones; never changes or
+  /// deletes anything. A list with the same title and identical sentence
+  /// texts is skipped. The seed identity of an imported list is kept only if
+  /// no list has it yet (it is unique). Malformed data throws
+  /// [FormatException] and changes nothing. Returns (added, skipped).
+  Future<(int, int)> importBackupData(Map<String, Object?> data) =>
+      _db.transaction(() async {
+        final raw = data['lists'];
+        if (raw is! List) throw const FormatException('lists');
+        final existing = await _db.select(_lists).get();
+        final signatures = <String>{};
+        for (final l in existing) {
+          if (l.kind == ListKind.history) continue;
+          signatures.add(_signature(l.title, await _bodies(l.id)));
+        }
+        final identities = {
+          for (final l in existing)
+            if (l.seedKey != null && l.seedLanguage != null)
+              '${l.seedLanguage}/${l.seedKey}',
+        };
+        final historyWasLast = await _historyIsLast();
+        var added = 0;
+        var skipped = 0;
+        for (final item in raw) {
+          if (item is! Map) throw const FormatException('list');
+          final title = (item['title'] as String).trim();
+          final kind = ListKind.values.byName(item['kind'] as String);
+          if (kind == ListKind.history) throw const FormatException('kind');
+          final rows = item['sentences'] as List;
+          final texts = [for (final s in rows) (s as Map)['text'] as String];
+          if (!signatures.add(_signature(title, texts))) {
+            skipped++;
+            continue;
+          }
+          final seedKey = item['seedKey'] as String?;
+          final seedLanguage = item['seedLanguage'] as String?;
+          final identity = '$seedLanguage/$seedKey';
+          final keepIdentity =
+              seedKey != null &&
+              seedLanguage != null &&
+              !identities.contains(identity);
+          if (keepIdentity) identities.add(identity);
+          final listId = await _db
+              .into(_lists)
+              .insert(
+                SentenceListsCompanion.insert(
+                  title: title,
+                  kind: kind,
+                  pinned: Value(item['pinned'] as bool? ?? false),
+                  position: await _lastListPosition() + 1,
+                  color: Value(item['color'] as String?),
+                  seedKey: Value(keepIdentity ? seedKey : null),
+                  seedLanguage: Value(keepIdentity ? seedLanguage : null),
+                ),
+              );
+          for (final (i, s) in rows.indexed) {
+            final m = s as Map;
+            await _db
+                .into(_sentences)
+                .insert(
+                  SentencesCompanion.insert(
+                    listId: listId,
+                    body: m['text'] as String,
+                    position: i,
+                    recordingPath: Value(m['recording'] as String?),
+                    soundKey: Value(m['sound'] as String?),
+                    alarm: Value(m['alarm'] as bool? ?? false),
+                    seedKey: Value(m['seedKey'] as String?),
+                  ),
+                );
+          }
+          added++;
+        }
+        if (added > 0 && historyWasLast) await _moveHistoryLast();
+        return (added, skipped);
+      });
+
+  String _signature(String title, List<String> texts) =>
+      [title, ...texts].join('\u0000');
+
+  Future<List<String>> _bodies(int listId) async => [
+    for (final s
+        in await (_db.select(_sentences)
+              ..where((x) => x.listId.equals(listId))
+              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+            .get())
+      s.body,
+  ];
+
+  Future<bool> _historyIsLast() async {
+    final history = await _historyList();
+    return history.position == await _lastListPosition();
+  }
+
+  /// Moves the history list behind all others, as [_addMissingSeedLists] does.
+  Future<void> _moveHistoryLast() async {
+    final history = await _historyList();
+    await (_db.update(_lists)..where((x) => x.id.equals(history.id))).write(
+      SentenceListsCompanion(position: Value(await _lastListPosition() + 1)),
+    );
+  }
+
   // ---- Last used list ----
 
   Future<int?> lastUsedListId() async =>

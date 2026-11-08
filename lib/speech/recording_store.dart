@@ -22,6 +22,18 @@ class RecordingStore {
     return Directory('${support.path}/recordings');
   }
 
+  /// The recordings directory (created if missing), for backup and restore.
+  Future<Directory> directory() => _dir();
+
+  /// Whether [name] is a plain file name (no path parts).
+  static bool isPlainName(String name) =>
+      name.isNotEmpty &&
+      name != '.' &&
+      name != '..' &&
+      !name.contains('/') &&
+      !name.contains(r'\') &&
+      !name.contains('\u0000');
+
   Future<Directory> _dir() async {
     final d = await _directory();
     if (!await d.exists()) await d.create(recursive: true);
@@ -46,7 +58,7 @@ class RecordingStore {
   /// Absolute path of [fileName], or null if the file is missing (or the name
   /// is not a plain file name).
   Future<String?> resolve(String fileName) async {
-    if (!_isPlainName(fileName)) return null;
+    if (!isPlainName(fileName)) return null;
     final file = File('${(await _dir()).path}/$fileName');
     return await file.exists() ? file.path : null;
   }
@@ -73,11 +85,4 @@ class RecordingStore {
     } catch (_) {}
     return deleted;
   }
-
-  bool _isPlainName(String name) =>
-      name.isNotEmpty &&
-      name != '.' &&
-      name != '..' &&
-      !name.contains('/') &&
-      !name.contains(r'\');
 }

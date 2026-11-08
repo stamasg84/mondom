@@ -426,4 +426,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get removeRecording => 'Delete';
+
+  @override
+  String get backupSection => 'Backup';
+
+  @override
+  String get backupCreate => 'Create a backup';
+
+  @override
+  String get backupCreateHelp =>
+      'Lists and recordings go into one file. Save it to Google Drive or to the phone.';
+
+  @override
+  String get backupRestore => 'Restore from a file';
+
+  @override
+  String get backupRestoreHelp =>
+      'Adds the backup\'s lists and recordings. Nothing existing is overwritten.';
+
+  @override
+  String get backupWorking => 'One moment…';
+
+  @override
+  String backupDone(int n) {
+    return 'Done. $n recordings saved.';
+  }
+
+  @override
+  String restoreDone(int added, int skipped, int recordings) {
+    return '$added lists added, $skipped already there, $recordings recordings copied.';
+  }
+
+  @override
+  String get backupFailed => 'The backup failed.';
+
+  @override
+  String get restoreFailed => 'The restore failed. Nothing was changed.';
+
+  @override
+  String get restoreErrorVersion =>
+      'This backup comes from a newer version of Mondom. Update the app.';
+
+  @override
+  String get restoreErrorFormat =>
+      'This is not a Mondom backup, or it is damaged. Nothing was changed.';
 }

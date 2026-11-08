@@ -130,5 +130,17 @@
   "recordingDeleteQuestion": "Delete the recording?",
   "keepRecordingQuestion": "The recording still says the old text. Keep it?",
   "keepRecording": "Keep",
-  "removeRecording": "Delete"
+  "removeRecording": "Delete",
+  "backupSection": "Backup",
+  "backupCreate": "Create a backup",
+  "backupCreateHelp": "Lists and recordings go into one file. Save it to Google Drive or to the phone.",
+  "backupRestore": "Restore from a file",
+  "backupRestoreHelp": "Adds the backup's lists and recordings. Nothing existing is overwritten.",
+  "backupWorking": "One moment…",
+  "backupDone": "Done. {n} recordings saved.",
+  "restoreDone": "{added} lists added, {skipped} already there, {recordings} recordings copied.",
+  "backupFailed": "The backup failed.",
+  "restoreFailed": "The restore failed. Nothing was changed.",
+  "restoreErrorVersion": "This backup comes from a newer version of Mondom. Update the app.",
+  "restoreErrorFormat": "This is not a Mondom backup, or it is damaged. Nothing was changed."
 }

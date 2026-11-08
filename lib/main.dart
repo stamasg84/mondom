@@ -8,6 +8,7 @@ import 'l10n/app_localizations.dart';
 import 'speech/alarm_volume.dart';
 import 'speech/recording_store.dart';
 import 'speech/speaker.dart';
+import 'storage/backup.dart';
 import 'storage/database.dart';
 import 'storage/lists_repository.dart';
 import 'ui/speaking_screen.dart';
@@ -212,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
       repo: repo,
       voice: () => _voice,
       onOpenVoicePicker: _openPicker,
+      backup: BackupService(repo: repo, recordings: _recordings),
     );
   }
 }

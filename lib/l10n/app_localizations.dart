@@ -829,6 +829,78 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Törlöm'**
   String get removeRecording;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Mentés'**
+  String get backupSection;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Biztonsági mentés készítése'**
+  String get backupCreate;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'A listák és a felvételek egy fájlba kerülnek. Mentheted Google Drive-ra vagy a telefonra.'**
+  String get backupCreateHelp;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Visszaállítás fájlból'**
+  String get backupRestore;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Hozzáadja a mentés listáit és felvételeit. A meglévőket nem írja felül.'**
+  String get backupRestoreHelp;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Egy pillanat…'**
+  String get backupWorking;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Kész. {n} felvétel mentve.'**
+  String backupDone(int n);
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'{added} lista hozzáadva, {skipped} már megvolt, {recordings} felvétel másolva.'**
+  String restoreDone(int added, int skipped, int recordings);
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Nem sikerült a mentés.'**
+  String get backupFailed;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Nem sikerült a visszaállítás. Nem változott semmi.'**
+  String get restoreFailed;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Ez a mentés a Mondom újabb verziójából való. Frissítsd az appot.'**
+  String get restoreErrorVersion;
+
+  /// Settings > Mentés (backup to a file).
+  ///
+  /// In hu, this message translates to:
+  /// **'Ez nem Mondom-mentés, vagy sérült. Nem változott semmi.'**
+  String get restoreErrorFormat;
 }
 
 class _AppLocalizationsDelegate

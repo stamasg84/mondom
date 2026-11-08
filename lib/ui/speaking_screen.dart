@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../speech/alarm_volume.dart';
 import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
+import '../storage/backup.dart';
 import '../storage/lists_repository.dart';
 import '../voices/voice.dart';
 import 'list_colors.dart';
@@ -21,7 +22,11 @@ class SpeakingScreen extends StatefulWidget {
     this.voice,
     this.onOpenVoicePicker,
     this.recorderFactory = RecordPackageRecorder.new,
+    this.backup,
   });
+
+  /// Backup and restore in settings; null hides them (tests).
+  final BackupService? backup;
 
   /// Creates the microphone recorder for the recording screen (tests fake it).
   final VoiceRecorder Function() recorderFactory;
@@ -212,6 +217,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
             alarmVolume: widget.speaker.alarmVolume ?? AlarmVolume(),
             speaker: widget.speaker,
             recorderFactory: widget.recorderFactory,
+            backup: widget.backup,
           ),
           appBar: AppBar(
             leading: Builder(

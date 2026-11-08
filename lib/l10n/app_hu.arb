@@ -484,8 +484,12 @@
   "@recordProgress": {
     "description": "Position in the batch recording of a list.",
     "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "recordSkip": "Kihagyom",
@@ -496,7 +500,9 @@
   "@recordSummary": {
     "description": "Summary after recording a whole list.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "recordListAction": "Felvétel",
@@ -534,5 +540,69 @@
   "removeRecording": "Törlöm",
   "@removeRecording": {
     "description": "Remove the recording."
+  },
+  "backupSection": "Mentés",
+  "@backupSection": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "backupCreate": "Biztonsági mentés készítése",
+  "@backupCreate": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "backupCreateHelp": "A listák és a felvételek egy fájlba kerülnek. Mentheted Google Drive-ra vagy a telefonra.",
+  "@backupCreateHelp": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "backupRestore": "Visszaállítás fájlból",
+  "@backupRestore": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "backupRestoreHelp": "Hozzáadja a mentés listáit és felvételeit. A meglévőket nem írja felül.",
+  "@backupRestoreHelp": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "backupWorking": "Egy pillanat…",
+  "@backupWorking": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "backupDone": "Kész. {n} felvétel mentve.",
+  "@backupDone": {
+    "description": "Settings > Mentés (backup to a file).",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreDone": "{added} lista hozzáadva, {skipped} már megvolt, {recordings} felvétel másolva.",
+  "@restoreDone": {
+    "description": "Settings > Mentés (backup to a file).",
+    "placeholders": {
+      "added": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "recordings": {
+        "type": "int"
+      }
+    }
+  },
+  "backupFailed": "Nem sikerült a mentés.",
+  "@backupFailed": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "restoreFailed": "Nem sikerült a visszaállítás. Nem változott semmi.",
+  "@restoreFailed": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "restoreErrorVersion": "Ez a mentés a Mondom újabb verziójából való. Frissítsd az appot.",
+  "@restoreErrorVersion": {
+    "description": "Settings > Mentés (backup to a file)."
+  },
+  "restoreErrorFormat": "Ez nem Mondom-mentés, vagy sérült. Nem változott semmi.",
+  "@restoreErrorFormat": {
+    "description": "Settings > Mentés (backup to a file)."
   }
 }

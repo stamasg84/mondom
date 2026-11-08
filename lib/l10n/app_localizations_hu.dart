@@ -421,4 +421,49 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get removeRecording => 'Törlöm';
+
+  @override
+  String get backupSection => 'Mentés';
+
+  @override
+  String get backupCreate => 'Biztonsági mentés készítése';
+
+  @override
+  String get backupCreateHelp =>
+      'A listák és a felvételek egy fájlba kerülnek. Mentheted Google Drive-ra vagy a telefonra.';
+
+  @override
+  String get backupRestore => 'Visszaállítás fájlból';
+
+  @override
+  String get backupRestoreHelp =>
+      'Hozzáadja a mentés listáit és felvételeit. A meglévőket nem írja felül.';
+
+  @override
+  String get backupWorking => 'Egy pillanat…';
+
+  @override
+  String backupDone(int n) {
+    return 'Kész. $n felvétel mentve.';
+  }
+
+  @override
+  String restoreDone(int added, int skipped, int recordings) {
+    return '$added lista hozzáadva, $skipped már megvolt, $recordings felvétel másolva.';
+  }
+
+  @override
+  String get backupFailed => 'Nem sikerült a mentés.';
+
+  @override
+  String get restoreFailed =>
+      'Nem sikerült a visszaállítás. Nem változott semmi.';
+
+  @override
+  String get restoreErrorVersion =>
+      'Ez a mentés a Mondom újabb verziójából való. Frissítsd az appot.';
+
+  @override
+  String get restoreErrorFormat =>
+      'Ez nem Mondom-mentés, vagy sérült. Nem változott semmi.';
 }
