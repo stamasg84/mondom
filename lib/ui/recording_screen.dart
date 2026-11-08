@@ -55,6 +55,7 @@ class _RecordingScreenState extends State<RecordingScreen>
     with WidgetsBindingObserver {
   _Phase _phase = _Phase.idle;
   int _index = 0;
+  int _saved = 0;
   double _level = 0;
   bool _denied = false;
   bool _failed = false;
@@ -192,19 +193,52 @@ class _RecordingScreenState extends State<RecordingScreen>
       _takePath = null; // adopt moved it
       await widget.repo.setSentenceRecording(_target.id, name);
       if (!mounted) return;
-      if (_index + 1 < widget.targets.length) {
-        setState(() {
-          _index++;
-          _phase = _Phase.idle;
-        });
-      } else {
-        Navigator.of(context).pop(true);
-      }
+      _saved++;
+      await _next();
     } catch (_) {
       if (mounted) setState(() => _failed = true);
     } finally {
       _busy = false;
     }
+  }
+
+  /// Moves on to the next sentence, idle; after the last one, the summary
+  /// (batch only) and back to the editor.
+  Future<void> _next() async {
+    if (_index + 1 < widget.targets.length) {
+      setState(() {
+        _index++;
+        _phase = _Phase.idle;
+        _failed = false;
+        _denied = false;
+      });
+      return;
+    }
+    if (widget.targets.length > 1) {
+      final l10n = AppLocalizations.of(context);
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text(
+            l10n.recordSummary(_saved),
+            style: const TextStyle(fontSize: 22),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.recordDone),
+            ),
+          ],
+        ),
+      );
+    }
+    if (mounted) Navigator.of(context).pop(_saved > 0);
+  }
+
+  Future<void> _skip() async {
+    if (_busy) return;
+    await widget.speaker.stop();
+    if (mounted) await _next();
   }
 
   Future<void> _confirmLeave() async {
@@ -249,7 +283,13 @@ class _RecordingScreenState extends State<RecordingScreen>
         if (!didPop) _confirmLeave();
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.recordAction)),
+        appBar: AppBar(
+          title: Text(
+            widget.targets.length > 1
+                ? l10n.recordProgress(_index + 1, widget.targets.length)
+                : l10n.recordAction,
+          ),
+        ),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -306,6 +346,10 @@ class _RecordingScreenState extends State<RecordingScreen>
       case _Phase.idle:
         return [
           _big(label: l10n.recordAction, icon: Icons.mic, onPressed: _start),
+          if (widget.targets.length > 1) ...[
+            const SizedBox(height: 12),
+            _big(label: l10n.recordSkip, onPressed: _skip, tonal: true),
+          ],
         ];
       case _Phase.recording:
         return [

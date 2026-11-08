@@ -382,6 +382,22 @@ class AppLocalizationsHu extends AppLocalizations {
   String get recordFailed => 'Nem sikerült a felvétel.';
 
   @override
+  String recordProgress(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get recordSkip => 'Kihagyom';
+
+  @override
+  String recordSummary(int count) {
+    return '$count felvétel mentve';
+  }
+
+  @override
+  String get recordListAction => 'Felvétel';
+
+  @override
   String get recordOwnVoice => 'Saját hang felvétele';
 
   @override

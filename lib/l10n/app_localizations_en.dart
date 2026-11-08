@@ -381,6 +381,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recordFailed => 'Recording failed.';
 
   @override
+  String recordProgress(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get recordSkip => 'Skip';
+
+  @override
+  String recordSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recordings saved',
+      one: '1 recording saved',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get recordListAction => 'Record';
+
+  @override
   String get recordOwnVoice => 'Record my own voice';
 
   @override

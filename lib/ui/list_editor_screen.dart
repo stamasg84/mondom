@@ -60,7 +60,24 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
                   ? l10n.historyTitle
                   : list.title);
         return Scaffold(
-          appBar: AppBar(title: Text(title)),
+          appBar: AppBar(
+            title: Text(title),
+            actions: [
+              if (!isHistory)
+                StreamBuilder<List<Sentence>>(
+                  stream: _sentences,
+                  builder: (context, snap) {
+                    final todo = _toRecord(snap.data ?? const <Sentence>[]);
+                    return IconButton(
+                      iconSize: 28,
+                      tooltip: l10n.recordListAction,
+                      icon: const Icon(Icons.mic),
+                      onPressed: todo.isEmpty ? null : () => _recordAll(todo),
+                    );
+                  },
+                ),
+            ],
+          ),
           body: SafeArea(
             child: Column(
               children: [
@@ -262,6 +279,30 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
       );
       if (remove == true) await widget.repo.setSentenceRecording(s.id, null);
     }
+  }
+
+  /// Rows with neither a recording nor a built-in sound, in order.
+  List<Sentence> _toRecord(List<Sentence> rows) => [
+    for (final s in rows)
+      if (s.recordingPath == null && s.soundKey == null && s.body.isNotEmpty) s,
+  ];
+
+  Future<void> _recordAll(List<Sentence> rows) async {
+    final store = widget.speaker.recordings;
+    if (store == null) return;
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => RecordingScreen(
+          targets: [
+            for (final s in rows) RecordingTarget(id: s.id, text: s.body),
+          ],
+          repo: widget.repo,
+          store: store,
+          speaker: widget.speaker,
+          recorder: widget.recorderFactory(),
+        ),
+      ),
+    );
   }
 
   Future<void> _record(Sentence s) async {

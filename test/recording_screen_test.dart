@@ -351,6 +351,40 @@ void main() {
     await finish(tester);
   });
 
+
+  testWidgets('batch: progress, Kihagyom saves nothing, summary counts', (
+    tester,
+  ) async {
+    await seedList(tester, ['Egy', 'Kettő']);
+    await pumpRecording(tester, count: 2);
+    expect(find.text('1 / 2'), findsOneWidget);
+    await tester.tap(find.text('Kihagyom'));
+    await settle(tester);
+    expect(find.text('2 / 2'), findsOneWidget);
+    expect(find.text('Mondat 1'), findsOneWidget);
+    expect((await row(tester, ids[0])).recordingPath, isNull);
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Felvétel'));
+    await settle(tester);
+    await tester.tap(find.text('Kész'));
+    await settle(tester);
+    await tester.tap(find.text('Mentés'));
+    await settle(tester, rounds: 20);
+    expect(find.text('1 felvétel mentve'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Kész'));
+    await settle(tester);
+    expect(find.text('open'), findsOneWidget);
+    expect((await row(tester, ids[1])).recordingPath, isNotNull);
+    await finish(tester);
+  });
+
+  testWidgets('single target has no Kihagyom and no summary', (tester) async {
+    await seedList(tester, ['Egy']);
+    await pumpRecording(tester);
+    expect(find.text('Kihagyom'), findsNothing);
+    await finish(tester);
+  });
+
   group('list editor', () {
     Future<void> openEditor(WidgetTester tester) async {
       tester.platformDispatcher.localesTestValue = const [Locale('hu', 'HU')];
@@ -408,7 +442,7 @@ void main() {
         await repo.setSentenceRecording(ids[0], name);
       });
       await openEditor(tester);
-      expect(find.byIcon(Icons.mic), findsOneWidget); // row icon
+      expect(find.byIcon(Icons.mic), findsNWidgets(2)); // row icon + app bar
       await openSheet(tester);
       expect(find.text('Saját hang felvétele'), findsNothing);
       expect(find.text('Felvétel meghallgatása'), findsOneWidget);
@@ -427,6 +461,37 @@ void main() {
       await tester.tap(find.text('Törlés'));
       await settle(tester);
       expect((await row(tester, ids[0])).recordingPath, isNull);
+      await finish(tester);
+    });
+
+    testWidgets('app bar mic records only rows without recording or sound', (
+      tester,
+    ) async {
+      await seedList(tester, ['Egy', 'Kettő', 'Három']);
+      await tester.runAsync(() async {
+        await repo.setSentenceRecording(ids[1], 'a.wav');
+      });
+      await openEditor(tester);
+      await tester.tap(find.byTooltip('Felvétel'));
+      await settle(tester);
+      expect(find.text('1 / 2'), findsOneWidget);
+      expect(find.text('Egy'), findsOneWidget);
+      await tester.tap(find.text('Kihagyom'));
+      await settle(tester);
+      expect(find.text('Három'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('app bar mic is disabled when nothing qualifies', (
+      tester,
+    ) async {
+      await seedList(tester, ['Egy']);
+      await tester.runAsync(() => repo.setSentenceRecording(ids[0], 'a.wav'));
+      await openEditor(tester);
+      final b = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, Icons.mic),
+      );
+      expect(b.onPressed, isNull);
       await finish(tester);
     });
 

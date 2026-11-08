@@ -480,6 +480,29 @@
   "@recordFailed": {
     "description": "Recording could not start."
   },
+  "recordProgress": "{current} / {total}",
+  "@recordProgress": {
+    "description": "Position in the batch recording of a list.",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "recordSkip": "Kihagyom",
+  "@recordSkip": {
+    "description": "Skips this sentence when recording a whole list."
+  },
+  "recordSummary": "{count} felvétel mentve",
+  "@recordSummary": {
+    "description": "Summary after recording a whole list.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recordListAction": "Felvétel",
+  "@recordListAction": {
+    "description": "Tooltip of the app bar button that records the rows of a list one after another."
+  },
   "recordOwnVoice": "Saját hang felvétele",
   "@recordOwnVoice": {
     "description": "Sheet row: record a sentence."

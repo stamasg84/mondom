@@ -758,6 +758,30 @@ abstract class AppLocalizations {
   /// **'Nem sikerült a felvétel.'**
   String get recordFailed;
 
+  /// Position in the batch recording of a list.
+  ///
+  /// In hu, this message translates to:
+  /// **'{current} / {total}'**
+  String recordProgress(int current, int total);
+
+  /// Skips this sentence when recording a whole list.
+  ///
+  /// In hu, this message translates to:
+  /// **'Kihagyom'**
+  String get recordSkip;
+
+  /// Summary after recording a whole list.
+  ///
+  /// In hu, this message translates to:
+  /// **'{count} felvétel mentve'**
+  String recordSummary(int count);
+
+  /// Tooltip of the app bar button that records the rows of a list one after another.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felvétel'**
+  String get recordListAction;
+
   /// Sheet row: record a sentence.
   ///
   /// In hu, this message translates to:

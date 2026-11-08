@@ -34,7 +34,7 @@ Goal: record your own voice for any sentence, played instead of TTS. Design: `do
 - ARB (hu + en). Tests with the fake recorder: the state machine; 60 s auto-stop; save sets the recording; Újra keeps the old one until Mentés; back asks; the sheet shows the right rows; the text-edit question appears only for rows with a recording.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T32 (Agent): Record a whole list in one sitting
+### [x] T32 (Agent): Record a whole list in one sitting
 Voice and energy are limited, so recording many sentences must not mean opening a sheet for each.
 - List editor app bar: `Icons.mic` button "Felvétel" (not for history, disabled when nothing qualifies). It opens the T31 screen with the list's rows, in order, that have neither a recording nor a built-in sound.
 - The screen shows progress ("3 / 12") and adds "Kihagyom". Mentés moves on to the next row, in Idle, without further taps. After the last row: a short summary ("9 felvétel mentve") and back to the editor. Leaving midway keeps what was saved; re-opening continues with what's left.
