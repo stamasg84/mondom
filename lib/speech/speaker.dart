@@ -262,11 +262,27 @@ class Speaker extends ChangeNotifier {
   /// Plays the recording [fileName] (prepared into a temp WAV, replayed
   /// instantly on a second tap). Returns false, having shown no error, if it
   /// can't be played, so the caller falls through to sound/TTS.
-  Future<bool> _playRecording(String fileName, {required bool alarm}) async {
+  Future<bool> _playRecording(String fileName, {required bool alarm}) {
     final store = recordings;
-    if (store == null) return false;
+    if (store == null) return Future.value(false);
+    return _playPrepared(
+      'rec $fileName',
+      () => store.resolve(fileName),
+      alarm: alarm,
+    );
+  }
+
+  /// Plays an unsaved take at [path] exactly as it will sound once saved
+  /// (through [prepareRecording]). False if it can't be played.
+  Future<bool> previewRecording(String path) =>
+      _playPrepared('preview $path', () async => path, alarm: false);
+
+  Future<bool> _playPrepared(
+    String key,
+    Future<String?> Function() resolve, {
+    required bool alarm,
+  }) async {
     if (_busy) return true; // same as speech: ignore taps while preparing
-    final key = 'rec\u0000$fileName';
     try {
       final last = _lastPath;
       if (key == _lastKey && last != null && File(last).existsSync()) {
@@ -277,7 +293,7 @@ class Speaker extends ChangeNotifier {
         await _playWav(last, alarm);
         return true;
       }
-      final source = await store.resolve(fileName);
+      final source = await resolve();
       if (source == null) return false;
       final bytes = await File(source).readAsBytes();
       await _stopAll(restoreVolume: !alarm);

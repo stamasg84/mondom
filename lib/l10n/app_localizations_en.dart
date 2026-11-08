@@ -352,4 +352,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get loadBanner =>
       'Tap the sentence you want to load into the text field';
+
+  @override
+  String get recordAction => 'Record';
+
+  @override
+  String get recordDone => 'Done';
+
+  @override
+  String get recordListen => 'Listen';
+
+  @override
+  String get recordAgain => 'Again';
+
+  @override
+  String get recordDiscardTitle => 'Discard the recording?';
+
+  @override
+  String get recordDiscard => 'Discard';
+
+  @override
+  String get micDenied => 'Microphone permission is needed to record.';
+
+  @override
+  String get openAppSettings => 'Open settings';
+
+  @override
+  String get recordFailed => 'Recording failed.';
+
+  @override
+  String get recordOwnVoice => 'Record my own voice';
+
+  @override
+  String get recordingListen => 'Listen to the recording';
+
+  @override
+  String get recordingNew => 'New recording';
+
+  @override
+  String get recordingDelete => 'Delete the recording';
+
+  @override
+  String get recordingDeleteQuestion => 'Delete the recording?';
+
+  @override
+  String get keepRecordingQuestion =>
+      'The recording still says the old text. Keep it?';
+
+  @override
+  String get keepRecording => 'Keep';
+
+  @override
+  String get removeRecording => 'Delete';
 }

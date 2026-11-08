@@ -703,6 +703,108 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Koppints a mondatra, amit a szövegmezőbe töltenél'**
   String get loadBanner;
+
+  /// Record button and screen title.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felvétel'**
+  String get recordAction;
+
+  /// Stops the recording.
+  ///
+  /// In hu, this message translates to:
+  /// **'Kész'**
+  String get recordDone;
+
+  /// Plays the take as it will sound.
+  ///
+  /// In hu, this message translates to:
+  /// **'Meghallgatom'**
+  String get recordListen;
+
+  /// Discards the take and records again.
+  ///
+  /// In hu, this message translates to:
+  /// **'Újra'**
+  String get recordAgain;
+
+  /// Asked when leaving with an unsaved take.
+  ///
+  /// In hu, this message translates to:
+  /// **'Elveted a felvételt?'**
+  String get recordDiscardTitle;
+
+  /// Confirm discarding the take.
+  ///
+  /// In hu, this message translates to:
+  /// **'Elvetem'**
+  String get recordDiscard;
+
+  /// Shown when the microphone permission is denied.
+  ///
+  /// In hu, this message translates to:
+  /// **'A felvételhez engedélyezni kell a mikrofon használatát.'**
+  String get micDenied;
+
+  /// Opens the app's Android settings.
+  ///
+  /// In hu, this message translates to:
+  /// **'Beállítások megnyitása'**
+  String get openAppSettings;
+
+  /// Recording could not start.
+  ///
+  /// In hu, this message translates to:
+  /// **'Nem sikerült a felvétel.'**
+  String get recordFailed;
+
+  /// Sheet row: record a sentence.
+  ///
+  /// In hu, this message translates to:
+  /// **'Saját hang felvétele'**
+  String get recordOwnVoice;
+
+  /// Sheet row: play the recording.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felvétel meghallgatása'**
+  String get recordingListen;
+
+  /// Sheet row: record again.
+  ///
+  /// In hu, this message translates to:
+  /// **'Új felvétel'**
+  String get recordingNew;
+
+  /// Sheet row: remove the recording.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felvétel törlése'**
+  String get recordingDelete;
+
+  /// Confirm dialog for removing a recording.
+  ///
+  /// In hu, this message translates to:
+  /// **'Törlöd a felvételt?'**
+  String get recordingDeleteQuestion;
+
+  /// Asked after editing the text of a recorded row.
+  ///
+  /// In hu, this message translates to:
+  /// **'A felvétel még a régi szöveget mondja. Megtartod?'**
+  String get keepRecordingQuestion;
+
+  /// Keep the recording.
+  ///
+  /// In hu, this message translates to:
+  /// **'Megtartom'**
+  String get keepRecording;
+
+  /// Remove the recording.
+  ///
+  /// In hu, this message translates to:
+  /// **'Törlöm'**
+  String get removeRecording;
 }
 
 class _AppLocalizationsDelegate

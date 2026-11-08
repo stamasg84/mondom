@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../speech/speaker.dart';
+import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
+import 'recording_screen.dart';
 import 'row_badges.dart';
 
 /// Per-list sentence editor: edit, reorder, delete, copy/move, add lines.
 /// List-level actions (rename, pin, delete) live in the lists overview.
 class ListEditorScreen extends StatefulWidget {
-  const ListEditorScreen({super.key, required this.repo, required this.listId});
+  const ListEditorScreen({
+    super.key,
+    required this.repo,
+    required this.listId,
+    required this.speaker,
+    required this.recorderFactory,
+  });
 
   final ListsRepository repo;
   final int listId;
+
+  /// Plays recordings and owns the recordings store.
+  final Speaker speaker;
+  final VoiceRecorder Function() recorderFactory;
 
   @override
   State<ListEditorScreen> createState() => _ListEditorScreenState();
@@ -221,7 +234,73 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
       context: context,
       builder: (_) => _EditDialog(initial: s.body),
     );
-    if (text != null) await widget.repo.updateSentenceText(s.id, text);
+    if (text == null) return;
+    await widget.repo.updateSentenceText(s.id, text);
+    // The recording still says the old words: never delete it silently.
+    if (s.recordingPath != null &&
+        normalizeText(text).isNotEmpty &&
+        normalizeText(text) != normalizeText(s.body) &&
+        mounted) {
+      final remove = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text(
+            l10n.keepRecordingQuestion,
+            style: const TextStyle(fontSize: 20),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.removeRecording),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.keepRecording),
+            ),
+          ],
+        ),
+      );
+      if (remove == true) await widget.repo.setSentenceRecording(s.id, null);
+    }
+  }
+
+  Future<void> _record(Sentence s) async {
+    final store = widget.speaker.recordings;
+    if (store == null) return;
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => RecordingScreen(
+          targets: [RecordingTarget(id: s.id, text: s.body)],
+          repo: widget.repo,
+          store: store,
+          speaker: widget.speaker,
+          recorder: widget.recorderFactory(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteRecording(AppLocalizations l10n, Sentence s) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(
+          l10n.recordingDeleteQuestion,
+          style: const TextStyle(fontSize: 20),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.deleteAction),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await widget.repo.setSentenceRecording(s.id, null);
   }
 
   Future<void> _actions(
@@ -231,25 +310,54 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
   }) async {
     final action = await showModalBottomSheet<String>(
       context: context,
+      // Scrollable: with the recording rows the sheet can exceed a small screen.
+      isScrollControlled: true,
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!isHistory) _AlarmSwitch(repo: widget.repo, sentence: s),
-            _sheetRow(context, Icons.copy, l10n.copyToList, 'copy'),
-            _sheetRow(
-              context,
-              Icons.drive_file_move_outline,
-              l10n.moveToList,
-              'move',
-            ),
-            _sheetRow(context, Icons.delete, l10n.deleteAction, 'delete'),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!isHistory) _AlarmSwitch(repo: widget.repo, sentence: s),
+              if (!isHistory && s.recordingPath == null)
+                _sheetRow(context, Icons.mic, l10n.recordOwnVoice, 'record'),
+              if (!isHistory && s.recordingPath != null) ...[
+                _sheetRow(
+                  context,
+                  Icons.play_arrow,
+                  l10n.recordingListen,
+                  'listen',
+                ),
+                _sheetRow(context, Icons.mic, l10n.recordingNew, 'record'),
+                _sheetRow(
+                  context,
+                  Icons.mic_off,
+                  l10n.recordingDelete,
+                  'deleteRecording',
+                ),
+              ],
+              _sheetRow(context, Icons.copy, l10n.copyToList, 'copy'),
+              _sheetRow(
+                context,
+                Icons.drive_file_move_outline,
+                l10n.moveToList,
+                'move',
+              ),
+              _sheetRow(context, Icons.delete, l10n.deleteAction, 'delete'),
+            ],
+          ),
         ),
       ),
     );
     if (!mounted || action == null) return;
     switch (action) {
+      case 'record':
+        await _record(s);
+      case 'listen':
+        await widget.speaker.play(
+          SentenceRowData(text: s.body, recordingPath: s.recordingPath),
+        );
+      case 'deleteRecording':
+        await _deleteRecording(l10n, s);
       case 'copy':
         final target = await _pickList(l10n);
         if (target != null) await widget.repo.copySentence(s.id, target);

@@ -21,7 +21,7 @@ Goal: record your own voice for any sentence, played instead of TTS. Design: `do
 - Tests: `prepareRecording` (trim, gain cap, ceiling, silence stays silence); playback priority; missing file → TTS; recording plays with no voice loaded; alarm + recording uses the alarm player; replay doesn't reprocess; the original file is never touched; sweep keeps referenced and young files, and does nothing when no reference exists; history carries the recording.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T31 (Agent): Recording screen, one sentence
+### [x] T31 (Agent): Recording screen, one sentence
 - Add the `record` package (`flutter pub add record`; approved 2026-11-08, BSD-3-Clause, 7.1.2 resolves with our constraints) and `RECORD_AUDIO` to the manifest. Hide it behind `abstract class VoiceRecorder` so widget tests can fake it. WAV, 44100 Hz, mono, 16-bit; autoGain, echoCancel and noiseSuppress off.
 - New `lib/ui/recording_screen.dart`, taking a list of sentences and showing one at a time (T32 passes many; here it gets one). Huge sentence text, then by state:
   - **Idle**: one large "Felvétel" button.

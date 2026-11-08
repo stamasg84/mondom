@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../speech/speaker.dart';
+import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
 import 'list_colors.dart';
 import 'list_editor_screen.dart';
@@ -13,7 +15,12 @@ class ListsScreen extends StatefulWidget {
     required this.repo,
     required this.currentListId,
     required this.speechLanguage,
+    required this.speaker,
+    required this.recorderFactory,
   });
+
+  final Speaker speaker;
+  final VoiceRecorder Function() recorderFactory;
 
   final ListsRepository repo;
 
@@ -46,7 +53,12 @@ class _ListsScreenState extends State<ListsScreen> {
   void _openEditor(int id) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ListEditorScreen(repo: widget.repo, listId: id),
+        builder: (_) => ListEditorScreen(
+          repo: widget.repo,
+          listId: id,
+          speaker: widget.speaker,
+          recorderFactory: widget.recorderFactory,
+        ),
       ),
     );
   }

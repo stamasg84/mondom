@@ -4,6 +4,8 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
+import android.net.Uri
+import android.provider.Settings
 import android.speech.tts.TextToSpeech
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -28,6 +30,28 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "mondom/alarm_volume"
         ).setMethodCallHandler { call, result -> alarmVolume(call, result) }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "mondom/app_settings"
+        ).setMethodCallHandler { call, result ->
+            if (call.method == "open") result.success(openAppSettings())
+            else result.notImplemented()
+        }
+    }
+
+    /** Opens this app's page in Android settings (to re-allow the microphone). */
+    private fun openAppSettings(): Boolean {
+        return try {
+            startActivity(
+                Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", packageName, null)
+                )
+            )
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
     /** `get` → {current, max} of STREAM_ALARM; `set(level)` sets it silently. */

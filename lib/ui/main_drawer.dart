@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../speech/alarm_volume.dart';
 import '../speech/speaker.dart';
+import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
 import '../voices/language_names.dart';
 import '../voices/voice.dart';
@@ -21,8 +22,10 @@ class MainDrawer extends StatelessWidget {
     required this.currentListId,
     required this.alarmVolume,
     required this.speaker,
+    required this.recorderFactory,
   });
 
+  final VoiceRecorder Function() recorderFactory;
   final AlarmVolume alarmVolume;
   final Speaker speaker;
 
@@ -68,6 +71,8 @@ class MainDrawer extends StatelessWidget {
                       repo: repo,
                       currentListId: currentListId(),
                       speechLanguage: () => voice().languageCode,
+                      speaker: speaker,
+                      recorderFactory: recorderFactory,
                     ),
                   ),
                 );

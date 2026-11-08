@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../speech/alarm_volume.dart';
 import '../speech/speaker.dart';
+import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
 import '../voices/voice.dart';
 import 'list_colors.dart';
@@ -19,7 +20,11 @@ class SpeakingScreen extends StatefulWidget {
     required this.repo,
     this.voice,
     this.onOpenVoicePicker,
+    this.recorderFactory = RecordPackageRecorder.new,
   });
+
+  /// Creates the microphone recorder for the recording screen (tests fake it).
+  final VoiceRecorder Function() recorderFactory;
 
   final Speaker speaker;
   final ListsRepository repo;
@@ -206,6 +211,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
             currentListId: () => _currentId,
             alarmVolume: widget.speaker.alarmVolume ?? AlarmVolume(),
             speaker: widget.speaker,
+            recorderFactory: widget.recorderFactory,
           ),
           appBar: AppBar(
             leading: Builder(

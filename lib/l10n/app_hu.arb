@@ -443,5 +443,73 @@
   "loadBanner": "Koppints a mondatra, amit a szövegmezőbe töltenél",
   "@loadBanner": {
     "description": "Banner shown while the load-into-text-field mode is armed."
+  },
+  "recordAction": "Felvétel",
+  "@recordAction": {
+    "description": "Record button and screen title."
+  },
+  "recordDone": "Kész",
+  "@recordDone": {
+    "description": "Stops the recording."
+  },
+  "recordListen": "Meghallgatom",
+  "@recordListen": {
+    "description": "Plays the take as it will sound."
+  },
+  "recordAgain": "Újra",
+  "@recordAgain": {
+    "description": "Discards the take and records again."
+  },
+  "recordDiscardTitle": "Elveted a felvételt?",
+  "@recordDiscardTitle": {
+    "description": "Asked when leaving with an unsaved take."
+  },
+  "recordDiscard": "Elvetem",
+  "@recordDiscard": {
+    "description": "Confirm discarding the take."
+  },
+  "micDenied": "A felvételhez engedélyezni kell a mikrofon használatát.",
+  "@micDenied": {
+    "description": "Shown when the microphone permission is denied."
+  },
+  "openAppSettings": "Beállítások megnyitása",
+  "@openAppSettings": {
+    "description": "Opens the app's Android settings."
+  },
+  "recordFailed": "Nem sikerült a felvétel.",
+  "@recordFailed": {
+    "description": "Recording could not start."
+  },
+  "recordOwnVoice": "Saját hang felvétele",
+  "@recordOwnVoice": {
+    "description": "Sheet row: record a sentence."
+  },
+  "recordingListen": "Felvétel meghallgatása",
+  "@recordingListen": {
+    "description": "Sheet row: play the recording."
+  },
+  "recordingNew": "Új felvétel",
+  "@recordingNew": {
+    "description": "Sheet row: record again."
+  },
+  "recordingDelete": "Felvétel törlése",
+  "@recordingDelete": {
+    "description": "Sheet row: remove the recording."
+  },
+  "recordingDeleteQuestion": "Törlöd a felvételt?",
+  "@recordingDeleteQuestion": {
+    "description": "Confirm dialog for removing a recording."
+  },
+  "keepRecordingQuestion": "A felvétel még a régi szöveget mondja. Megtartod?",
+  "@keepRecordingQuestion": {
+    "description": "Asked after editing the text of a recorded row."
+  },
+  "keepRecording": "Megtartom",
+  "@keepRecording": {
+    "description": "Keep the recording."
+  },
+  "removeRecording": "Törlöm",
+  "@removeRecording": {
+    "description": "Remove the recording."
   }
 }

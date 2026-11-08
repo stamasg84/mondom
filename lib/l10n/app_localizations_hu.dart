@@ -352,4 +352,57 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get loadBanner => 'Koppints a mondatra, amit a szövegmezőbe töltenél';
+
+  @override
+  String get recordAction => 'Felvétel';
+
+  @override
+  String get recordDone => 'Kész';
+
+  @override
+  String get recordListen => 'Meghallgatom';
+
+  @override
+  String get recordAgain => 'Újra';
+
+  @override
+  String get recordDiscardTitle => 'Elveted a felvételt?';
+
+  @override
+  String get recordDiscard => 'Elvetem';
+
+  @override
+  String get micDenied =>
+      'A felvételhez engedélyezni kell a mikrofon használatát.';
+
+  @override
+  String get openAppSettings => 'Beállítások megnyitása';
+
+  @override
+  String get recordFailed => 'Nem sikerült a felvétel.';
+
+  @override
+  String get recordOwnVoice => 'Saját hang felvétele';
+
+  @override
+  String get recordingListen => 'Felvétel meghallgatása';
+
+  @override
+  String get recordingNew => 'Új felvétel';
+
+  @override
+  String get recordingDelete => 'Felvétel törlése';
+
+  @override
+  String get recordingDeleteQuestion => 'Törlöd a felvételt?';
+
+  @override
+  String get keepRecordingQuestion =>
+      'A felvétel még a régi szöveget mondja. Megtartod?';
+
+  @override
+  String get keepRecording => 'Megtartom';
+
+  @override
+  String get removeRecording => 'Törlöm';
 }

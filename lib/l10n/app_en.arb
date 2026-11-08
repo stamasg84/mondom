@@ -109,5 +109,22 @@
   "nextSentence": "Next",
   "allSaid": "All said",
   "loadSentence": "Load a sentence into the text field",
-  "loadBanner": "Tap the sentence you want to load into the text field"
+  "loadBanner": "Tap the sentence you want to load into the text field",
+  "recordAction": "Record",
+  "recordDone": "Done",
+  "recordListen": "Listen",
+  "recordAgain": "Again",
+  "recordDiscardTitle": "Discard the recording?",
+  "recordDiscard": "Discard",
+  "micDenied": "Microphone permission is needed to record.",
+  "openAppSettings": "Open settings",
+  "recordFailed": "Recording failed.",
+  "recordOwnVoice": "Record my own voice",
+  "recordingListen": "Listen to the recording",
+  "recordingNew": "New recording",
+  "recordingDelete": "Delete the recording",
+  "recordingDeleteQuestion": "Delete the recording?",
+  "keepRecordingQuestion": "The recording still says the old text. Keep it?",
+  "keepRecording": "Keep",
+  "removeRecording": "Delete"
 }
