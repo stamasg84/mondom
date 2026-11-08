@@ -11,7 +11,7 @@ Mark tasks done by changing `[ ]` to `[x]`. When a phase is finished, move it to
 
 Goal: record your own voice for any sentence, played instead of TTS. Design: `docs/architecture.md` "Message banking" (read it first). No schema change: `sentences.recordingPath` already exists.
 
-### [ ] T30 (Agent): Playing recordings (no recording UI yet)
+### [x] T30 (Agent): Playing recordings (no recording UI yet)
 - New `lib/speech/recording_store.dart`: `RecordingStore` over `<appSupport>/recordings/`: `adopt(tempWavPath)` (copy in under a new unique file name, delete the temp, return the file name), `resolve(fileName)` → absolute path or null if the file is missing. `sweep(Set<String> referenced)` at app start deletes unreferenced files, with the guards from the architecture doc. The DB stores the **file name only**.
 - `lib/speech/loudness.dart`: `prepareRecording(PcmWav)`: drop the first and last 100 ms (button clicks), trim silence at both ends (20 ms frames, threshold 40 dB below the loudest frame, keep 100 ms of padding), high-pass at 80 Hz, normalize speech level to `recordingTargetRmsDb` (start at -16 dBFS) with the gain capped at +15 dB, then the T28 limiter. No `speechGainDb`. Never modifies the original.
 - `SentenceRowData.recordingPath` (file name). In `Speaker.play`, priority is recording > sound > TTS. A recording: resolve, read, `prepareRecording` in an `Isolate.run`, write a temp WAV, play on the speech or alarm player per `alarm`, reusing the last-utterance mechanism (key `rec\0<fileName>`) so a second tap replays instantly. Only that temp file may ever be deleted by `_forgetLast`. Must work with no voice loaded (`canPlay` true when `recordingPath != null`). File missing or unreadable → fall through to sound/TTS, no error shown.

@@ -145,7 +145,12 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     final speaker = widget.speaker;
     final data = row == null
         ? null
-        : SentenceRowData(text: text, soundKey: row.soundKey, alarm: row.alarm);
+        : SentenceRowData(
+            text: text,
+            soundKey: row.soundKey,
+            recordingPath: row.recordingPath,
+            alarm: row.alarm,
+          );
     final canPlay = data == null ? speaker.ready : speaker.canPlay(data);
     if (!canPlay || text.trim().isEmpty) return;
     final rowId = row?.id;
@@ -159,7 +164,9 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     // Tapping a row in the history list must not reorder it under the finger;
     // alarm rows are never logged.
     if ((rowId == null || !_currentIsHistory) && !(row?.alarm ?? false)) {
-      unawaited(widget.repo.addToHistory(text));
+      unawaited(
+        widget.repo.addToHistory(text, recordingPath: row?.recordingPath),
+      );
     }
     await (data == null ? speaker.speak(text) : speaker.play(data));
     if (mounted) setState(() => _tappedId = null);

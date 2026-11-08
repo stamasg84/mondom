@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import '../voices/voice.dart';
 import '../voices/voice_engine.dart';
 import 'alarm_volume.dart';
 import 'loudness.dart';
+import 'recording_store.dart';
 import 'sounds.dart';
 
 /// Plays WAV files. Abstracted so [Speaker] can be unit-tested.
@@ -108,17 +110,20 @@ class AudioPlayersSoundPlayer implements SoundPlayer {
   }
 }
 
-/// What a tapped row plays: a known [soundKey] plays its built-in sound,
+/// What a tapped row plays, by priority: its own recording ([recordingPath],
+/// a file name in the [RecordingStore]), a known [soundKey] (built-in sound),
 /// otherwise [text] is spoken. [alarm] rows play on the alarm stream.
 class SentenceRowData {
   const SentenceRowData({
     required this.text,
     this.soundKey,
+    this.recordingPath,
     this.alarm = false,
   });
 
   final String text;
   final String? soundKey;
+  final String? recordingPath;
   final bool alarm;
 
   /// The built-in sound to play, or null (unknown key = TTS).
@@ -139,12 +144,20 @@ class Speaker extends ChangeNotifier {
     SoundPlayer? alarmPlayer,
     this.loopLimit = alarmLoopLimit,
     this.alarmVolume,
+    this.recordings,
+    this.tempDir,
   }) : _createEngine = engineFactory,
        _player = player ?? AudioPlayersWavPlayer(),
        _soundPlayer = soundPlayer ?? AudioPlayersSoundPlayer(),
        _alarmPlayer = alarmPlayer ?? AudioPlayersSoundPlayer(alarm: true) {
     _alarmDone = _alarmPlayer.onComplete.listen((_) => _endAlarm());
   }
+
+  /// Message-banking files; null = recordings are never played.
+  final RecordingStore? recordings;
+
+  /// Where prepared recordings are written (default: the system temp dir).
+  final Directory? tempDir;
 
   /// Raises the alarm stream around alarms (custom volume mode); null = never.
   final AlarmVolume? alarmVolume;
@@ -210,13 +223,18 @@ class Speaker extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Whether [row] can play now: a built-in sound needs no voice, so an alarm
-  /// works even while the voice is still loading.
-  bool canPlay(SentenceRowData row) => row.sound != null || ready;
+  /// Whether [row] can play now: a recording or built-in sound needs no
+  /// voice, so they work even while the voice is still loading.
+  bool canPlay(SentenceRowData row) =>
+      row.recordingPath != null || row.sound != null || ready;
 
-  /// Row-level entry: a known sound plays its asset (alarm rows on the alarm
-  /// stream), anything else is spoken. Only one thing plays at a time.
+  /// Row-level entry: a recording plays first, then a known sound (its asset),
+  /// anything else is spoken; alarm rows use the alarm stream. A missing or
+  /// unreadable recording falls through silently. Only one thing plays at a
+  /// time.
   Future<void> play(SentenceRowData row) async {
+    final rec = row.recordingPath;
+    if (rec != null && await _playRecording(rec, alarm: row.alarm)) return;
     final sound = row.sound;
     if (sound == null) {
       return row.alarm ? _speakText(row.text, alarm: true) : speak(row.text);
@@ -240,6 +258,62 @@ class Speaker extends ChangeNotifier {
 
   /// Free text: speech on the normal player.
   Future<void> speak(String text) => _speakText(text, alarm: false);
+
+  /// Plays the recording [fileName] (prepared into a temp WAV, replayed
+  /// instantly on a second tap). Returns false, having shown no error, if it
+  /// can't be played, so the caller falls through to sound/TTS.
+  Future<bool> _playRecording(String fileName, {required bool alarm}) async {
+    final store = recordings;
+    if (store == null) return false;
+    if (_busy) return true; // same as speech: ignore taps while preparing
+    final key = 'rec\u0000$fileName';
+    try {
+      final last = _lastPath;
+      if (key == _lastKey && last != null && File(last).existsSync()) {
+        await _stopAll(restoreVolume: !alarm);
+        _lastReplayed = true;
+        _error = null;
+        notifyListeners();
+        await _playWav(last, alarm);
+        return true;
+      }
+      final source = await store.resolve(fileName);
+      if (source == null) return false;
+      final bytes = await File(source).readAsBytes();
+      await _stopAll(restoreVolume: !alarm);
+      _busy = true;
+      notifyListeners();
+      Uint8List? prepared;
+      try {
+        prepared = await Isolate.run(() => prepareRecordingBytes(bytes));
+      } finally {
+        _busy = false;
+      }
+      if (prepared == null) {
+        notifyListeners();
+        return false;
+      }
+      final dir = tempDir ?? Directory.systemTemp;
+      final out = File(
+        '${dir.path}/mondom_rec_${DateTime.now().microsecondsSinceEpoch}.wav',
+      );
+      await out.writeAsBytes(prepared, flush: true);
+      final old = _lastPath;
+      _lastKey = key;
+      _lastPath = out.path;
+      _lastReplayed = false;
+      _error = null;
+      if (old != null) await _deleteQuietly(old);
+      notifyListeners();
+      await _playWav(out.path, alarm);
+      return true;
+    } catch (_) {
+      _busy = false;
+      notifyListeners();
+      await _restoreVolume();
+      return false;
+    }
+  }
 
   Future<void> _speakText(String text, {required bool alarm}) async {
     final normalized = normalizeText(text);

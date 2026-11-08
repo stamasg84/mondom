@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'l10n/app_localizations.dart';
 import 'speech/alarm_volume.dart';
+import 'speech/recording_store.dart';
 import 'speech/speaker.dart';
 import 'storage/database.dart';
 import 'storage/lists_repository.dart';
@@ -53,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static const _prefKey = 'voiceId';
 
   final _alarmVolume = AlarmVolume();
+  final _recordings = RecordingStore();
   late final Speaker _speaker;
   AppDatabase? _db;
   ListsRepository? _repo;
@@ -65,8 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _speaker = Speaker(engineFactory: _createEngine, alarmVolume: _alarmVolume)
-      ..addListener(() => setState(() {}));
+    _speaker = Speaker(
+      engineFactory: _createEngine,
+      alarmVolume: _alarmVolume,
+      recordings: _recordings,
+    )..addListener(() => setState(() {}));
     _init();
   }
 
@@ -81,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _db = db;
       _repo = repo;
     });
+    unawaited(_sweepRecordings(repo));
     await _installer.cleanupStaging();
     final info = await PackageInfo.fromPlatform();
     _catalog = await CatalogRepository(appVersion: info.version).load();
@@ -110,6 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
       // Safety net for a seed that never happened (e.g. killed mid-start).
       await repo.addSeedLists(_voice.languageCode);
     }
+  }
+
+  /// Removes recording files no row references (guards in [RecordingStore]).
+  Future<void> _sweepRecordings(ListsRepository repo) async {
+    try {
+      await _recordings.sweep(await repo.referencedRecordings());
+    } catch (_) {}
   }
 
   Future<void> _openPicker({bool firstRun = false}) {

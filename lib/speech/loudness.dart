@@ -146,6 +146,104 @@ Float32List limitPeaks(
   return out;
 }
 
+/// Target speech level (dBFS, 75th percentile of 20 ms frame RMS) of a
+/// message-banking recording on playback.
+const recordingTargetRmsDb = -16.0;
+
+/// Largest gain [prepareRecording] adds (it may attenuate without limit).
+const recordingMaxGainDb = 15.0;
+
+/// Corner of the recording high-pass (Hz).
+const recordingHighPassHz = 80.0;
+
+const _recordingClickSec = 0.100;
+const _recordingFrameSec = 0.020;
+const _recordingSilenceDb = -40.0;
+const _recordingPaddingSec = 0.100;
+
+/// Playback-time cleanup of a message-banking recording; never touches the
+/// file. Drops the first and last 100 ms (button clicks), trims silence at
+/// both ends (20 ms frames, 40 dB below the loudest frame, 100 ms padding
+/// kept), high-passes at [recordingHighPassHz], normalizes the speech level to
+/// [recordingTargetRmsDb] (gain at most [recordingMaxGainDb]) and applies the
+/// look-ahead [limitPeaks]. Multi-channel input is downmixed to mono. Silence
+/// stays silence. Returns a new [PcmWav].
+PcmWav prepareRecording(PcmWav wav) {
+  final rate = wav.sampleRate;
+  var x = _toMono(wav);
+  final click = (_recordingClickSec * rate).round();
+  x = x.length > 2 * click
+      ? Float32List.sublistView(x, click, x.length - click)
+      : Float32List(0);
+  final frame = math.max(1, (_recordingFrameSec * rate).round());
+  var rms = _frameRms(x, frame);
+  final loudest = rms.isEmpty ? 0.0 : rms.reduce(math.max);
+  if (loudest < 1e-5) return PcmWav(Float32List(x.length), rate, 1);
+
+  // Trim silence, keeping some padding.
+  final threshold = loudest * _fromDb(_recordingSilenceDb);
+  final first = rms.indexWhere((r) => r >= threshold);
+  final last = rms.lastIndexWhere((r) => r >= threshold);
+  final pad = (_recordingPaddingSec * rate).round();
+  final start = math.max(0, first * frame - pad);
+  final end = math.min(x.length, (last + 1) * frame + pad);
+  x = Float32List.fromList(Float32List.sublistView(x, start, end));
+
+  x = highPass(x, rate, recordingHighPassHz);
+
+  // Speech level: 75th percentile of frame RMS over the non-silent frames.
+  rms = _frameRms(x, frame)..removeWhere((r) => r < threshold);
+  if (rms.isEmpty) return PcmWav(Float32List(x.length), rate, 1);
+  rms.sort();
+  final level = rms[((rms.length - 1) * 0.75).round()];
+  if (level < 1e-6) return PcmWav(Float32List(x.length), rate, 1);
+  final gainDb = math.min(
+    recordingMaxGainDb,
+    recordingTargetRmsDb - 20 * math.log(level) / math.ln10,
+  );
+  final gain = _fromDb(gainDb);
+  for (var i = 0; i < x.length; i++) {
+    x[i] *= gain;
+  }
+  return PcmWav(limitPeaks(x, sampleRate: rate), rate, 1);
+}
+
+/// WAV bytes in, prepared WAV bytes out; null if [bytes] is not 16-bit PCM
+/// WAV. Top-level so it can run in `Isolate.run`.
+Uint8List? prepareRecordingBytes(Uint8List bytes) {
+  final wav = readPcm16Wav(bytes);
+  if (wav == null) return null;
+  return writePcm16Wav(prepareRecording(wav));
+}
+
+Float32List _toMono(PcmWav wav) {
+  if (wav.channels == 1) return wav.samples;
+  final n = wav.samples.length ~/ wav.channels;
+  final out = Float32List(n);
+  for (var i = 0; i < n; i++) {
+    var sum = 0.0;
+    for (var c = 0; c < wav.channels; c++) {
+      sum += wav.samples[i * wav.channels + c];
+    }
+    out[i] = sum / wav.channels;
+  }
+  return out;
+}
+
+/// RMS of each full or partial [frame]-sample frame.
+List<double> _frameRms(Float32List x, int frame) {
+  final out = <double>[];
+  for (var s = 0; s < x.length; s += frame) {
+    final e = math.min(x.length, s + frame);
+    var sum = 0.0;
+    for (var i = s; i < e; i++) {
+      sum += x[i] * x[i];
+    }
+    out.add(math.sqrt(sum / (e - s)));
+  }
+  return out;
+}
+
 /// 16-bit PCM WAV contents.
 class PcmWav {
   PcmWav(this.samples, this.sampleRate, this.channels);

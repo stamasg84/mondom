@@ -162,9 +162,14 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
               padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
               child: Row(
                 children: [
-                  // What plays (built-in sound), then the alarm flag; the
-                  // two are independent.
-                  if (soundIcon(s.soundKey) case final icon?)
+                  // What plays (own recording, else built-in sound), then the
+                  // alarm flag; the two are independent.
+                  if (s.recordingPath != null)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 12),
+                      child: Icon(Icons.mic, size: 30),
+                    )
+                  else if (soundIcon(s.soundKey) case final icon?)
                     Padding(
                       padding: const EdgeInsets.only(right: 12),
                       child: Icon(icon, size: 30),

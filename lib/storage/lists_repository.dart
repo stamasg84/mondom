@@ -157,6 +157,26 @@ class ListsRepository {
     )..where((s) => s.id.equals(id))).write(SentencesCompanion(body: Value(t)));
   }
 
+  /// Attaches (or, with null, detaches) a message-banking recording, by file
+  /// name. The file itself is never deleted here; the app-start sweep removes
+  /// files nothing references.
+  Future<void> setSentenceRecording(int id, String? fileName) =>
+      (_db.update(_sentences)..where((s) => s.id.equals(id))).write(
+        SentencesCompanion(recordingPath: Value(fileName)),
+      );
+
+  /// File names of recordings referenced by rows of permanent lists, for the
+  /// sweep. History rows don't count: deleting a row must free its recording
+  /// without waiting for history to drop it (a history row then just falls
+  /// back to TTS).
+  Future<Set<String>> referencedRecordings() async {
+    final history = await _historyList();
+    return {
+      for (final s in await _db.select(_sentences).get())
+        if (s.recordingPath != null && s.listId != history.id) s.recordingPath!,
+    };
+  }
+
   Future<void> setSentenceAlarm(int id, bool alarm) =>
       (_db.update(_sentences)..where((s) => s.id.equals(id))).write(
         SentencesCompanion(alarm: Value(alarm)),
@@ -229,43 +249,55 @@ class ListsRepository {
   /// Records a spoken text at the top of history; the same normalized text is
   /// moved instead of duplicated. Oldest rows beyond [historyCap] are dropped.
   /// Newest-first order is kept by giving the new row the lowest position.
-  Future<void> addToHistory(String text) => _db.transaction(() async {
-    final normalized = normalizeText(text);
-    if (normalized.isEmpty) return;
-    final history = await _historyList();
-    final rows =
-        await (_db.select(_sentences)
-              ..where((s) => s.listId.equals(history.id))
-              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
-            .get();
-    final now = DateTime.now();
-    final top = rows.isEmpty ? 0 : rows.first.position - 1;
-    final same = rows
-        .where((r) => normalizeText(r.body) == normalized)
-        .toList();
-    if (same.isNotEmpty) {
-      await (_db.update(
-        _sentences,
-      )..where((s) => s.id.equals(same.first.id))).write(
-        SentencesCompanion(position: Value(top), spokenAt: Value(now)),
-      );
-    } else {
-      await _db
-          .into(_sentences)
-          .insert(
-            SentencesCompanion.insert(
-              listId: history.id,
-              body: normalized,
-              position: top,
+  ///
+  /// [recordingPath] (a recording's file name) is stored on a new row and
+  /// overwrites an existing row's only when non-null, so re-tapping from
+  /// history plays the same voice.
+  Future<void> addToHistory(String text, {String? recordingPath}) =>
+      _db.transaction(() async {
+        final normalized = normalizeText(text);
+        if (normalized.isEmpty) return;
+        final history = await _historyList();
+        final rows =
+            await (_db.select(_sentences)
+                  ..where((s) => s.listId.equals(history.id))
+                  ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+                .get();
+        final now = DateTime.now();
+        final top = rows.isEmpty ? 0 : rows.first.position - 1;
+        final same = rows
+            .where((r) => normalizeText(r.body) == normalized)
+            .toList();
+        if (same.isNotEmpty) {
+          await (_db.update(
+            _sentences,
+          )..where((s) => s.id.equals(same.first.id))).write(
+            SentencesCompanion(
+              position: Value(top),
               spokenAt: Value(now),
+              recordingPath: recordingPath == null
+                  ? const Value.absent()
+                  : Value(recordingPath),
             ),
           );
-    }
-    final ids = await _sentenceIds(history.id);
-    for (final id in ids.skip(historyCap)) {
-      await (_db.delete(_sentences)..where((s) => s.id.equals(id))).go();
-    }
-  });
+        } else {
+          await _db
+              .into(_sentences)
+              .insert(
+                SentencesCompanion.insert(
+                  listId: history.id,
+                  body: normalized,
+                  position: top,
+                  spokenAt: Value(now),
+                  recordingPath: Value(recordingPath),
+                ),
+              );
+        }
+        final ids = await _sentenceIds(history.id);
+        for (final id in ids.skip(historyCap)) {
+          await (_db.delete(_sentences)..where((s) => s.id.equals(id))).go();
+        }
+      });
 
   // ---- Defaults ----
 
