@@ -7,52 +7,86 @@ Mark tasks done by changing `[ ]` to `[x]`. When a phase is finished, move it to
 
 ---
 
-## Phase 7: ElevenLabs voice (optional, user's own account)
+## Phase 8: Final adjustments before the Play Store release
 
-Goal: a user with an ElevenLabs account (e.g. their own voice clone from the Impact Program) can use it in Mondom, with automatic fallback to an offline voice. Design and API facts: `docs/architecture.md` "ElevenLabs voice" (read it first). Never put a real API key in code, tests, docs or logs; tests use `package:http/testing.dart`'s `MockClient`.
+Goal: polish what testers will see first, give the project a public face (About, README, license, privacy policy), and produce a signed release build. No new features beyond these.
 
-### [x] T35 (Agent): API client and key store (no UI)
-- Add `flutter_secure_storage` (approved 2026-11-13, BSD-3-Clause, which is GPL-3.0 compatible; credit it in About). Exclude its data from Android auto-backup (`android:fullBackupContent` / `android:dataExtractionRules` excluding the secure-storage shared-prefs file; check the package README for the file name). Add it to the approved list in `docs/architecture.md`.
-- `lib/voices/elevenlabs_key_store.dart`: `abstract class ElevenLabsKeyStore { Future<String?> read(); Future<void> write(String); Future<void> clear(); }` with a secure-storage implementation and an in-memory fake for tests.
-- `lib/voices/elevenlabs_client.dart`, taking an `http.Client` and the key:
-  - `listVoices()` → `List<ElevenLabsVoice>` (`id`, `name` = the part of the API name before " - ", so "Brian - Deep, Resonant..." shows as "Brian"). All voices, no filtering and no labels; own voices (any `category` other than `premade`) first, then the rest, each group by name.
-  - `synthesize(text, voiceId, modelId, languageCode)` → WAV bytes: PCM 22050 Hz from the endpoint wrapped in a WAV header (reuse the WAV writing helpers in `loudness.dart` if they fit). Timeout `elevenLabsTimeout` (4 s) on the whole request.
-  - `subscription()` → `(used, limit, resetsAt)` from `GET /v1/user/subscription` (`character_count`, `character_limit`, `next_character_count_reset_unix`), or null on `missing_permissions`.
-  - One `ElevenLabsException` with a `reason` enum: `offline` (socket/DNS/timeout), `badKey` (401 other than missing permissions), `missingPermission`, `quota` (only `quota_exceeded`, in `detail.status` or `detail.code`; an unrecognised 402 is `server`), `unsupportedLanguage` (400 `unsupported_language`), `voiceNotAllowed` (e.g. `paid_plan_required` for a library voice), `server` (5xx, anything else). `toString` never includes the key.
-- Tests with `MockClient`: voice parsing and ordering; synthesis sends `xi-api-key`, a UTF-8 JSON body with `language_code`, `output_format=pcm_22050`, and returns a valid WAV with the right sample count; each error maps to its reason (use the real response bodies quoted in the architecture doc); timeout → `offline`; the key never appears in any exception text.
+### [ ] T39 (Agent): ElevenLabs picker section and setup screen wording
+Problems found in T38: the "Beállítások" entry is drawn like a voice row (with a play button area), and as the section's last row it's hard to find under a long voice list. The setup screen's Hungarian reads like a translation.
+- Voice picker, ElevenLabs section (`_elevenLabsSection` in `voice_picker.dart`):
+  - The section header gets a trailing gear `IconButton` (tooltip "ElevenLabs beállításai", ≥48 dp) that opens the setup screen. It's in the header, so it's visible as soon as the section is reached, however many voices follow. Remove the "Beállítások" row.
+  - No key: no voice-style row. Instead, under the header, one full-width `OutlinedButton.icon` "ElevenLabs beállítása" (no play button). The gear is hidden in this state (the button does the same).
+  - Keep the "Nincs internet" / failure note directly under the header.
+  - Subtitle: "Saját ElevenLabs-fiókkal, internettel" (en: "With your own ElevenLabs account, needs internet").
+- Setup screen (`elevenlabs_screen.dart`): rewrite the Hungarian strings (keep the keys where the meaning stays; the English ones follow the same meaning). Drafts, the human may adjust them before the task runs:
+  - Intro, as short separate paragraphs instead of one block:
+    - "Ha van ElevenLabs-fiókod (például ott készült el a saját hangod másolata), a Mondom azzal a hanggal is tud beszélni."
+    - "Amit így kimondasz, azt a Mondom elküldi az ElevenLabsnek, ezért internet kell hozzá, és a mondatok megjelennek az ElevenLabs-fiókod előzményeiben. Az ingyenes ElevenLabs-csomagban havonta korlátozott a felhasználható kredit."
+    - "Ha nincs internet, egy másik hang szól helyette. Amit egyszer már kimondtál, az internet nélkül is az ElevenLabs-hangon szól."
+  - Key how-to (replaces `elevenLabsPermissions`): "Az API-kulcsot az ElevenLabs honlapján hozhatod létre (Developers → API Keys). Ezeket a jogosultságokat add meg neki: Text to Speech és Voices. Ha a User (Read) jogot is megadod, itt látni fogod a felhasznált kreditet." Agent: check the menu path against current ElevenLabs docs; if unsure, leave out the path and keep the sentence general.
+  - `elevenLabsKeySaved`: "A kulcs működik, elmentve."
+  - `elevenLabsErrPermission`: "A kulcsnál nincs bekapcsolva a Voices jogosultság."
+  - `elevenLabsErrOffline`: "Nincs internet, így nem lehet ellenőrizni a kulcsot."
+  - `elevenLabsFallbackChoice`: "Tartalék hang, ha nincs internet:"
+  - `elevenLabsExpressive`: title "Kifejezőbb hang", subtitle "Lassabban indul, és kétszer annyi kreditbe kerül."
+  - `elevenLabsDeleteKeyQuestion`: "Törlöd a kulcsot? Az ElevenLabs-hangon már elmentett mondatok is törlődnek." ("gyorsítótár" is jargon.)
+  - Use "ElevenLabs-hang", "ElevenLabs-fiók" consistently (hyphenated) in every ElevenLabs string, including the fallback dialog ones.
+- Tests: update `voice_picker_test.dart` / `elevenlabs_screen_test.dart` (gear opens the setup screen; the no-key button opens it; no row with key `elevenlabs-settings`).
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [x] T36 (Agent): Engine with fallback, cache and status
-- `VoiceKind.elevenlabs`; `Voice.elevenLabs(lang, voiceId, name)` with id `elevenlabs:<lang>:<voiceId>`. The selected voice (in `shared_preferences`, as now) keeps the name so the picker can show it offline. Settings in `shared_preferences`: `elevenLabsFallbackVoiceId`, `elevenLabsExpressive` (false = `eleven_flash_v2_5`, true = `eleven_v3`).
-- `VoiceEngine.synthesizeToWav(text, {bool urgent = false})`; Piper and system engines ignore `urgent`.
-- `lib/voices/elevenlabs_engine.dart`: `ElevenLabsEngine(voice, client, fallback, cache)`. `load()` loads only the fallback. `synthesizeToWav`: cache hit → copy to a new temp WAV (boosted when Hangosítás is on, as in Piper); else if `urgent` → fallback; else request → write the cache entry, then the temp copy; on `ElevenLabsException` → fallback, and set `lastFallback` (the reason, or null after a successful ElevenLabs utterance or cache hit). `isLoaded` = fallback loaded.
-- `lib/voices/elevenlabs_cache.dart`: as in the architecture doc (key, 100 MB cap, oldest-used eviction, `clear()`). Eviction runs after a write, in the background.
-- `main.dart` engine factory: build the fallback from `elevenLabsFallbackVoiceId` (if missing or not installed: the system voice of the voice's language). No key stored → the engine always falls back with reason `badKey`.
-- `Speaker`: pass `urgent: alarm` for TTS rows; expose `lastFallback` (notify listeners when it changes).
-- Speaking screen app bar: a `cloud_off` icon slot shown while `lastFallback != null` (keep the app-bar layout fixed). Tap → a dialog with the reason text and the fallback voice's name. ARB (hu + en).
-- Tests: success writes the cache and plays; second call is a cache hit with no request; each failure reason falls back and is exposed; `urgent` never calls the client; the returned path is never the cache file; eviction keeps the newest files under the cap; alarm rows pass `urgent`; the icon shows and hides.
+### [ ] T40 (Agent): Speech speed
+Some voices talk faster than others (e.g. `nst` vs `imre`), so the speed is **stored per voice** (`shared_preferences` key `speechSpeed:<voiceId>`, default 1.0), and switching voices brings back that voice's speed.
+- Beállítások, section Beszéd: "Beszéd sebessége" slider with "Lassabb" / "Gyorsabb" end labels (no numbers), 0.7–1.3 in 0.05 steps, with the selected voice's name under the title ("Imre hangjára"). Releasing the slider says the language's `sampleText` at the new speed. A "Visszaállítás" text button when ≠ 1.0. Hidden when no voice is selected.
+- Per source (`VoiceEngine` gets a `speed` it applies on each `synthesizeToWav`, so changing it needs no model reload):
+  - **Piper**: pass it as `generate(..., speed: speed)` (sherpa-onnx divides the length scale by it; the configured `lengthScale` 1.2 stays the baseline for 1.0).
+  - **System TTS**: `flutter_tts.setSpeechRate` before `synthesizeToFile`. flutter_tts on Android maps 0.5 to Android's normal rate 1.0, so pass `speed / 2`. Verify it affects `synthesizeToFile`.
+  - **ElevenLabs**: `voice_settings.speed` in the request body (API range 0.7–1.2: clamp). Check the API docs for whether `eleven_v3` accepts it; if not, omit it there. **Add the speed to the cache key** (old entries simply miss, no migration).
+  - The ElevenLabs fallback engine uses the fallback voice's own speed.
+  - Recordings and built-in sounds: unchanged (no time-stretching).
+- Architecture doc: a short "Speech speed" note with the above.
+- Tests: per-voice persistence; Piper and system engines receive the speed; the ElevenLabs body has the clamped speed and different speeds give different cache keys; slider hidden without a voice.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [x] T37 (Agent): Setup screen and voice picker section
-- Voice picker: for languages in `elevenLabsLanguages` only (constant in `elevenlabs_client.dart`, see the architecture doc), below the language's voices, an "ElevenLabs" section header with a short subtitle "Internet és saját ElevenLabs-fiók kell". No key → one row "Beállítás" opening the setup screen. Key stored → the account's voices, by name only (fetched when the picker opens; offline → just the currently selected ElevenLabs voice, plus a "Nincs internet" note), each with "Próba" and select, like Piper rows, and a "Beállítások" row to the setup screen. Selecting one makes the picker's language the speech language (same as the system voice row).
-- "Próba" synthesizes the catalog's `sampleText` for the picker language with that voice, through the cache (so it costs credits only once).
-- New `lib/ui/elevenlabs_screen.dart`:
-  - Plain explanation: optional; needs internet and an ElevenLabs account; the text you say is sent to ElevenLabs and appears in your ElevenLabs history; the free plan has a monthly credit limit; without internet another voice speaks instead. Which permissions the key needs (Text to Speech, Voices; User optional for the credit display).
-  - Key field (obscured, paste-friendly) + "Ellenőrzés": calls `listVoices()`; stores the key only if that succeeds; otherwise shows the reason (bad key / missing permission / no internet).
-  - With a key: credit line when available ("Felhasznált kredit: 1 234 / 10 000, újraindul: <date>"); "Ha nincs internet, ez a hang beszél:" picking among installed Piper voices and the system voice of the speech language; the "Kifejezőbb hang (lassabb, kétszer annyi kredit)" switch; "Kulcs törlése" (confirm dialog; clears the key and the cache; if an ElevenLabs voice is selected, switch to the fallback voice).
-- ARB (hu + en). Tests with the fake key store and `MockClient`: bad key isn't stored; good key stores and lists voices; the offline picker shows the selected voice; delete key switches to the fallback and clears the cache.
+### [ ] T41 (Agent): About screen, LICENSE file, opening links
+- Add the GPL-3.0 text as `LICENSE` in the repo root (the official text from gnu.org, unmodified).
+- `MainActivity.kt`: an `openUrl` method on an existing small channel (`Intent.ACTION_VIEW`; no `url_launcher` dependency). Catch `ActivityNotFoundException` and return false; the UI then shows the URL as selectable text.
+- New `lib/ui/about_screen.dart`, drawer row "Névjegy", last. Contents, top to bottom:
+  - App name, version (`package_info_plus`), one line: "Ingyenes, reklám nélküli, nyílt forráskódú beszédsegítő. Nincs fiók, minden adat a telefonon marad."
+  - "A projekt a GitHubon" → `https://github.com/stamasg84/mondom`. "Adatkezelés" → the privacy policy from T43 (`https://github.com/stamasg84/mondom/blob/main/PRIVACY.md`).
+  - **Hangok**: every catalog voice with its license from the catalog; `alma` gets the CC BY 4.0 credit line with the dataset author as given on the Piper model card (copy it from the model card, link to it). Then "Android alapértelmezett: a telefon saját hangja".
+  - **Felhasznált szoftverek**: sherpa-onnx (Apache-2.0), Piper (MIT), espeak-ng (GPL-3.0), Flutter (BSD-3-Clause), `record` and `flutter_secure_storage` (BSD-3-Clause), plus "Összes licenc" → Flutter's `showLicensePage` (which already lists every Dart package). Register the licenses that aren't Dart packages (espeak-ng, Piper, the voice licenses) with `LicenseRegistry.addLicense` in `main.dart` so they appear there too.
+  - **Tárhely**: "Saját felvételek" (`<appSupport>/recordings/`) and "Letöltött hangok" (`<appSupport>/voices/`, incl. espeak-ng-data), in MB, computed in an isolate when the screen opens ("…" until done).
+  - One small line: "Az ElevenLabs az ElevenLabs Inc. védjegye; a Mondom nem kapcsolódik hozzá."
+- ARB (hu + en). Tests: the drawer row opens the screen; voice credits come from the catalog; sizes render after computing; the link calls the channel.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [x] T38 (You): Try ElevenLabs on the phone
-Create a new API key for the phone (Text to Speech + Voices, optionally User read), don't reuse one that was pasted into a chat.
-1. ☰ → Hang és nyelv → ElevenLabs → Beállítás: try a wrong key first (clear error), then the real one. Credits shown (if User read is on)?
-2. Listen to "Próba" for 2–3 voices, pick one. Speak list rows and typed text: how long until sound starts (compare with Imre)? Try the "Kifejezőbb hang" switch.
-3. Tap a row twice and re-tap a row said earlier: the second is instant (cache).
-4. Airplane mode: a row said before still uses the ElevenLabs voice (cache); a new sentence comes in the fallback voice within ~4 s, and the cloud icon explains why. Turn the network back on: the icon disappears after the next ElevenLabs utterance.
-5. An alarm row with typed text (no sound): plays immediately even on slow/no network.
-6. A recorded row still plays your recording.
-7. Kulcs törlése: back to the fallback voice.
-Note the delay numbers. If 4 s feels too long before the fallback, say so. Done → commit.
+### [ ] T42 (Agent): README in English and Hungarian
+`README.md` (English, what GitHub shows) and `README.hu.md` (Hungarian), each linking the other in its first line. Same content in both:
+- One paragraph: what Mondom is and who it's for (from `CLAUDE.md`: literate adults who lost their speech; ALS, stroke, laryngectomy, MS; Hungarian-first).
+- Goals / why: free, no ads, no accounts, offline after setup; natural voices without setting up a TTS engine; everything in one install. Plain tone, no superlatives, no competitor names.
+- Features: sentence lists, free text with tap-again-to-repeat, history, prepared conversations, message banking + backup, alarm rows, voices (offline Piper voices, the system voice, optionally your own ElevenLabs account).
+- Short manual (5–8 steps): first launch and voice choice, speaking a row, typing, ☰ → Listák (editing), preparing a conversation, recording your own voice, making a backup, alarms. Placeholders for 3 screenshots (`docs/screenshots/*.png`, the human adds them).
+- Install: Google Play (link placeholder), APKs from GitHub Releases. Building from source: `flutter build apk --split-per-abi`.
+- Privacy (2 sentences + link to `PRIVACY.md`), license (GPL-3.0; voice licenses per voice in `voices/catalog.json`), feedback (GitHub issues).
+- Write the Hungarian version natively, not sentence-by-sentence from the English; the human proofreads it.
+- **Checks:** links point at files in the repo (or are marked placeholders).
+
+### [ ] T43 (Agent): Privacy policy and release build setup
+- `PRIVACY.md` (Hungarian first, English below, plain language): no accounts, no analytics, no ads, the developer collects nothing. The microphone is used only to record sentences the user chooses; recordings, lists and history stay on the phone; backups go only where the user saves them. Network: the voice catalog and voice downloads (GitHub), and only if the user sets it up, the text to be spoken goes to ElevenLabs with the user's own key, under ElevenLabs' privacy policy (link). The key is stored encrypted on the phone. Contact: GitHub issues.
+- `docs/release.md`: the Play data-safety answers matching the above (shared: the text spoken, with ElevenLabs, only when the user opts in; nothing collected by the developer; encrypted in transit), and the release steps from T44.
+- Release signing: `android/app/build.gradle.kts` reads `android/key.properties` (storeFile, storePassword, keyAlias, keyPassword) when it exists and signs `release` with it; otherwise it falls back to debug signing as now. Add `key.properties` and `*.jks` to `.gitignore`. Document in `docs/release.md` how to create the upload keystore (`keytool -genkey ...`), and that it must be backed up outside the PC (with Play App Signing a lost upload key can be reset, but it takes days).
+- Release build check: `flutter build appbundle` and `flutter build apk --split-per-abi` succeed; if R8 strips something sherpa-onnx or another plugin needs, add keep rules in `proguard-rules.pro`. Note the per-ABI APK sizes in `docs/release.md`, and update `docs/TODO.md` "APK size" with the decision: keep `armeabi-v7a`, since cheap old phones are exactly the target.
+- **Checks:** both builds succeed; `flutter analyze`; `git status` shows no keystore or `key.properties`.
+
+### [ ] T44 (You): Release candidate test and store listing
+1. Proofread T39's Hungarian on the phone, and `README.hu.md`. Take 3–4 screenshots for the README and the store listing.
+2. Speed slider: Imre a bit faster, nst slower, the system voice, an ElevenLabs voice. Each keeps its own speed after switching back and forth.
+3. About: links open, storage numbers plausible, Alma credit present.
+4. Create the upload keystore (`docs/release.md`) and back it up. Build the release APK, uninstall the debug app, install the release one, and do a full smoke test (first-launch picker, download a voice, rows, typing, recording, alarm, backup/restore, ElevenLabs). Release builds can break things debug builds don't.
+5. If possible: install on the cheapest Android phone available, time tap → sound with Imre (the measurement `CLAUDE.md` asks for), and try "Más nyelvek" (`docs/TODO.md`).
+6. App icon: still Flutter's default? Decide on one.
+7. Play Console: listing texts (hu + en, from the README), screenshots, content rating, target audience, data safety (from `docs/release.md`), privacy policy URL; upload the app bundle to internal testing first.
+Done → commit, tag `v1.0.0`.
 
 ---
 
@@ -62,10 +96,6 @@ Note the delay numbers. If 4 s feels too long before the fallback, say so. Done 
 
 ## Later (rough)
 **Before the Play Store release:**
-- About screen, its own drawer row, last (GPL-3.0 app; per-voice licenses from the catalog, Alma is CC BY 4.0 and needs credit; Apache-2.0 sherpa-onnx; BSD-3-Clause `record`). Also shows disk usage: "Saját felvételek" (`<appSupport>/recordings/`) and "Letöltött hangok" (`<appSupport>/voices/`, including the shared espeak-ng-data), in MB, computed in the background when the screen opens.
-- Per-ABI builds / app bundle (`docs/TODO.md`).
-- Privacy policy and Play data-safety form (mic is used, nothing leaves the phone).
-- Measure speed on the cheapest Android phone available (never done; `CLAUDE.md`), and the "Más nyelvek" check (`docs/TODO.md`).
 - **Crash course for the human (You + Opus, interactive, do it late so the code is near its release state).** Goal: not to become a Flutter dev, but to have basic confidence in how the app solves its problem, where to check what it asks for, and how to take responsibility for it doing no harm without knowing every line. Walk through this repo's real code, and let the human's questions set the depth:
   - Flutter basics (widgets, state, how a screen gets drawn), and how Flutter handles cross-platform (one Dart UI, native code only behind platform channels and plugins).
   - What each folder in the repo is for.
@@ -75,7 +105,6 @@ Note the delay numbers. If 4 s feels too long before the fallback, say so. Done 
   - The "does no harm" checklist: where network calls and file writes happen, what plugins can do, what could fail in an urgent moment (a silent tap, a lost recording), and how to check these again before each release.
 
 **After, or if testing asks for it:**
-- Speech speed setting (lengthScale): a slider in the Beállítások screen, section Beszéd.
 - Carry unsaid sentences of a conversation over to a new one.
 - Offer new default lists/sentences added in later app versions to existing users (seed version).
 - Choose a row's built-in sound in the editor.
