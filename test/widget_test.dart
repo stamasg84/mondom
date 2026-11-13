@@ -19,8 +19,10 @@ class _NoEngine implements VoiceEngine {
   @override
   Future<void> load() async {}
   @override
-  Future<SynthResult> synthesizeToWav(String text) async =>
-      throw UnimplementedError();
+  Future<SynthResult> synthesizeToWav(
+    String text, {
+    bool urgent = false,
+  }) async => throw UnimplementedError();
   @override
   void dispose() {}
 }

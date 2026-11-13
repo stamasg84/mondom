@@ -142,5 +142,11 @@
   "backupFailed": "The backup failed.",
   "restoreFailed": "The restore failed. Nothing was changed.",
   "restoreErrorVersion": "This backup comes from a newer version of Mondom. Update the app.",
-  "restoreErrorFormat": "This is not a Mondom backup, or it is damaged. Nothing was changed."
+  "restoreErrorFormat": "This is not a Mondom backup, or it is damaged. Nothing was changed.",
+  "closeAction": "Close",
+  "elevenLabsFallbackTooltip": "Why did another voice speak?",
+  "elevenLabsFallbackOffline": "No internet, {voice} is speaking instead.",
+  "elevenLabsFallbackQuota": "The ElevenLabs credit has run out, {voice} is speaking instead.",
+  "elevenLabsFallbackBadKey": "The ElevenLabs key isn't valid, {voice} is speaking instead.",
+  "elevenLabsFallbackOther": "ElevenLabs isn't available right now, {voice} is speaking instead."
 }

@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +17,10 @@ import 'storage/lists_repository.dart';
 import 'ui/speaking_screen.dart';
 import 'ui/voice_picker.dart';
 import 'voices/catalog.dart';
+import 'voices/elevenlabs_cache.dart';
+import 'voices/elevenlabs_client.dart';
+import 'voices/elevenlabs_engine.dart';
+import 'voices/elevenlabs_key_store.dart';
 import 'voices/language_names.dart';
 import 'voices/piper_engine.dart';
 import 'voices/system_engine.dart';
@@ -55,6 +62,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const _prefKey = 'voiceId';
+  static const _nameKey = 'voiceName';
+  static const _fallbackKey = 'elevenLabsFallbackVoiceId';
+  static const _expressiveKey = 'elevenLabsExpressive';
 
   final _alarmVolume = AlarmVolume();
   final _recordings = RecordingStore();
@@ -99,6 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final saved = _catalog.byId(savedId ?? '');
     if (saved != null && await _installer.isInstalled(saved.id)) {
       _voice = saved.toVoice();
+    } else if (savedId != null && savedId.startsWith('elevenlabs:')) {
+      final parts = savedId.split(':');
+      _voice = Voice.elevenLabs(
+        parts[1],
+        parts.skip(2).join(':'),
+        prefs.getString(_nameKey) ?? '',
+      );
     } else if (savedId != null && savedId.startsWith('system-')) {
       _voice = Voice.system(savedId.substring('system-'.length));
     } else {
@@ -151,13 +168,43 @@ class _HomeScreenState extends State<HomeScreen> {
       espeakDataDir: await _installer.espeakDataDir(),
       modelFile: _catalog.byId(v.id)!.modelFile,
     ),
+    VoiceKind.elevenlabs => await _createElevenLabsEngine(v),
   };
+
+  /// The fallback is the voice in `elevenLabsFallbackVoiceId` if it is still
+  /// installed, otherwise the system voice of the voice's language.
+  Future<VoiceEngine> _createElevenLabsEngine(Voice v) async {
+    final prefs = await SharedPreferences.getInstance();
+    final fallbackId = prefs.getString(_fallbackKey);
+    final entry = _catalog.byId(fallbackId ?? '');
+    final fallbackVoice =
+        entry != null && await _installer.isInstalled(entry.id)
+        ? entry.toVoice()
+        : Voice.system(v.languageCode);
+    final key = await SecureElevenLabsKeyStore().read();
+    final support = await getApplicationSupportDirectory();
+    return ElevenLabsEngine(
+      voice: v,
+      client: key == null ? null : ElevenLabsClient(http.Client(), key),
+      fallback: await _createEngine(fallbackVoice),
+      fallbackVoice: fallbackVoice,
+      cache: ElevenLabsCache(Directory('${support.path}/elevenlabs_cache')),
+      modelId: () async =>
+          (await SharedPreferences.getInstance()).getBool(_expressiveKey) ??
+              false
+          ? elevenLabsExpressiveModel
+          : elevenLabsFlashModel,
+    );
+  }
 
   Future<void> _selectVoice(Voice v) async {
     final languageChanged = v.languageCode != _voice.languageCode;
     _voice = v;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefKey, v.id);
+    if (v.kind == VoiceKind.elevenlabs) {
+      await prefs.setString(_nameKey, v.label);
+    }
     await _speaker.setVoice(v);
     // After the switch, so a question doesn't delay the new voice.
     await _repo?.offerSeedLists(

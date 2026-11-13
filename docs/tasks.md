@@ -22,7 +22,7 @@ Goal: a user with an ElevenLabs account (e.g. their own voice clone from the Imp
 - Tests with `MockClient`: voice parsing and ordering; synthesis sends `xi-api-key`, a UTF-8 JSON body with `language_code`, `output_format=pcm_22050`, and returns a valid WAV with the right sample count; each error maps to its reason (use the real response bodies quoted in the architecture doc); timeout → `offline`; the key never appears in any exception text.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T36 (Agent): Engine with fallback, cache and status
+### [x] T36 (Agent): Engine with fallback, cache and status
 - `VoiceKind.elevenlabs`; `Voice.elevenLabs(lang, voiceId, name)` with id `elevenlabs:<lang>:<voiceId>`. The selected voice (in `shared_preferences`, as now) keeps the name so the picker can show it offline. Settings in `shared_preferences`: `elevenLabsFallbackVoiceId`, `elevenLabsExpressive` (false = `eleven_flash_v2_5`, true = `eleven_v3`).
 - `VoiceEngine.synthesizeToWav(text, {bool urgent = false})`; Piper and system engines ignore `urgent`.
 - `lib/voices/elevenlabs_engine.dart`: `ElevenLabsEngine(voice, client, fallback, cache)`. `load()` loads only the fallback. `synthesizeToWav`: cache hit → copy to a new temp WAV (boosted when Hangosítás is on, as in Piper); else if `urgent` → fallback; else request → write the cache entry, then the temp copy; on `ElevenLabsException` → fallback, and set `lastFallback` (the reason, or null after a successful ElevenLabs utterance or cache hit). `isLoaded` = fallback loaded.

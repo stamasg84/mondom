@@ -58,6 +58,9 @@ class ElevenLabsClient {
   final String _key;
   final Duration timeout;
 
+  /// Releases the underlying HTTP client.
+  void close() => _http.close();
+
   Map<String, String> get _headers => {'xi-api-key': _key};
 
   Future<List<ElevenLabsVoice>> listVoices() async {

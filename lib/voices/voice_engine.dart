@@ -19,7 +19,9 @@ abstract class VoiceEngine {
   Future<void> load();
 
   /// Synthesizes [text] into a WAV file and returns its path and timings.
-  Future<SynthResult> synthesizeToWav(String text);
+  /// [urgent] (alarm rows) must never wait on the network; only the
+  /// ElevenLabs engine cares, the others ignore it.
+  Future<SynthResult> synthesizeToWav(String text, {bool urgent = false});
 
   void dispose();
 }

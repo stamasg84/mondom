@@ -12,6 +12,7 @@ class FakeEngine implements VoiceEngine {
   FakeEngine(this.dir);
   final Directory dir;
   int calls = 0;
+  final urgentFlags = <bool>[];
   @override
   int get loadMs => 0;
   @override
@@ -19,7 +20,11 @@ class FakeEngine implements VoiceEngine {
   @override
   Future<void> load() async {}
   @override
-  Future<SynthResult> synthesizeToWav(String text) async {
+  Future<SynthResult> synthesizeToWav(
+    String text, {
+    bool urgent = false,
+  }) async {
+    urgentFlags.add(urgent);
     final f = File('${dir.path}/${calls++}.wav')..writeAsStringSync(text);
     return SynthResult(f.path, 1, 1);
   }

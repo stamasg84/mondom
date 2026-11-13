@@ -13,6 +13,7 @@ import 'speaker_test.dart' show FakeSoundPlayer;
 import 'package:mondom/storage/database.dart';
 import 'package:mondom/storage/lists_repository.dart';
 import 'package:mondom/ui/speaking_screen.dart';
+import 'package:mondom/voices/elevenlabs_client.dart';
 import 'package:mondom/voices/voice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +24,11 @@ class _FakeSpeaker extends Speaker {
         player: _NoPlayer(),
       );
   final spoken = <String>[];
+  ElevenLabsFailure? fallback;
+  @override
+  ElevenLabsFailure? get lastFallback => fallback;
+  @override
+  Voice? get fallbackVoice => Voice.system('hu');
   @override
   bool get ready => true;
   @override
@@ -84,6 +90,27 @@ void main() {
     );
     await settle(tester);
   }
+
+  testWidgets('cloud_off icon only while the last utterance fell back', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    expect(find.byIcon(Icons.cloud_off), findsNothing);
+    await finish(tester);
+
+    speaker.fallback = ElevenLabsFailure.offline;
+    await pumpScreen(tester, seed: false);
+    expect(find.byIcon(Icons.cloud_off), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.cloud_off));
+    await settle(tester);
+    expect(
+      find.text('Nincs internet, Android alapértelmezett beszél helyette.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Bezár'));
+    await settle(tester);
+    await finish(tester);
+  });
 
   testWidgets('opens on everyday list; tapping a row speaks and logs history', (
     tester,

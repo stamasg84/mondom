@@ -101,7 +101,10 @@ class PiperEngine implements VoiceEngine {
   }
 
   @override
-  Future<SynthResult> synthesizeToWav(String text) async {
+  Future<SynthResult> synthesizeToWav(
+    String text, {
+    bool urgent = false,
+  }) async {
     if (_disposed || _ready == null) throw StateError('TTS not loaded');
     // Wait for the load (requests arriving mid-load wait here).
     await _ready!.future;

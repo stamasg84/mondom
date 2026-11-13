@@ -35,7 +35,10 @@ class SystemEngine implements VoiceEngine {
   }
 
   @override
-  Future<SynthResult> synthesizeToWav(String text) async {
+  Future<SynthResult> synthesizeToWav(
+    String text, {
+    bool urgent = false,
+  }) async {
     if (!_loaded) throw StateError('TTS not loaded');
     final tmp = await getTemporaryDirectory();
     final path = '${tmp.path}/sys_${_counter++}.wav';

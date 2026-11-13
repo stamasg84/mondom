@@ -604,5 +604,33 @@
   "restoreErrorFormat": "Ez nem Mondom-mentés, vagy sérült. Nem változott semmi.",
   "@restoreErrorFormat": {
     "description": "Settings > Mentés (backup to a file)."
+  },
+  "closeAction": "Bezár",
+  "@closeAction": {
+    "description": "Closes an information dialog."
+  },
+  "elevenLabsFallbackTooltip": "Miért más hang szólt?",
+  "@elevenLabsFallbackTooltip": {
+    "description": "Speaking screen app bar icon, shown while the offline fallback spoke instead of the ElevenLabs voice."
+  },
+  "elevenLabsFallbackOffline": "Nincs internet, {voice} beszél helyette.",
+  "@elevenLabsFallbackOffline": {
+    "description": "Fallback dialog: no network or timeout.",
+    "placeholders": { "voice": { "type": "String" } }
+  },
+  "elevenLabsFallbackQuota": "Elfogyott az ElevenLabs kredit, {voice} beszél helyette.",
+  "@elevenLabsFallbackQuota": {
+    "description": "Fallback dialog: ElevenLabs credits used up.",
+    "placeholders": { "voice": { "type": "String" } }
+  },
+  "elevenLabsFallbackBadKey": "Az ElevenLabs kulcs nem érvényes, {voice} beszél helyette.",
+  "@elevenLabsFallbackBadKey": {
+    "description": "Fallback dialog: no key stored or the key was rejected.",
+    "placeholders": { "voice": { "type": "String" } }
+  },
+  "elevenLabsFallbackOther": "Az ElevenLabs most nem elérhető, {voice} beszél helyette.",
+  "@elevenLabsFallbackOther": {
+    "description": "Fallback dialog: any other ElevenLabs failure.",
+    "placeholders": { "voice": { "type": "String" } }
   }
 }

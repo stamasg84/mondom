@@ -8,6 +8,7 @@ import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
 import '../storage/backup.dart';
 import '../storage/lists_repository.dart';
+import '../voices/elevenlabs_client.dart';
 import '../voices/voice.dart';
 import 'list_colors.dart';
 import 'main_drawer.dart';
@@ -239,7 +240,11 @@ class _SpeakingScreenState extends State<SpeakingScreen>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            actions: [_loadButton(l10n), const SizedBox(width: 4)],
+            actions: [
+              _fallbackButton(l10n),
+              _loadButton(l10n),
+              const SizedBox(width: 4),
+            ],
           ),
           body: SafeArea(
             child: Column(
@@ -262,6 +267,47 @@ class _SpeakingScreenState extends State<SpeakingScreen>
 
   /// Builder-mode toggle. Lives in the app bar so the free-text field gets
   /// the full width of the bottom bar.
+  /// A fixed-width slot, so the load button never shifts when the icon
+  /// appears; the icon shows while the last utterance fell back.
+  Widget _fallbackButton(AppLocalizations l10n) {
+    final why = widget.speaker.lastFallback;
+    return SizedBox(
+      width: 48,
+      child: why == null
+          ? null
+          : IconButton(
+              tooltip: l10n.elevenLabsFallbackTooltip,
+              icon: const Icon(Icons.cloud_off),
+              onPressed: () => _showFallbackReason(l10n, why),
+            ),
+    );
+  }
+
+  void _showFallbackReason(AppLocalizations l10n, ElevenLabsFailure why) {
+    final v = widget.speaker.fallbackVoice;
+    final name = v == null || v.kind == VoiceKind.system
+        ? l10n.systemVoice
+        : v.label;
+    final text = switch (why) {
+      ElevenLabsFailure.offline => l10n.elevenLabsFallbackOffline(name),
+      ElevenLabsFailure.quota => l10n.elevenLabsFallbackQuota(name),
+      ElevenLabsFailure.badKey => l10n.elevenLabsFallbackBadKey(name),
+      _ => l10n.elevenLabsFallbackOther(name),
+    };
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(text, style: const TextStyle(fontSize: 20)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.closeAction),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _loadButton(AppLocalizations l10n) {
     final scheme = Theme.of(context).colorScheme;
     // Same corner radius as the sentence rows and the banner, not the

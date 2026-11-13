@@ -466,4 +466,30 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get restoreErrorFormat =>
       'Ez nem Mondom-mentés, vagy sérült. Nem változott semmi.';
+
+  @override
+  String get closeAction => 'Bezár';
+
+  @override
+  String get elevenLabsFallbackTooltip => 'Miért más hang szólt?';
+
+  @override
+  String elevenLabsFallbackOffline(String voice) {
+    return 'Nincs internet, $voice beszél helyette.';
+  }
+
+  @override
+  String elevenLabsFallbackQuota(String voice) {
+    return 'Elfogyott az ElevenLabs kredit, $voice beszél helyette.';
+  }
+
+  @override
+  String elevenLabsFallbackBadKey(String voice) {
+    return 'Az ElevenLabs kulcs nem érvényes, $voice beszél helyette.';
+  }
+
+  @override
+  String elevenLabsFallbackOther(String voice) {
+    return 'Az ElevenLabs most nem elérhető, $voice beszél helyette.';
+  }
 }

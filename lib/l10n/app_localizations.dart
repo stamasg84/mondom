@@ -901,6 +901,42 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Ez nem Mondom-mentés, vagy sérült. Nem változott semmi.'**
   String get restoreErrorFormat;
+
+  /// Closes an information dialog.
+  ///
+  /// In hu, this message translates to:
+  /// **'Bezár'**
+  String get closeAction;
+
+  /// Speaking screen app bar icon, shown while the offline fallback spoke instead of the ElevenLabs voice.
+  ///
+  /// In hu, this message translates to:
+  /// **'Miért más hang szólt?'**
+  String get elevenLabsFallbackTooltip;
+
+  /// Fallback dialog: no network or timeout.
+  ///
+  /// In hu, this message translates to:
+  /// **'Nincs internet, {voice} beszél helyette.'**
+  String elevenLabsFallbackOffline(String voice);
+
+  /// Fallback dialog: ElevenLabs credits used up.
+  ///
+  /// In hu, this message translates to:
+  /// **'Elfogyott az ElevenLabs kredit, {voice} beszél helyette.'**
+  String elevenLabsFallbackQuota(String voice);
+
+  /// Fallback dialog: no key stored or the key was rejected.
+  ///
+  /// In hu, this message translates to:
+  /// **'Az ElevenLabs kulcs nem érvényes, {voice} beszél helyette.'**
+  String elevenLabsFallbackBadKey(String voice);
+
+  /// Fallback dialog: any other ElevenLabs failure.
+  ///
+  /// In hu, this message translates to:
+  /// **'Az ElevenLabs most nem elérhető, {voice} beszél helyette.'**
+  String elevenLabsFallbackOther(String voice);
 }
 
 class _AppLocalizationsDelegate

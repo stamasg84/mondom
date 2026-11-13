@@ -470,4 +470,30 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get restoreErrorFormat =>
       'This is not a Mondom backup, or it is damaged. Nothing was changed.';
+
+  @override
+  String get closeAction => 'Close';
+
+  @override
+  String get elevenLabsFallbackTooltip => 'Why did another voice speak?';
+
+  @override
+  String elevenLabsFallbackOffline(String voice) {
+    return 'No internet, $voice is speaking instead.';
+  }
+
+  @override
+  String elevenLabsFallbackQuota(String voice) {
+    return 'The ElevenLabs credit has run out, $voice is speaking instead.';
+  }
+
+  @override
+  String elevenLabsFallbackBadKey(String voice) {
+    return 'The ElevenLabs key isn\'t valid, $voice is speaking instead.';
+  }
+
+  @override
+  String elevenLabsFallbackOther(String voice) {
+    return 'ElevenLabs isn\'t available right now, $voice is speaking instead.';
+  }
 }

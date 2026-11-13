@@ -5,6 +5,8 @@ import 'dart:isolate';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
+import '../voices/elevenlabs_client.dart';
+import '../voices/elevenlabs_engine.dart';
 import '../voices/voice.dart';
 import '../voices/voice_engine.dart';
 import 'alarm_volume.dart';
@@ -202,6 +204,19 @@ class Speaker extends ChangeNotifier {
   bool get ready => (_engine?.isLoaded ?? false) && !_loading && !_busy;
   int get loadMs => _engine?.loadMs ?? 0;
 
+  /// Why the last utterance was spoken by the offline fallback instead of
+  /// the selected ElevenLabs voice; null when it wasn't (or isn't ElevenLabs).
+  ElevenLabsFailure? get lastFallback {
+    final e = _engine;
+    return e is ElevenLabsEngine ? e.lastFallback : null;
+  }
+
+  /// The voice that speaks when ElevenLabs can't, or null.
+  Voice? get fallbackVoice {
+    final e = _engine;
+    return e is ElevenLabsEngine ? e.fallbackVoice : null;
+  }
+
   /// Switches voice: disposes the old engine, loads the engine for [v] and
   /// forgets the last utterance.
   Future<void> setVoice(Voice v) async {
@@ -350,7 +365,7 @@ class Speaker extends ChangeNotifier {
       }
       _busy = true;
       notifyListeners();
-      final result = await engine.synthesizeToWav(normalized);
+      final result = await engine.synthesizeToWav(normalized, urgent: alarm);
       final old = _lastPath;
       _lastKey = key;
       _lastPath = result.path;
