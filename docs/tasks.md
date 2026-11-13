@@ -7,57 +7,56 @@ Mark tasks done by changing `[ ]` to `[x]`. When a phase is finished, move it to
 
 ---
 
-## Phase 6: Message banking
+## Phase 7: ElevenLabs voice (optional, user's own account)
 
-Goal: record your own voice for any sentence, played instead of TTS. Design: `docs/architecture.md` "Message banking" (read it first). No schema change: `sentences.recordingPath` already exists.
+Goal: a user with an ElevenLabs account (e.g. their own voice clone from the Impact Program) can use it in Mondom, with automatic fallback to an offline voice. Design and API facts: `docs/architecture.md` "ElevenLabs voice" (read it first). Never put a real API key in code, tests, docs or logs; tests use `package:http/testing.dart`'s `MockClient`.
 
-### [x] T30 (Agent): Playing recordings (no recording UI yet)
-- New `lib/speech/recording_store.dart`: `RecordingStore` over `<appSupport>/recordings/`: `adopt(tempWavPath)` (copy in under a new unique file name, delete the temp, return the file name), `resolve(fileName)` → absolute path or null if the file is missing. `sweep(Set<String> referenced)` at app start deletes unreferenced files, with the guards from the architecture doc. The DB stores the **file name only**.
-- `lib/speech/loudness.dart`: `prepareRecording(PcmWav)`: drop the first and last 100 ms (button clicks), trim silence at both ends (20 ms frames, threshold 40 dB below the loudest frame, keep 100 ms of padding), high-pass at 80 Hz, normalize speech level to `recordingTargetRmsDb` (start at -16 dBFS) with the gain capped at +15 dB, then the T28 limiter. No `speechGainDb`. Never modifies the original.
-- `SentenceRowData.recordingPath` (file name). In `Speaker.play`, priority is recording > sound > TTS. A recording: resolve, read, `prepareRecording` in an `Isolate.run`, write a temp WAV, play on the speech or alarm player per `alarm`, reusing the last-utterance mechanism (key `rec\0<fileName>`) so a second tap replays instantly. Only that temp file may ever be deleted by `_forgetLast`. Must work with no voice loaded (`canPlay` true when `recordingPath != null`). File missing or unreadable → fall through to sound/TTS, no error shown.
-- `speaking_screen.dart`: pass `recordingPath` for row taps and Következő.
-- `ListsRepository`: `setSentenceRecording(id, fileName?)`; `addToHistory(text, {recordingPath})` stores it on a new row, and overwrites on an existing row only when non-null, so re-tapping from Előzmények plays the same voice. `referencedRecordings()` for the sweep. `main.dart` runs the sweep at start, without blocking the UI.
-- Editor rows: a leading `Icons.mic` when `recordingPath != null` (next to the sound icon logic). Nothing new on the speaking screen.
-- Tests: `prepareRecording` (trim, gain cap, ceiling, silence stays silence); playback priority; missing file → TTS; recording plays with no voice loaded; alarm + recording uses the alarm player; replay doesn't reprocess; the original file is never touched; sweep keeps referenced and young files, and does nothing when no reference exists; history carries the recording.
+### [ ] T35 (Agent): API client and key store (no UI)
+- Add `flutter_secure_storage` (approved 2026-11-13, BSD-3-Clause, which is GPL-3.0 compatible; credit it in About). Exclude its data from Android auto-backup (`android:fullBackupContent` / `android:dataExtractionRules` excluding the secure-storage shared-prefs file; check the package README for the file name). Add it to the approved list in `docs/architecture.md`.
+- `lib/voices/elevenlabs_key_store.dart`: `abstract class ElevenLabsKeyStore { Future<String?> read(); Future<void> write(String); Future<void> clear(); }` with a secure-storage implementation and an in-memory fake for tests.
+- `lib/voices/elevenlabs_client.dart`, taking an `http.Client` and the key:
+  - `listVoices()` → `List<ElevenLabsVoice>` (`id`, `name` = the part of the API name before " - ", so "Brian - Deep, Resonant..." shows as "Brian"). All voices, no filtering and no labels; own voices (any `category` other than `premade`) first, then the rest, each group by name.
+  - `synthesize(text, voiceId, modelId, languageCode)` → WAV bytes: PCM 22050 Hz from the endpoint wrapped in a WAV header (reuse the WAV writing helpers in `loudness.dart` if they fit). Timeout `elevenLabsTimeout` (4 s) on the whole request.
+  - `subscription()` → `(used, limit, resetsAt)` from `GET /v1/user/subscription` (`character_count`, `character_limit`, `next_character_count_reset_unix`), or null on `missing_permissions`.
+  - One `ElevenLabsException` with a `reason` enum: `offline` (socket/DNS/timeout), `badKey` (401 other than missing permissions), `missingPermission`, `quota` (402, or `status` `quota_exceeded`), `unsupportedLanguage` (400 `unsupported_language`), `voiceNotAllowed` (e.g. `paid_plan_required` for a library voice), `server` (5xx, anything else). `toString` never includes the key.
+- Tests with `MockClient`: voice parsing and ordering; synthesis sends `xi-api-key`, a UTF-8 JSON body with `language_code`, `output_format=pcm_22050`, and returns a valid WAV with the right sample count; each error maps to its reason (use the real response bodies quoted in the architecture doc); timeout → `offline`; the key never appears in any exception text.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [x] T31 (Agent): Recording screen, one sentence
-- Add the `record` package (`flutter pub add record`; approved 2026-11-08, BSD-3-Clause, 7.1.2 resolves with our constraints) and `RECORD_AUDIO` to the manifest. Hide it behind `abstract class VoiceRecorder` so widget tests can fake it. WAV, 44100 Hz, mono, 16-bit; autoGain, echoCancel and noiseSuppress off.
-- New `lib/ui/recording_screen.dart`, taking a list of sentences and showing one at a time (T32 passes many; here it gets one). Huge sentence text, then by state:
-  - **Idle**: one large "Felvétel" button.
-  - **Recording**: red dot plus a live level bar (from the amplitude stream), one large "Kész" button. Tap to start, tap to stop, **never press-and-hold** (weak hands). Auto-stop at 60 s (`maxRecordingLength`).
-  - **Review**: "Meghallgatom" (plays through `prepareRecording`, so it sounds as it will), "Újra", "Mentés". Saving is the only thing that touches the DB; an old recording stays until then.
-- Stop all playback before recording. App going to the background while recording: stop and go to Review. Back with an unsaved take: "Elveted a felvételt?".
-- Mic permission: requested on the first "Felvétel". Denied: a short explanation and a button to the app's Android settings (small addition to the channel in `MainActivity.kt`).
-- ⋮ sheet in the list editor (not for history): no recording → "Saját hang felvétele". Has one → "Felvétel meghallgatása", "Új felvétel", "Felvétel törlése" (with a confirm dialog; clears `recordingPath`).
-- Editing the text of a row with a recording: after the edit dialog, ask "A felvétel még a régi szöveget mondja. Megtartod?", with "Megtartom" and "Törlöm". Never delete silently.
-- ARB (hu + en). Tests with the fake recorder: the state machine; 60 s auto-stop; save sets the recording; Újra keeps the old one until Mentés; back asks; the sheet shows the right rows; the text-edit question appears only for rows with a recording.
+### [ ] T36 (Agent): Engine with fallback, cache and status
+- `VoiceKind.elevenlabs`; `Voice.elevenLabs(lang, voiceId, name)` with id `elevenlabs:<lang>:<voiceId>`. The selected voice (in `shared_preferences`, as now) keeps the name so the picker can show it offline. Settings in `shared_preferences`: `elevenLabsFallbackVoiceId`, `elevenLabsExpressive` (false = `eleven_flash_v2_5`, true = `eleven_v3`).
+- `VoiceEngine.synthesizeToWav(text, {bool urgent = false})`; Piper and system engines ignore `urgent`.
+- `lib/voices/elevenlabs_engine.dart`: `ElevenLabsEngine(voice, client, fallback, cache)`. `load()` loads only the fallback. `synthesizeToWav`: cache hit → copy to a new temp WAV (boosted when Hangosítás is on, as in Piper); else if `urgent` → fallback; else request → write the cache entry, then the temp copy; on `ElevenLabsException` → fallback, and set `lastFallback` (the reason, or null after a successful ElevenLabs utterance or cache hit). `isLoaded` = fallback loaded.
+- `lib/voices/elevenlabs_cache.dart`: as in the architecture doc (key, 100 MB cap, oldest-used eviction, `clear()`). Eviction runs after a write, in the background.
+- `main.dart` engine factory: build the fallback from `elevenLabsFallbackVoiceId` (if missing or not installed: the system voice of the voice's language). No key stored → the engine always falls back with reason `badKey`.
+- `Speaker`: pass `urgent: alarm` for TTS rows; expose `lastFallback` (notify listeners when it changes).
+- Speaking screen app bar: a `cloud_off` icon slot shown while `lastFallback != null` (keep the app-bar layout fixed). Tap → a dialog with the reason text and the fallback voice's name. ARB (hu + en).
+- Tests: success writes the cache and plays; second call is a cache hit with no request; each failure reason falls back and is exposed; `urgent` never calls the client; the returned path is never the cache file; eviction keeps the newest files under the cap; alarm rows pass `urgent`; the icon shows and hides.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [x] T32 (Agent): Record a whole list in one sitting
-Voice and energy are limited, so recording many sentences must not mean opening a sheet for each.
-- List editor app bar: `Icons.mic` button "Felvétel" (not for history, disabled when nothing qualifies). It opens the T31 screen with the list's rows, in order, that have neither a recording nor a built-in sound.
-- The screen shows progress ("3 / 12") and adds "Kihagyom". Mentés moves on to the next row, in Idle, without further taps. After the last row: a short summary ("9 felvétel mentve") and back to the editor. Leaving midway keeps what was saved; re-opening continues with what's left.
-- ARB (hu + en). Tests: rows with recordings/sounds are skipped; Mentés advances; Kihagyom saves nothing; the summary count.
+### [ ] T37 (Agent): Setup screen and voice picker section
+- Voice picker: for languages in `elevenLabsLanguages` only (constant in `elevenlabs_client.dart`, see the architecture doc), below the language's voices, an "ElevenLabs" section header with a short subtitle "Internet és saját ElevenLabs-fiók kell". No key → one row "Beállítás" opening the setup screen. Key stored → the account's voices, by name only (fetched when the picker opens; offline → just the currently selected ElevenLabs voice, plus a "Nincs internet" note), each with "Próba" and select, like Piper rows, and a "Beállítások" row to the setup screen. Selecting one makes the picker's language the speech language (same as the system voice row).
+- "Próba" synthesizes the catalog's `sampleText` for the picker language with that voice, through the cache (so it costs credits only once).
+- New `lib/ui/elevenlabs_screen.dart`:
+  - Plain explanation: optional; needs internet and an ElevenLabs account; the text you say is sent to ElevenLabs and appears in your ElevenLabs history; the free plan has a monthly credit limit; without internet another voice speaks instead. Which permissions the key needs (Text to Speech, Voices; User optional for the credit display).
+  - Key field (obscured, paste-friendly) + "Ellenőrzés": calls `listVoices()`; stores the key only if that succeeds; otherwise shows the reason (bad key / missing permission / no internet).
+  - With a key: credit line when available ("Felhasznált kredit: 1 234 / 10 000, újraindul: <date>"); "Ha nincs internet, ez a hang beszél:" picking among installed Piper voices and the system voice of the speech language; the "Kifejezőbb hang (lassabb, kétszer annyi kredit)" switch; "Kulcs törlése" (confirm dialog; clears the key and the cache; if an ElevenLabs voice is selected, switch to the fallback voice).
+- ARB (hu + en). Tests with the fake key store and `MockClient`: bad key isn't stored; good key stores and lists voices; the offline picker shows the selected voice; delete key switches to the fallback and clears the cache.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [x] T33 (Agent): Backup to a file
-Recordings can't be made again once the voice is gone, and a lost phone must not mean losing them. Android's auto-backup caps at 25 MB, so it isn't enough.
-- Beállítások, new section "Mentés": "Biztonsági mentés készítése" and "Visszaállítás fájlból".
-- Export: in an isolate, write a zip (`archive`, streaming to disk, no full read into memory) to temp: `backup.json` (`version`; all non-history lists with sentences, including `recording` file names, `soundKey`, `alarm`, colors, kind, pinned) plus `recordings/*.wav`. Hand it to Android's file picker (`ACTION_CREATE_DOCUMENT`, default name `mondom-mentes-<date>.zip`) via a small channel in `MainActivity.kt`, streaming the copy. No permission; Google Drive shows up in the picker, with no Drive code on our side.
-- Import (`ACTION_OPEN_DOCUMENT`): **non-destructive**, like restore defaults. Lists are appended; a list with the same title and identical sentence texts is skipped. Recording files are copied in under their names and existing ones are never overwritten. Unknown `version` → an error message and no changes. Reject zip entries with paths outside `recordings/`.
-- Show progress (the zip may be 100 MB+), and a result line.
-- ARB (hu + en). Tests: round-trip into an empty DB; importing twice adds nothing; bad version; a malicious entry path is rejected.
-- **Checks:** `flutter analyze`, `flutter test`.
+### [ ] T38 (You): Try ElevenLabs on the phone
+Create a new API key for the phone (Text to Speech + Voices, optionally User read), don't reuse one that was pasted into a chat.
+1. ☰ → Hang és nyelv → ElevenLabs → Beállítás: try a wrong key first (clear error), then the real one. Credits shown (if User read is on)?
+2. Listen to "Próba" for 2–3 voices, pick one. Speak list rows and typed text: how long until sound starts (compare with Imre)? Try the "Kifejezőbb hang" switch.
+3. Tap a row twice and re-tap a row said earlier: the second is instant (cache).
+4. Airplane mode: a row said before still uses the ElevenLabs voice (cache); a new sentence comes in the fallback voice within ~4 s, and the cloud icon explains why. Turn the network back on: the icon disappears after the next ElevenLabs utterance.
+5. An alarm row with typed text (no sound): plays immediately even on slow/no network.
+6. A recorded row still plays your recording.
+7. Kulcs törlése: back to the fallback voice.
+Note the delay numbers. If 4 s feels too long before the fallback, say so. Done → commit.
 
-### [x] T34 (You): Try message banking
-1. In a list, ☰ → Listák → a list → the mic button: record 5+ sentences in one go. Grant the mic permission at the first one. Include one at arm's length and one in a noisy room.
-2. On the speaking screen, tap them: is it your voice, as loud as TTS, with no clicks or long silence at the ends? Note how long a tap takes before sound starts.
-3. Airplane mode, a list with recordings, with a Piper voice selected and with no voice loaded yet (tap right after launch).
-4. Flag a recorded row as an alarm: loud, not in Előzmények. Tap a non-alarm recorded row, then re-tap it from Előzmények: your voice.
-5. Edit the text of a recorded row: you get the question. Delete a row and press Visszavonás: the recording still plays.
-6. Make a backup to Drive or the Downloads folder, uninstall the app, reinstall, restore: lists and recordings are back.
-Done → commit.
+---
+
+**After Phase 7, if users ask for it:** "Lista hangjának letöltése" in the list editor (fetch every row of a list into the cache ahead of time, showing the credit cost first), so the user's own ElevenLabs voice works offline for whole lists.
 
 ---
 
