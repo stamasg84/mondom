@@ -11,7 +11,7 @@ Mark tasks done by changing `[ ]` to `[x]`. When a phase is finished, move it to
 
 Goal: a user with an ElevenLabs account (e.g. their own voice clone from the Impact Program) can use it in Mondom, with automatic fallback to an offline voice. Design and API facts: `docs/architecture.md` "ElevenLabs voice" (read it first). Never put a real API key in code, tests, docs or logs; tests use `package:http/testing.dart`'s `MockClient`.
 
-### [ ] T35 (Agent): API client and key store (no UI)
+### [x] T35 (Agent): API client and key store (no UI)
 - Add `flutter_secure_storage` (approved 2026-11-13, BSD-3-Clause, which is GPL-3.0 compatible; credit it in About). Exclude its data from Android auto-backup (`android:fullBackupContent` / `android:dataExtractionRules` excluding the secure-storage shared-prefs file; check the package README for the file name). Add it to the approved list in `docs/architecture.md`.
 - `lib/voices/elevenlabs_key_store.dart`: `abstract class ElevenLabsKeyStore { Future<String?> read(); Future<void> write(String); Future<void> clear(); }` with a secure-storage implementation and an in-memory fake for tests.
 - `lib/voices/elevenlabs_client.dart`, taking an `http.Client` and the key:

@@ -61,7 +61,7 @@ tool/sync_catalog.ps1       # copies voices/catalog.json → assets/catalog.json
 Rules:
 - Android only (`flutter create --platforms android`). No iOS work yet.
 - **Voice model files are never committed or bundled.** Installed at runtime into `<appSupport>/voices/<id>/`, with one shared `<appSupport>/voices/espeak-ng-data/`.
-- Keep dependencies minimal. Approved: `sherpa_onnx`, `path_provider`, `audioplayers`, `flutter_localizations`, `intl`, `flutter_tts`, `shared_preferences`, `http`, `archive`, `crypto`, `package_info_plus`, `drift`, `drift_flutter`, `record` (BSD-3-Clause, for message banking; credit it in About) (dev: `drift_dev`, `build_runner`). Ask before adding others.
+- Keep dependencies minimal. Approved: `sherpa_onnx`, `path_provider`, `audioplayers`, `flutter_localizations`, `intl`, `flutter_tts`, `shared_preferences`, `http`, `archive`, `crypto`, `package_info_plus`, `drift`, `drift_flutter`, `record` (BSD-3-Clause, for message banking; credit it in About), `flutter_secure_storage` (BSD-3-Clause, for the ElevenLabs key; credit it in About) (dev: `drift_dev`, `build_runner`). Ask before adding others.
 - UI strings in Hungarian. Code, comments and docs in English.
 - Hungarian-first, not Hungarian-only. In the prototype, hardcoded strings are fine. After it, all UI strings move to Flutter's standard `gen-l10n` (ARB files, `hu` as the template locale). Never hardcode language-specific assumptions in logic. Language-specific things include preloaded phrases, the voice list and the alarm list's sentences, so treat them as per-locale data.
 
