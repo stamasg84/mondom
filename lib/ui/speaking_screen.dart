@@ -292,6 +292,9 @@ class _SpeakingScreenState extends State<SpeakingScreen>
       ElevenLabsFailure.offline => l10n.elevenLabsFallbackOffline(name),
       ElevenLabsFailure.quota => l10n.elevenLabsFallbackQuota(name),
       ElevenLabsFailure.badKey => l10n.elevenLabsFallbackBadKey(name),
+      ElevenLabsFailure.voiceNotAllowed => l10n.elevenLabsFallbackPaidOnly(
+        name,
+      ),
       _ => l10n.elevenLabsFallbackOther(name),
     };
     showDialog<void>(

@@ -125,9 +125,16 @@ void main() {
     expect(
         await reasonFor(402, {
           'detail': {
-            'status': 'paid_plan_required',
+            'type': 'payment_required',
+            'code': 'paid_plan_required',
+            'status': 'payment_required',
             'message': 'Free users cannot use library voices via the API.'
           }
+        }),
+        ElevenLabsFailure.voiceNotAllowed);
+    expect(
+        await reasonFor(402, {
+          'detail': {'status': 'paid_plan_required', 'message': 'old shape'}
         }),
         ElevenLabsFailure.voiceNotAllowed);
     expect(
@@ -135,7 +142,7 @@ void main() {
           'detail': {'status': 'quota_exceeded', 'message': 'out of credits'}
         }),
         ElevenLabsFailure.quota);
-    expect(await reasonFor(402, {'oops': 1}), ElevenLabsFailure.quota);
+    expect(await reasonFor(402, {'oops': 1}), ElevenLabsFailure.server);
     expect(
         await reasonFor(400, {
           'detail': {

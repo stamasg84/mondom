@@ -184,23 +184,31 @@ class ElevenLabsClient {
   }
 
   ElevenLabsException _failure(http.Response res) {
+    // The API isn't consistent about where the reason goes: some errors put
+    // it in `detail.status`, others in `detail.code` (e.g. a library voice on
+    // the free plan: code `paid_plan_required`, status `payment_required`).
     String? status;
+    String? errCode;
     try {
       final body = jsonDecode(utf8.decode(res.bodyBytes));
       final detail = body is Map ? body['detail'] : null;
-      if (detail is Map && detail['status'] is String) {
-        status = detail['status'] as String;
+      if (detail is Map) {
+        if (detail['status'] is String) status = detail['status'] as String;
+        if (detail['code'] is String) errCode = detail['code'] as String;
       }
     } catch (_) {}
+    bool says(String s) => status == s || errCode == s;
     final code = res.statusCode;
     final ElevenLabsFailure reason;
-    if (status == 'missing_permissions') {
+    if (says('missing_permissions')) {
       reason = ElevenLabsFailure.missingPermission;
-    } else if (status == 'quota_exceeded' || (code == 402 && status == null)) {
-      reason = ElevenLabsFailure.quota;
-    } else if (status == 'paid_plan_required') {
+    } else if (says('paid_plan_required')) {
       reason = ElevenLabsFailure.voiceNotAllowed;
-    } else if (status == 'unsupported_language') {
+    } else if (says('quota_exceeded')) {
+      // Only when the API says so: an unrecognised 402 is reported as an
+      // unknown failure, not as "out of credit".
+      reason = ElevenLabsFailure.quota;
+    } else if (says('unsupported_language')) {
       reason = ElevenLabsFailure.unsupportedLanguage;
     } else if (code == 401) {
       reason = ElevenLabsFailure.badKey;

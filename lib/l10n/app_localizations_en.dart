@@ -498,6 +498,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String elevenLabsFallbackPaidOnly(String voice) {
+    return 'This ElevenLabs voice needs a paid ElevenLabs plan, $voice is speaking instead.';
+  }
+
+  @override
+  String get elevenLabsPaidOnly =>
+      'This voice comes from the ElevenLabs voice library and only works with a paid ElevenLabs plan.';
+
+  @override
   String get elevenLabsSection => 'ElevenLabs';
 
   @override

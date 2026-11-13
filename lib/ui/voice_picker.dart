@@ -136,7 +136,6 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   InstallStage _stage = InstallStage.downloading;
   InstallCancelToken? _token;
   String? _message;
-  String? _sampleError;
 
   bool _elKeyChecked = false;
   bool _elHasKey = false;
@@ -301,14 +300,18 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     final text = widget.catalog.sampleText[lang];
     final access = widget.elevenLabs;
     if (text == null || access == null) return;
+    var paidOnly = false;
     await _play(() async {
       try {
         final wav = await access.sample(v.id, text, lang);
         return await _previewer.playBytes(wav);
+      } on ElevenLabsException catch (e) {
+        paidOnly = e.reason == ElevenLabsFailure.voiceNotAllowed;
+        return false;
       } catch (_) {
         return false;
       }
-    });
+    }, why: (l10n) => paidOnly ? l10n.elevenLabsPaidOnly : null);
   }
 
   Future<void> _select(Voice v) async {
@@ -360,14 +363,20 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     if (mounted) setState(() => _installed.remove(v.id));
   }
 
-  Future<void> _play(Future<bool> Function() play) async {
-    setState(() => _sampleError = null);
+  /// Plays a sample; on failure shows why in a SnackBar, which stays visible
+  /// however far the list is scrolled. [why] can give a specific reason.
+  Future<void> _play(
+    Future<bool> Function() play, {
+    String? Function(AppLocalizations l10n)? why,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
     final ok = await play();
-    if (!ok && mounted) {
-      setState(
-        () => _sampleError = AppLocalizations.of(context).sampleUnavailable,
-      );
-    }
+    if (ok || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+    messenger.showSnackBar(
+      SnackBar(content: Text(why?.call(l10n) ?? l10n.sampleUnavailable)),
+    );
   }
 
   Future<void> _chooseLanguage() async {
@@ -451,14 +460,6 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   _message!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            if (_sampleError != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  _sampleError!,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),

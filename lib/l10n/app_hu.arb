@@ -649,6 +649,19 @@
       }
     }
   },
+  "elevenLabsFallbackPaidOnly": "Ez az ElevenLabs-hang csak fizetős ElevenLabs-előfizetéssel használható, {voice} beszél helyette.",
+  "@elevenLabsFallbackPaidOnly": {
+    "description": "Fallback dialog: a voice library voice on the free ElevenLabs plan (402 paid_plan_required).",
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
+  },
+  "elevenLabsPaidOnly": "Ez a hang az ElevenLabs hangtárából való, és csak fizetős ElevenLabs-előfizetéssel használható.",
+  "@elevenLabsPaidOnly": {
+    "description": "Voice picker: the sample of a voice library voice failed because the ElevenLabs plan is free (402 paid_plan_required)."
+  },
   "elevenLabsSection": "ElevenLabs",
   "@elevenLabsSection": {
     "description": "Voice picker: header of the ElevenLabs section."

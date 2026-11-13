@@ -494,6 +494,15 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String elevenLabsFallbackPaidOnly(String voice) {
+    return 'Ez az ElevenLabs-hang csak fizetős ElevenLabs-előfizetéssel használható, $voice beszél helyette.';
+  }
+
+  @override
+  String get elevenLabsPaidOnly =>
+      'Ez a hang az ElevenLabs hangtárából való, és csak fizetős ElevenLabs-előfizetéssel használható.';
+
+  @override
   String get elevenLabsSection => 'ElevenLabs';
 
   @override

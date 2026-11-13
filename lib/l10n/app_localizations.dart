@@ -938,6 +938,18 @@ abstract class AppLocalizations {
   /// **'Az ElevenLabs most nem elérhető, {voice} beszél helyette.'**
   String elevenLabsFallbackOther(String voice);
 
+  /// Fallback dialog: a voice library voice on the free ElevenLabs plan (402 paid_plan_required).
+  ///
+  /// In hu, this message translates to:
+  /// **'Ez az ElevenLabs-hang csak fizetős ElevenLabs-előfizetéssel használható, {voice} beszél helyette.'**
+  String elevenLabsFallbackPaidOnly(String voice);
+
+  /// Voice picker: the sample of a voice library voice failed because the ElevenLabs plan is free (402 paid_plan_required).
+  ///
+  /// In hu, this message translates to:
+  /// **'Ez a hang az ElevenLabs hangtárából való, és csak fizetős ElevenLabs-előfizetéssel használható.'**
+  String get elevenLabsPaidOnly;
+
   /// Voice picker: header of the ElevenLabs section.
   ///
   /// In hu, this message translates to:

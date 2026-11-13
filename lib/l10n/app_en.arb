@@ -149,6 +149,8 @@
   "elevenLabsFallbackQuota": "The ElevenLabs credit has run out, {voice} is speaking instead.",
   "elevenLabsFallbackBadKey": "The ElevenLabs key isn't valid, {voice} is speaking instead.",
   "elevenLabsFallbackOther": "ElevenLabs isn't available right now, {voice} is speaking instead.",
+  "elevenLabsFallbackPaidOnly": "This ElevenLabs voice needs a paid ElevenLabs plan, {voice} is speaking instead.",
+  "elevenLabsPaidOnly": "This voice comes from the ElevenLabs voice library and only works with a paid ElevenLabs plan.",
   "elevenLabsSection": "ElevenLabs",
   "elevenLabsSectionSubtitle": "Needs internet and your own ElevenLabs account",
   "elevenLabsSetup": "Set up",
