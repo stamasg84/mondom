@@ -43,7 +43,7 @@ Goal: a user with an ElevenLabs account (e.g. their own voice clone from the Imp
 - ARB (hu + en). Tests with the fake key store and `MockClient`: bad key isn't stored; good key stores and lists voices; the offline picker shows the selected voice; delete key switches to the fallback and clears the cache.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T38 (You): Try ElevenLabs on the phone
+### [x] T38 (You): Try ElevenLabs on the phone
 Create a new API key for the phone (Text to Speech + Voices, optionally User read), don't reuse one that was pasted into a chat.
 1. ☰ → Hang és nyelv → ElevenLabs → Beállítás: try a wrong key first (clear error), then the real one. Credits shown (if User read is on)?
 2. Listen to "Próba" for 2–3 voices, pick one. Speak list rows and typed text: how long until sound starts (compare with Imre)? Try the "Kifejezőbb hang" switch.
