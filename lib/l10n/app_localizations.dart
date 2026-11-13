@@ -937,6 +937,144 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Az ElevenLabs most nem elérhető, {voice} beszél helyette.'**
   String elevenLabsFallbackOther(String voice);
+
+  /// Voice picker: header of the ElevenLabs section.
+  ///
+  /// In hu, this message translates to:
+  /// **'ElevenLabs'**
+  String get elevenLabsSection;
+
+  /// Voice picker: subtitle under the ElevenLabs header.
+  ///
+  /// In hu, this message translates to:
+  /// **'Internet és saját ElevenLabs-fiók kell'**
+  String get elevenLabsSectionSubtitle;
+
+  /// Voice picker: opens the ElevenLabs setup screen when no key is stored.
+  ///
+  /// In hu, this message translates to:
+  /// **'Beállítás'**
+  String get elevenLabsSetup;
+
+  /// Voice picker: opens the ElevenLabs setup screen when a key is stored.
+  ///
+  /// In hu, this message translates to:
+  /// **'Beállítások'**
+  String get elevenLabsSettings;
+
+  /// Voice picker: tooltip of the play button of an ElevenLabs voice.
+  ///
+  /// In hu, this message translates to:
+  /// **'Próba'**
+  String get elevenLabsTrial;
+
+  /// Voice picker: the ElevenLabs voice list could not be fetched offline.
+  ///
+  /// In hu, this message translates to:
+  /// **'Nincs internet'**
+  String get elevenLabsNoInternet;
+
+  /// Voice picker: the ElevenLabs voice list failed for a reason other than being offline.
+  ///
+  /// In hu, this message translates to:
+  /// **'Az ElevenLabs hangjai most nem érhetők el. Nézd meg a beállításokat.'**
+  String get elevenLabsListFailed;
+
+  /// Title of the ElevenLabs setup screen.
+  ///
+  /// In hu, this message translates to:
+  /// **'ElevenLabs hang'**
+  String get elevenLabsScreenTitle;
+
+  /// Setup screen: what the ElevenLabs voice means.
+  ///
+  /// In hu, this message translates to:
+  /// **'Ez nem kötelező. Saját ElevenLabs-fiók és internet kell hozzá. Amit kimondatsz, azt a Mondom elküldi az ElevenLabsnek, és megjelenik az ElevenLabs-előzményeidben. Az ingyenes csomagban havi kreditkeret van. Ha nincs internet, egy másik hang beszél helyette; a korábban kimondott mondatok internet nélkül is az ElevenLabs hangján szólnak.'**
+  String get elevenLabsIntro;
+
+  /// Setup screen: required API key permissions.
+  ///
+  /// In hu, this message translates to:
+  /// **'A kulcsnak ezek a jogosultságok kellenek: Text to Speech és Voices. A User (olvasás) nem kötelező, de akkor látszik a felhasznált kredit.'**
+  String get elevenLabsPermissions;
+
+  /// Setup screen: label of the key field.
+  ///
+  /// In hu, this message translates to:
+  /// **'ElevenLabs API-kulcs'**
+  String get elevenLabsKeyLabel;
+
+  /// Setup screen: checks and saves the key.
+  ///
+  /// In hu, this message translates to:
+  /// **'Ellenőrzés'**
+  String get elevenLabsCheck;
+
+  /// Setup screen: shown after a successful check.
+  ///
+  /// In hu, this message translates to:
+  /// **'A kulcs működik, elmentettem.'**
+  String get elevenLabsKeySaved;
+
+  /// Setup screen: check failed, bad key.
+  ///
+  /// In hu, this message translates to:
+  /// **'Ez a kulcs nem érvényes.'**
+  String get elevenLabsErrBadKey;
+
+  /// Setup screen: check failed, missing permission.
+  ///
+  /// In hu, this message translates to:
+  /// **'A kulcsnak nincs meg a Voices jogosultsága.'**
+  String get elevenLabsErrPermission;
+
+  /// Setup screen: check failed, offline.
+  ///
+  /// In hu, this message translates to:
+  /// **'Nincs internet, nem tudtam ellenőrizni.'**
+  String get elevenLabsErrOffline;
+
+  /// Setup screen: check failed, other reason.
+  ///
+  /// In hu, this message translates to:
+  /// **'Az ElevenLabs most nem válaszol. Próbáld újra később.'**
+  String get elevenLabsErrOther;
+
+  /// Setup screen: credit line.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felhasznált kredit: {used} / {limit}, újraindul: {date}'**
+  String elevenLabsCredit(String used, String limit, String date);
+
+  /// Setup screen: credit line without a reset date.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felhasznált kredit: {used} / {limit}'**
+  String elevenLabsCreditNoDate(String used, String limit);
+
+  /// Setup screen: fallback voice choice.
+  ///
+  /// In hu, this message translates to:
+  /// **'Ha nincs internet, ez a hang beszél:'**
+  String get elevenLabsFallbackChoice;
+
+  /// Setup screen: switch for eleven_v3.
+  ///
+  /// In hu, this message translates to:
+  /// **'Kifejezőbb hang (lassabb, kétszer annyi kredit)'**
+  String get elevenLabsExpressive;
+
+  /// Setup screen: removes the API key.
+  ///
+  /// In hu, this message translates to:
+  /// **'Kulcs törlése'**
+  String get elevenLabsDeleteKey;
+
+  /// Setup screen: confirm dialog.
+  ///
+  /// In hu, this message translates to:
+  /// **'Törlöd a kulcsot? Az ElevenLabs hangok gyorsítótára is törlődik.'**
+  String get elevenLabsDeleteKeyQuestion;
 }
 
 class _AppLocalizationsDelegate

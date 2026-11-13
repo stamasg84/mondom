@@ -492,4 +492,85 @@ class AppLocalizationsHu extends AppLocalizations {
   String elevenLabsFallbackOther(String voice) {
     return 'Az ElevenLabs most nem elérhető, $voice beszél helyette.';
   }
+
+  @override
+  String get elevenLabsSection => 'ElevenLabs';
+
+  @override
+  String get elevenLabsSectionSubtitle =>
+      'Internet és saját ElevenLabs-fiók kell';
+
+  @override
+  String get elevenLabsSetup => 'Beállítás';
+
+  @override
+  String get elevenLabsSettings => 'Beállítások';
+
+  @override
+  String get elevenLabsTrial => 'Próba';
+
+  @override
+  String get elevenLabsNoInternet => 'Nincs internet';
+
+  @override
+  String get elevenLabsListFailed =>
+      'Az ElevenLabs hangjai most nem érhetők el. Nézd meg a beállításokat.';
+
+  @override
+  String get elevenLabsScreenTitle => 'ElevenLabs hang';
+
+  @override
+  String get elevenLabsIntro =>
+      'Ez nem kötelező. Saját ElevenLabs-fiók és internet kell hozzá. Amit kimondatsz, azt a Mondom elküldi az ElevenLabsnek, és megjelenik az ElevenLabs-előzményeidben. Az ingyenes csomagban havi kreditkeret van. Ha nincs internet, egy másik hang beszél helyette; a korábban kimondott mondatok internet nélkül is az ElevenLabs hangján szólnak.';
+
+  @override
+  String get elevenLabsPermissions =>
+      'A kulcsnak ezek a jogosultságok kellenek: Text to Speech és Voices. A User (olvasás) nem kötelező, de akkor látszik a felhasznált kredit.';
+
+  @override
+  String get elevenLabsKeyLabel => 'ElevenLabs API-kulcs';
+
+  @override
+  String get elevenLabsCheck => 'Ellenőrzés';
+
+  @override
+  String get elevenLabsKeySaved => 'A kulcs működik, elmentettem.';
+
+  @override
+  String get elevenLabsErrBadKey => 'Ez a kulcs nem érvényes.';
+
+  @override
+  String get elevenLabsErrPermission =>
+      'A kulcsnak nincs meg a Voices jogosultsága.';
+
+  @override
+  String get elevenLabsErrOffline => 'Nincs internet, nem tudtam ellenőrizni.';
+
+  @override
+  String get elevenLabsErrOther =>
+      'Az ElevenLabs most nem válaszol. Próbáld újra később.';
+
+  @override
+  String elevenLabsCredit(String used, String limit, String date) {
+    return 'Felhasznált kredit: $used / $limit, újraindul: $date';
+  }
+
+  @override
+  String elevenLabsCreditNoDate(String used, String limit) {
+    return 'Felhasznált kredit: $used / $limit';
+  }
+
+  @override
+  String get elevenLabsFallbackChoice => 'Ha nincs internet, ez a hang beszél:';
+
+  @override
+  String get elevenLabsExpressive =>
+      'Kifejezőbb hang (lassabb, kétszer annyi kredit)';
+
+  @override
+  String get elevenLabsDeleteKey => 'Kulcs törlése';
+
+  @override
+  String get elevenLabsDeleteKeyQuestion =>
+      'Törlöd a kulcsot? Az ElevenLabs hangok gyorsítótára is törlődik.';
 }

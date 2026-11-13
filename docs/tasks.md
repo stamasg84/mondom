@@ -33,7 +33,7 @@ Goal: a user with an ElevenLabs account (e.g. their own voice clone from the Imp
 - Tests: success writes the cache and plays; second call is a cache hit with no request; each failure reason falls back and is exposed; `urgent` never calls the client; the returned path is never the cache file; eviction keeps the newest files under the cap; alarm rows pass `urgent`; the icon shows and hides.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T37 (Agent): Setup screen and voice picker section
+### [x] T37 (Agent): Setup screen and voice picker section
 - Voice picker: for languages in `elevenLabsLanguages` only (constant in `elevenlabs_client.dart`, see the architecture doc), below the language's voices, an "ElevenLabs" section header with a short subtitle "Internet és saját ElevenLabs-fiók kell". No key → one row "Beállítás" opening the setup screen. Key stored → the account's voices, by name only (fetched when the picker opens; offline → just the currently selected ElevenLabs voice, plus a "Nincs internet" note), each with "Próba" and select, like Piper rows, and a "Beállítások" row to the setup screen. Selecting one makes the picker's language the speech language (same as the system voice row).
 - "Próba" synthesizes the catalog's `sampleText` for the picker language with that voice, through the cache (so it costs credits only once).
 - New `lib/ui/elevenlabs_screen.dart`:

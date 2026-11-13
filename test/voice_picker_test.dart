@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,8 @@ class FakePreviewer implements VoicePreviewer {
 
   @override
   Future<bool> playSample(String url) async => sampleOk;
+  @override
+  Future<bool> playBytes(Uint8List wav) async => false;
   @override
   Future<void> speakSystem(String text, String language) async =>
       spoken.add(text);

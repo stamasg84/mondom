@@ -17,6 +17,7 @@ import 'storage/lists_repository.dart';
 import 'ui/speaking_screen.dart';
 import 'ui/voice_picker.dart';
 import 'voices/catalog.dart';
+import 'voices/elevenlabs_access.dart';
 import 'voices/elevenlabs_cache.dart';
 import 'voices/elevenlabs_client.dart';
 import 'voices/elevenlabs_engine.dart';
@@ -63,8 +64,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   static const _prefKey = 'voiceId';
   static const _nameKey = 'voiceName';
-  static const _fallbackKey = 'elevenLabsFallbackVoiceId';
-  static const _expressiveKey = 'elevenLabsExpressive';
 
   final _alarmVolume = AlarmVolume();
   final _recordings = RecordingStore();
@@ -145,8 +144,14 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (_) {}
   }
 
-  Future<void> _openPicker({bool firstRun = false}) {
-    return Navigator.of(context).push(
+  Future<void> _openPicker({bool firstRun = false}) async {
+    final support = await getApplicationSupportDirectory();
+    if (!mounted) return;
+    final access = ElevenLabsAccess(
+      keyStore: SecureElevenLabsKeyStore(),
+      cache: ElevenLabsCache(Directory('${support.path}/elevenlabs_cache')),
+    );
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => VoicePickerScreen(
           catalog: _catalog,
@@ -156,6 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedId: firstRun ? '' : _voice.id,
           firstRun: firstRun,
           onSelect: _selectVoice,
+          elevenLabs: access,
+          selectedLabel: _voice.label,
         ),
       ),
     );
@@ -175,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// installed, otherwise the system voice of the voice's language.
   Future<VoiceEngine> _createElevenLabsEngine(Voice v) async {
     final prefs = await SharedPreferences.getInstance();
-    final fallbackId = prefs.getString(_fallbackKey);
+    final fallbackId = prefs.getString(elevenLabsFallbackKey);
     final entry = _catalog.byId(fallbackId ?? '');
     final fallbackVoice =
         entry != null && await _installer.isInstalled(entry.id)
@@ -190,7 +197,9 @@ class _HomeScreenState extends State<HomeScreen> {
       fallbackVoice: fallbackVoice,
       cache: ElevenLabsCache(Directory('${support.path}/elevenlabs_cache')),
       modelId: () async =>
-          (await SharedPreferences.getInstance()).getBool(_expressiveKey) ??
+          (await SharedPreferences.getInstance()).getBool(
+                elevenLabsExpressiveKey,
+              ) ??
               false
           ? elevenLabsExpressiveModel
           : elevenLabsFlashModel,

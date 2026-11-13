@@ -616,21 +616,148 @@
   "elevenLabsFallbackOffline": "Nincs internet, {voice} beszél helyette.",
   "@elevenLabsFallbackOffline": {
     "description": "Fallback dialog: no network or timeout.",
-    "placeholders": { "voice": { "type": "String" } }
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
   },
   "elevenLabsFallbackQuota": "Elfogyott az ElevenLabs kredit, {voice} beszél helyette.",
   "@elevenLabsFallbackQuota": {
     "description": "Fallback dialog: ElevenLabs credits used up.",
-    "placeholders": { "voice": { "type": "String" } }
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
   },
   "elevenLabsFallbackBadKey": "Az ElevenLabs kulcs nem érvényes, {voice} beszél helyette.",
   "@elevenLabsFallbackBadKey": {
     "description": "Fallback dialog: no key stored or the key was rejected.",
-    "placeholders": { "voice": { "type": "String" } }
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
   },
   "elevenLabsFallbackOther": "Az ElevenLabs most nem elérhető, {voice} beszél helyette.",
   "@elevenLabsFallbackOther": {
     "description": "Fallback dialog: any other ElevenLabs failure.",
-    "placeholders": { "voice": { "type": "String" } }
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
+  },
+  "elevenLabsSection": "ElevenLabs",
+  "@elevenLabsSection": {
+    "description": "Voice picker: header of the ElevenLabs section."
+  },
+  "elevenLabsSectionSubtitle": "Internet és saját ElevenLabs-fiók kell",
+  "@elevenLabsSectionSubtitle": {
+    "description": "Voice picker: subtitle under the ElevenLabs header."
+  },
+  "elevenLabsSetup": "Beállítás",
+  "@elevenLabsSetup": {
+    "description": "Voice picker: opens the ElevenLabs setup screen when no key is stored."
+  },
+  "elevenLabsSettings": "Beállítások",
+  "@elevenLabsSettings": {
+    "description": "Voice picker: opens the ElevenLabs setup screen when a key is stored."
+  },
+  "elevenLabsTrial": "Próba",
+  "@elevenLabsTrial": {
+    "description": "Voice picker: tooltip of the play button of an ElevenLabs voice."
+  },
+  "elevenLabsNoInternet": "Nincs internet",
+  "@elevenLabsNoInternet": {
+    "description": "Voice picker: the ElevenLabs voice list could not be fetched offline."
+  },
+  "elevenLabsListFailed": "Az ElevenLabs hangjai most nem érhetők el. Nézd meg a beállításokat.",
+  "@elevenLabsListFailed": {
+    "description": "Voice picker: the ElevenLabs voice list failed for a reason other than being offline."
+  },
+  "elevenLabsScreenTitle": "ElevenLabs hang",
+  "@elevenLabsScreenTitle": {
+    "description": "Title of the ElevenLabs setup screen."
+  },
+  "elevenLabsIntro": "Ez nem kötelező. Saját ElevenLabs-fiók és internet kell hozzá. Amit kimondatsz, azt a Mondom elküldi az ElevenLabsnek, és megjelenik az ElevenLabs-előzményeidben. Az ingyenes csomagban havi kreditkeret van. Ha nincs internet, egy másik hang beszél helyette; a korábban kimondott mondatok internet nélkül is az ElevenLabs hangján szólnak.",
+  "@elevenLabsIntro": {
+    "description": "Setup screen: what the ElevenLabs voice means."
+  },
+  "elevenLabsPermissions": "A kulcsnak ezek a jogosultságok kellenek: Text to Speech és Voices. A User (olvasás) nem kötelező, de akkor látszik a felhasznált kredit.",
+  "@elevenLabsPermissions": {
+    "description": "Setup screen: required API key permissions."
+  },
+  "elevenLabsKeyLabel": "ElevenLabs API-kulcs",
+  "@elevenLabsKeyLabel": {
+    "description": "Setup screen: label of the key field."
+  },
+  "elevenLabsCheck": "Ellenőrzés",
+  "@elevenLabsCheck": {
+    "description": "Setup screen: checks and saves the key."
+  },
+  "elevenLabsKeySaved": "A kulcs működik, elmentettem.",
+  "@elevenLabsKeySaved": {
+    "description": "Setup screen: shown after a successful check."
+  },
+  "elevenLabsErrBadKey": "Ez a kulcs nem érvényes.",
+  "@elevenLabsErrBadKey": {
+    "description": "Setup screen: check failed, bad key."
+  },
+  "elevenLabsErrPermission": "A kulcsnak nincs meg a Voices jogosultsága.",
+  "@elevenLabsErrPermission": {
+    "description": "Setup screen: check failed, missing permission."
+  },
+  "elevenLabsErrOffline": "Nincs internet, nem tudtam ellenőrizni.",
+  "@elevenLabsErrOffline": {
+    "description": "Setup screen: check failed, offline."
+  },
+  "elevenLabsErrOther": "Az ElevenLabs most nem válaszol. Próbáld újra később.",
+  "@elevenLabsErrOther": {
+    "description": "Setup screen: check failed, other reason."
+  },
+  "elevenLabsCredit": "Felhasznált kredit: {used} / {limit}, újraindul: {date}",
+  "@elevenLabsCredit": {
+    "description": "Setup screen: credit line.",
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "elevenLabsCreditNoDate": "Felhasznált kredit: {used} / {limit}",
+  "@elevenLabsCreditNoDate": {
+    "description": "Setup screen: credit line without a reset date.",
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "elevenLabsFallbackChoice": "Ha nincs internet, ez a hang beszél:",
+  "@elevenLabsFallbackChoice": {
+    "description": "Setup screen: fallback voice choice."
+  },
+  "elevenLabsExpressive": "Kifejezőbb hang (lassabb, kétszer annyi kredit)",
+  "@elevenLabsExpressive": {
+    "description": "Setup screen: switch for eleven_v3."
+  },
+  "elevenLabsDeleteKey": "Kulcs törlése",
+  "@elevenLabsDeleteKey": {
+    "description": "Setup screen: removes the API key."
+  },
+  "elevenLabsDeleteKeyQuestion": "Törlöd a kulcsot? Az ElevenLabs hangok gyorsítótára is törlődik.",
+  "@elevenLabsDeleteKeyQuestion": {
+    "description": "Setup screen: confirm dialog."
   }
 }

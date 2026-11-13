@@ -496,4 +496,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String elevenLabsFallbackOther(String voice) {
     return 'ElevenLabs isn\'t available right now, $voice is speaking instead.';
   }
+
+  @override
+  String get elevenLabsSection => 'ElevenLabs';
+
+  @override
+  String get elevenLabsSectionSubtitle =>
+      'Needs internet and your own ElevenLabs account';
+
+  @override
+  String get elevenLabsSetup => 'Set up';
+
+  @override
+  String get elevenLabsSettings => 'Settings';
+
+  @override
+  String get elevenLabsTrial => 'Try';
+
+  @override
+  String get elevenLabsNoInternet => 'No internet';
+
+  @override
+  String get elevenLabsListFailed =>
+      'The ElevenLabs voices aren\'t available right now. Check the settings.';
+
+  @override
+  String get elevenLabsScreenTitle => 'ElevenLabs voice';
+
+  @override
+  String get elevenLabsIntro =>
+      'This is optional. It needs your own ElevenLabs account and internet. What you say is sent to ElevenLabs and appears in your ElevenLabs history. The free plan has a monthly credit limit. Without internet another voice speaks instead; sentences said before still use the ElevenLabs voice offline.';
+
+  @override
+  String get elevenLabsPermissions =>
+      'The key needs these permissions: Text to Speech and Voices. User (read) is optional, but then the used credit is shown.';
+
+  @override
+  String get elevenLabsKeyLabel => 'ElevenLabs API key';
+
+  @override
+  String get elevenLabsCheck => 'Check';
+
+  @override
+  String get elevenLabsKeySaved => 'The key works and is saved.';
+
+  @override
+  String get elevenLabsErrBadKey => 'This key isn\'t valid.';
+
+  @override
+  String get elevenLabsErrPermission =>
+      'The key doesn\'t have the Voices permission.';
+
+  @override
+  String get elevenLabsErrOffline => 'No internet, couldn\'t check.';
+
+  @override
+  String get elevenLabsErrOther =>
+      'ElevenLabs isn\'t answering right now. Try again later.';
+
+  @override
+  String elevenLabsCredit(String used, String limit, String date) {
+    return 'Credit used: $used / $limit, resets: $date';
+  }
+
+  @override
+  String elevenLabsCreditNoDate(String used, String limit) {
+    return 'Credit used: $used / $limit';
+  }
+
+  @override
+  String get elevenLabsFallbackChoice => 'Without internet, this voice speaks:';
+
+  @override
+  String get elevenLabsExpressive =>
+      'More expressive voice (slower, twice the credit)';
+
+  @override
+  String get elevenLabsDeleteKey => 'Delete key';
+
+  @override
+  String get elevenLabsDeleteKeyQuestion =>
+      'Delete the key? The saved ElevenLabs audio is deleted too.';
 }
