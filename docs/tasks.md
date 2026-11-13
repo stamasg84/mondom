@@ -50,7 +50,7 @@ Recordings can't be made again once the voice is gone, and a lost phone must not
 - ARB (hu + en). Tests: round-trip into an empty DB; importing twice adds nothing; bad version; a malicious entry path is rejected.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T34 (You): Try message banking
+### [x] T34 (You): Try message banking
 1. In a list, ☰ → Listák → a list → the mic button: record 5+ sentences in one go. Grant the mic permission at the first one. Include one at arm's length and one in a noisy room.
 2. On the speaking screen, tap them: is it your voice, as loud as TTS, with no clicks or long silence at the ends? Note how long a tap takes before sound starts.
 3. Airplane mode, a list with recordings, with a Piper voice selected and with no voice loaded yet (tap right after launch).
