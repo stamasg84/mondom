@@ -43,6 +43,7 @@ Képernyőképek: `docs/screenshots/*.png` (később kerülnek ide).
 6. **Saját hang felvétele.** A lista szerkesztőjében a mikrofon gombbal az egész listához, egy sor ⋮ menüjével egyetlen mondathoz vehetsz fel hangot. Koppints a kezdéshez, koppints a leállításhoz, hallgasd meg, majd mentsd. A felvett sorok a te hangodon szólnak a szintetikus helyett.
 7. **Biztonsági mentés.** ☰ → „Beállítások” → „Mentés”: készíts mentésfájlt (listák és felvételek), és tedd el Google Drive-ra vagy máshová. A visszaállítás csak hozzáad, a telefonon lévőket sosem írja felül.
 8. **Riasztás.** A kitűzött piros „Riasztás” listában vannak a riasztósorok (sziréna, csengő, kürt). A saját sorodat is megjelölheted riasztásnak. Amíg egy riasztás szól, nagy „Leállítás” gomb jelenik meg. A riasztás hangerejét a „Beállítások” között állíthatod.
+9. **Sebesség és hangerő.** ☰ → „Beállítások” → „Beszéd sebessége”: lassabbra vagy gyorsabbra állíthatod a beszédet. A sebességet minden hanghoz külön megjegyzi; a „Visszaállítás” visszaállítja a normálra. A „Hangosítás” hangosabbá teszi a beszédet a telefon hangszóróján; kapcsold ki, ha torznak hallod.
 
 ## ElevenLabs
 

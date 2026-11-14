@@ -35,14 +35,15 @@ Mondom ("I say it") is a free, open-source speech aid for Android. It is made fo
 
 Screenshots: `docs/screenshots/*.png` (to be added).
 
-1. **First launch.** Mondom asks you to pick a voice. "Android default" works immediately; the other voices are downloaded once (about 60 MB each, over Wi-Fi) and then work offline. Tap the play button on a row to hear a sample first. You can change the voice later in ☰ → "Hang és nyelv".
+1. **First launch.** Mondom asks you to pick a voice. "Android default" works immediately; the other voices are downloaded once (about 60 MB each, over Wi-Fi) and then work offline. Tap the play button on a row to hear a sample first. You can change the voice later in ☰ → "Voice and language".
 2. **Speaking a row.** Tap a sentence and it is spoken. Tap it again to repeat it. The list chips at the top switch between your pinned lists; ▾ shows all lists.
 3. **Typing.** Type in the field at the bottom and press the speak button. The text stays in the field, so pressing again repeats it; ✕ clears it. The ↓ button in the top right corner, above the list chips, loads the next tapped row into the text field instead of speaking it, so you can build a sentence from pieces.
-4. **Editing lists.** ☰ → "Listák". Create, rename, color, pin and reorder lists; open a list to edit its sentences. Editing is deliberately two taps away, so a stray tap during a conversation can't leave you on an editing screen.
-5. **Preparing a conversation.** In "Listák" create a list of the conversation kind and add one sentence per line. During the visit open it and tap "Következő" (Next) to say the next unsaid sentence, or tap any row.
+4. **Editing lists.** ☰ → "Lists". Create, rename, color, pin and reorder lists; open a list to edit its sentences. Editing is deliberately two taps away, so a stray tap during a conversation can't leave you on an editing screen.
+5. **Preparing a conversation.** In "Lists" create a list of the conversation kind and add one sentence per line. During the visit open it and tap "Next" to say the next unsaid sentence, or tap any row.
 6. **Recording your own voice.** In a list's editor, use the microphone button for the whole list or a row's ⋮ menu for one sentence. Tap to start, tap to stop, listen, then save. Recorded rows play your voice instead of the synthetic one.
-7. **Backup.** ☰ → "Beállítások" → "Mentés": make a backup file (lists and recordings) and keep it on Google Drive or elsewhere. Restoring only adds, it never overwrites what is on the phone.
-8. **Alarms.** The pinned red "Riasztás" list has alarm rows (siren, bell, horn). Any row of yours can be marked as an alarm too. While an alarm plays, a big "Leállítás" (Stop) button appears. The alarm volume can be set in "Beállítások".
+7. **Backup.** ☰ → "Settings" → "Backup": make a backup file (lists and recordings) and keep it on Google Drive or elsewhere. Restoring only adds, it never overwrites what is on the phone.
+8. **Alarms.** The pinned red "Alarm" list has alarm rows (siren, bell, horn). Any row of yours can be marked as an alarm too. While an alarm plays, a big "Stop" button appears. The alarm volume can be set in "Settings".
+9. **Speed and loudness.** ☰ → "Settings" → "Speech speed": make speech slower or faster. The speed is saved separately for each voice; "Reset" goes back to normal. "Louder speech" boosts the volume on the phone speaker; turn it off if it sounds distorted.
 
 ## ElevenLabs
 
@@ -52,14 +53,14 @@ Texts spoken with an ElevenLabs voice are sent to ElevenLabs and appear in your 
 
 **Setup**
 1. In your ElevenLabs account, create an API key (in the ElevenLabs web app: Developers → API Keys). Give it these permissions: **Text to Speech** and **Voices (read)**. Optionally **User (read)**, which only lets Mondom show your remaining credits.
-2. In Mondom open ☰ → "Hang és nyelv". In the ElevenLabs section choose "ElevenLabs beállítása", paste the key and save. Mondom checks that it works.
+2. In Mondom open ☰ → "Voice and language". In the ElevenLabs section choose "Set up ElevenLabs", paste the key and save. Mondom checks that it works.
 3. Pick one of the voices of your account in the list. Voices are listed by name; your own clone is among them.
 4. Choose the **fallback voice**: an offline voice that speaks instead when ElevenLabs can't be reached (no internet, no credit left, invalid key). Mondom is never silent; a cloud icon in the top bar tells you when the fallback spoke and why.
 
 **Good to know**
 - **Sentences you already said** are kept on the phone (a cache, up to 100 MB, oldest unused dropped first), so they work offline in the ElevenLabs voice and don't use credits again. Alarm rows never wait for the network.
-- **"Kifejezőbb hang"** (more expressive voice) uses a slower, more expressive model that costs twice as many credits.
-- **Generating a list's recordings.** In a list's editor, the cloud button saves every row of the list as a recording in your ElevenLabs voice. Mondom shows the estimated cost first. Rows that have your own recording are only replaced if you say so. For a single row use its ⋮ menu → "ElevenLabs-hangon mentés"; you can listen before saving.
+- **"More expressive voice"** uses a slower, more expressive model that costs twice as many credits.
+- **Generating a list's recordings.** In a list's editor, the cloud button saves every row of the list as a recording in your ElevenLabs voice. Mondom shows the estimated cost first. Rows that have your own recording are only replaced if you say so. For a single row use its ⋮ menu → "Save in ElevenLabs voice"; you can listen before saving.
 - **Generated recordings are permanent.** They are normal recordings: they work offline, are part of the backup, and are not affected by removing the key, a lapsed subscription or a different selected voice. They do not follow later changes of speed or model.
 - **Deleting the key** clears only the cache. Recordings saved into lists are kept; other sentences are spoken by the fallback voice from then on.
 
@@ -75,7 +76,7 @@ Mondom has no accounts, no ads and no tracking, and everything you write and rec
 
 ## License
 
-GPL-3.0, see [LICENSE](LICENSE). The voices have their own licenses, listed per voice in [voices/catalog.json](voices/catalog.json) and in the app's "Névjegy" screen.
+GPL-3.0, see [LICENSE](LICENSE). The voices have their own licenses, listed per voice in [voices/catalog.json](voices/catalog.json) and in the app's "About" screen.
 
 ## Feedback
 
