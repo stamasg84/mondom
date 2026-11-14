@@ -2,12 +2,7 @@
 
 # Mondom
 
-Mondom ("I say it") is a free, open-source speech aid for Android. It is made for literate adults who have lost their speech or are losing it: ALS (especially bulbar), stroke, laryngectomy, MS. You type or tap a ready-made sentence, and the phone says it out loud. It is Hungarian-first, and works in other languages too.
-
-<!-- Screenshots: the human adds these files. -->
-<!-- ![Speaking screen](docs/screenshots/speaking.png) -->
-<!-- ![Lists](docs/screenshots/lists.png) -->
-<!-- ![Voice picker](docs/screenshots/voices.png) -->
+Mondom ("I say it") is a free, open-source speech aid for Android. It is made for literate adults who have lost their speech or are losing it: ALS (especially bulbar), stroke, laryngectomy, MS. You type or tap a ready-made sentence, and the phone says it out loud. It works in any language your phone's voice can speak; the app itself is in English and Hungarian.
 
 ## Why Mondom
 
@@ -18,7 +13,7 @@ Mondom ("I say it") is a free, open-source speech aid for Android. It is made fo
 
 ## Features
 
-- **Sentence lists.** Everything you can say with one tap is a row in a list of whole sentences. Hungarian everyday phrases are preloaded; you add your own lists ("Doctor", "Night").
+- **Sentence lists.** Everything you can say with one tap is a row in a list of whole sentences. Everyday phrases are preloaded (in English, Hungarian and Swedish); you add your own lists ("Doctor", "Night").
 - **Free text.** A text field and a speak button are always on the main screen. Press the button again with the same text and it repeats instantly.
 - **Building sentences from pieces.** One button loads a row from any list (or history) into the text field instead of speaking it, so you can combine saved pieces with typed words before saying them.
 - **History.** The last 30 things you said, ready to say again or save to a list.
@@ -32,8 +27,6 @@ Mondom ("I say it") is a free, open-source speech aid for Android. It is made fo
 - **Speech speed**, set per voice, and an optional loudness boost for the phone speaker.
 
 ## Manual
-
-Screenshots: `docs/screenshots/*.png` (to be added).
 
 1. **First launch.** Mondom asks you to pick a voice. "Android default" works immediately; the other voices are downloaded once (about 60 MB each, over Wi-Fi) and then work offline. Tap the play button on a row to hear a sample first. You can change the voice later in ☰ → "Voice and language".
 2. **Speaking a row.** Tap a sentence and it is spoken. Tap it again to repeat it. The list chips at the top switch between your pinned lists; ▾ shows all lists.

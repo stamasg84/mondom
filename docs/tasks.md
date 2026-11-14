@@ -92,7 +92,7 @@ Included before the release without waiting for user requests (decided 2026-11-1
 - **Checks:** `flutter analyze`, `flutter test`.
 
 ### [ ] T44 (You): Release candidate test and store listing
-1. Proofread T39's Hungarian on the phone, and `README.hu.md`. Take 3–4 screenshots for the README and the store listing.
+1. Proofread T39's Hungarian on the phone, and `README.hu.md`. Take 3–4 screenshots for the Play store listing (not for the README).
 2. Speed slider: Imre a bit faster, nst slower, the system voice, an ElevenLabs voice. Each keeps its own speed after switching back and forth.
 3. About: links open, storage numbers plausible, Alma credit present.
 3a. T45: generate a short list with an ElevenLabs voice (check the cost dialog against the credit line), record one row yourself first and try "Csak a többit". Then delete the key and switch to Imre: the generated rows still speak in the ElevenLabs voice, offline too (airplane mode), and survive a backup/restore.

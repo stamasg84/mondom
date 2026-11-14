@@ -2,12 +2,7 @@
 
 # Mondom
 
-A Mondom ingyenes, nyílt forráskódú beszédsegítő alkalmazás Androidra. Olyan felnőtteknek készült, akik tudnak írni és olvasni, de a beszédük elveszett vagy fokozatosan romlik, például ALS (különösen bulbáris ALS), stroke, gégeeltávolítás vagy SM miatt. Beírod, amit mondani szeretnél, vagy rákoppintasz egy kész mondatra, és a telefon kimondja. Elsősorban magyar nyelvre készült, de más nyelveken is használható.
-
-<!-- Képernyőképek: a fájlokat az ember teszi be. -->
-<!-- ![Beszédképernyő](docs/screenshots/speaking.png) -->
-<!-- ![Listák](docs/screenshots/lists.png) -->
-<!-- ![Hangválasztó](docs/screenshots/voices.png) -->
+A Mondom ingyenes, nyílt forráskódú beszédsegítő alkalmazás Androidra. Olyan felnőtteknek készült, akik tudnak írni és olvasni, de a beszédük elveszett vagy fokozatosan romlik, például ALS (különösen bulbáris ALS), stroke, gégeeltávolítás vagy SM miatt. Beírod, amit mondani szeretnél, vagy rákoppintasz egy kész mondatra, és a telefon kimondja. Bármilyen nyelven használható, amelyen a telefon hangja beszélni tud; maga az alkalmazás magyar és angol nyelvű.
 
 ## Miért készült
 
@@ -18,7 +13,7 @@ A Mondom ingyenes, nyílt forráskódú beszédsegítő alkalmazás Androidra. O
 
 ## Mit tud?
 
-- **Mondatlisták.** Mindent, amit egy koppintással ki akarsz mondani, egész mondatként tárolhatsz listákban. A mindennapi mondatok előre be vannak töltve, és saját listákat is készíthetsz (például „Orvos” vagy „Éjszaka”).
+- **Mondatlisták.** Mindent, amit egy koppintással ki akarsz mondani, egész mondatként tárolhatsz listákban. A mindennapi mondatok előre be vannak töltve (magyarul, angolul és svédül), és saját listákat is készíthetsz (például „Orvos” vagy „Éjszaka”).
 - **Szabad szöveg.** A szövegmező és a Mondom gomb mindig ott van a főképernyőn. Ha a szöveg változatlan, a gomb újbóli megnyomására azonnal megismétli.
 - **Mondatok összerakása.** Bármelyik lista vagy az előzmények egy sorát kimondás helyett betöltheted a szövegmezőbe, így a kész mondatrészeket kiegészítheted, mielőtt kimondod őket.
 - **Előzmények.** Az utolsó 30 kimondott szöveg. Bármelyiket újra kimondhatod, vagy elmentheted egy listába.
@@ -32,8 +27,6 @@ A Mondom ingyenes, nyílt forráskódú beszédsegítő alkalmazás Androidra. O
 - **Beszédsebesség** hangonként külön, valamint igény szerint hangosítás a telefon hangszórójához.
 
 ## Használati útmutató
-
-Képernyőképek: `docs/screenshots/*.png` (később kerülnek ide).
 
 1. **Első indítás.** A Mondom először azt kéri, hogy válassz hangot. Az „Android alapértelmezett” azonnal működik, a többi hangot egyszer le kell tölteni (egyenként kb. 60 MB, érdemes wifin), utána internet nélkül is szólnak. A sor lejátszás gombjával előbb meghallgathatod a hangmintát. A hangot később is lecserélheted: ☰ → „Hang és nyelv”.
 2. **Mondat kimondása.** Koppints egy mondatra, és a Mondom kimondja. Újabb koppintásra megismétli. A fenti listagombokkal a kitűzött listák között válthatsz, a ▾ gomb az összes listát megmutatja.

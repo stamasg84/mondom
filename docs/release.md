@@ -25,7 +25,7 @@ keyPassword=...
 
 ```
 flutter build appbundle                 # for Google Play
-flutter build apk --split-per-abi       # for GitHub Releases / F-Droid
+flutter build apk --split-per-abi       # for GitHub Releases
 ```
 
 Bump `version:` in `pubspec.yaml` (`name+build`) before each upload; Play needs a higher build number every time.
@@ -54,6 +54,6 @@ Per-ABI APK sizes (measured on the first release build): (`flutter build apk --s
 1. `flutter analyze` and `flutter test` pass.
 2. Build the appbundle and per-ABI APKs; install the release APK on the Pixel 6a and run through the main flows (speak, record, backup, alarm, voice download).
 3. Check on a device that system-TTS speed affects `synthesizeToFile` (see `docs/architecture.md` "Speech speed").
-4. Add the 3 screenshots to `docs/screenshots/` and link them in the READMEs.
+4. Take the phone screenshots for the Play listing (Play needs at least 2; 3–4 is good: speaking screen, lists, voice picker). They are not used in the READMEs, so they need no upkeep there.
 5. Upload the `.aab` to a Play internal testing track, fill the store listing and data safety form (above), then promote.
 6. Tag the release on GitHub and attach the per-ABI APKs.
