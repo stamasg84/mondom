@@ -180,5 +180,48 @@
   "elevenLabsExpressive": "More expressive voice",
   "elevenLabsExpressiveSubtitle": "Starts slower and costs twice the credit.",
   "elevenLabsDeleteKey": "Delete key",
-  "elevenLabsDeleteKeyQuestion": "Delete the key? ElevenLabs recordings saved into lists are kept; other sentences will use the fallback voice next time."
+  "elevenLabsDeleteKeyQuestion": "Delete the key? ElevenLabs recordings saved into lists are kept; other sentences will use the fallback voice next time.",
+  "aboutTitle": "About",
+  "aboutSubtitle": "Version, licenses, storage",
+  "aboutTagline": "A free, ad-free, open-source speech aid. No account, all data stays on the phone.",
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutGithub": "The project on GitHub",
+  "aboutPrivacy": "Privacy policy",
+  "aboutVoices": "Voices",
+  "aboutVoiceLine": "{name}: {license}",
+  "@aboutVoiceLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutAlmaCredit": "Alma: the voice model is trained on the NST Swedish speech dataset (Språkbanken, National Library of Norway), license CC BY 4.0.",
+  "aboutModelCard": "Voice model card",
+  "aboutSystemVoiceLine": "Android default: the phone's own voice",
+  "aboutSoftware": "Software used",
+  "aboutAllLicenses": "All licenses",
+  "aboutStorage": "Storage",
+  "aboutRecordings": "Own recordings",
+  "aboutDownloadedVoices": "Downloaded voices",
+  "aboutMegabytes": "{mb} MB",
+  "@aboutMegabytes": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutTrademark": "ElevenLabs is a trademark of ElevenLabs. Mondom is not affiliated with ElevenLabs.",
+  "aboutLinkFailed": "Could not open it. The address:"
 }

@@ -1129,6 +1129,120 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Törlöd a kulcsot? A listákba mentett ElevenLabs-felvételek megmaradnak, a többi kimondott mondat legközelebb a tartalék hangon szól.'**
   String get elevenLabsDeleteKeyQuestion;
+
+  /// Drawer row and screen title for the About screen.
+  ///
+  /// In hu, this message translates to:
+  /// **'Névjegy'**
+  String get aboutTitle;
+
+  /// Subtitle of the About drawer row.
+  ///
+  /// In hu, this message translates to:
+  /// **'Verzió, licencek, tárhely'**
+  String get aboutSubtitle;
+
+  /// One-line description at the top of About.
+  ///
+  /// In hu, this message translates to:
+  /// **'Ingyenes, reklám nélküli, nyílt forráskódú beszédsegítő. Nincs fiók, minden adat a telefonon marad.'**
+  String get aboutTagline;
+
+  /// App version line.
+  ///
+  /// In hu, this message translates to:
+  /// **'Verzió {version}'**
+  String aboutVersion(String version);
+
+  /// Link row in About.
+  ///
+  /// In hu, this message translates to:
+  /// **'A projekt a GitHubon'**
+  String get aboutGithub;
+
+  /// Link row in About.
+  ///
+  /// In hu, this message translates to:
+  /// **'Adatkezelés'**
+  String get aboutPrivacy;
+
+  /// About section header.
+  ///
+  /// In hu, this message translates to:
+  /// **'Hangok'**
+  String get aboutVoices;
+
+  /// One voice and its license in About.
+  ///
+  /// In hu, this message translates to:
+  /// **'{name}: {license}'**
+  String aboutVoiceLine(String name, String license);
+
+  /// CC BY 4.0 credit for the Alma voice.
+  ///
+  /// In hu, this message translates to:
+  /// **'Alma: a hangmodell az NST svéd beszédadatbázison (Språkbanken, Norvég Nemzeti Könyvtár) készült, licenc: CC BY 4.0.'**
+  String get aboutAlmaCredit;
+
+  /// Link to the Alma model card.
+  ///
+  /// In hu, this message translates to:
+  /// **'Hangmodell adatlapja'**
+  String get aboutModelCard;
+
+  /// System voice line in About.
+  ///
+  /// In hu, this message translates to:
+  /// **'Android alapértelmezett: a telefon saját hangja'**
+  String get aboutSystemVoiceLine;
+
+  /// About section header.
+  ///
+  /// In hu, this message translates to:
+  /// **'Felhasznált szoftverek'**
+  String get aboutSoftware;
+
+  /// Opens Flutter's license page.
+  ///
+  /// In hu, this message translates to:
+  /// **'Összes licenc'**
+  String get aboutAllLicenses;
+
+  /// About section header.
+  ///
+  /// In hu, this message translates to:
+  /// **'Tárhely'**
+  String get aboutStorage;
+
+  /// Storage row.
+  ///
+  /// In hu, this message translates to:
+  /// **'Saját felvételek'**
+  String get aboutRecordings;
+
+  /// Storage row.
+  ///
+  /// In hu, this message translates to:
+  /// **'Letöltött hangok'**
+  String get aboutDownloadedVoices;
+
+  /// Size in megabytes.
+  ///
+  /// In hu, this message translates to:
+  /// **'{mb} MB'**
+  String aboutMegabytes(String mb);
+
+  /// Trademark / non-affiliation line.
+  ///
+  /// In hu, this message translates to:
+  /// **'Az ElevenLabs az ElevenLabs védjegye; a Mondom nem kapcsolódik hozzá.'**
+  String get aboutTrademark;
+
+  /// Shown above a URL that could not be opened.
+  ///
+  /// In hu, this message translates to:
+  /// **'Nem sikerült megnyitni. A cím:'**
+  String get aboutLinkFailed;
 }
 
 class _AppLocalizationsDelegate

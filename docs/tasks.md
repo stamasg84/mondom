@@ -46,7 +46,7 @@ Some voices talk faster than others (e.g. `nst` vs `imre`), so the speed is **st
 - Tests: per-voice persistence; Piper and system engines receive the speed; the ElevenLabs body has the clamped speed and different speeds give different cache keys; slider hidden without a voice.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T41 (Agent): About screen, LICENSE file, opening links
+### [x] T41 (Agent): About screen, LICENSE file, opening links
 - Add the GPL-3.0 text as `LICENSE` in the repo root (the official text from gnu.org, unmodified).
 - `MainActivity.kt`: an `openUrl` method on an existing small channel (`Intent.ACTION_VIEW`; no `url_launcher` dependency). Catch `ActivityNotFoundException` and return false; the UI then shows the URL as selectable text.
 - New `lib/ui/about_screen.dart`, drawer row "Névjegy", last. Contents, top to bottom:

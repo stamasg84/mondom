@@ -14,6 +14,7 @@ import 'speech/speaker.dart';
 import 'storage/backup.dart';
 import 'storage/database.dart';
 import 'storage/lists_repository.dart';
+import 'ui/about_licenses.dart';
 import 'ui/speaking_screen.dart';
 import 'ui/voice_picker.dart';
 import 'voices/catalog.dart';
@@ -29,7 +30,10 @@ import 'voices/voice.dart';
 import 'voices/voice_engine.dart';
 import 'voices/voice_installer.dart';
 
-void main() => runApp(const MondomApp());
+void main() {
+  registerExtraLicenses();
+  runApp(const MondomApp());
+}
 
 class MondomApp extends StatelessWidget {
   const MondomApp({super.key, this.home = const HomeScreen()});
@@ -270,6 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
       voice: () => _voice,
       onOpenVoicePicker: _openPicker,
       sampleText: () => _catalog.sampleText[_voice.languageCode],
+      catalog: () => _catalog,
       backup: BackupService(repo: repo, recordings: _recordings),
     );
   }

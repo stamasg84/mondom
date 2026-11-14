@@ -68,3 +68,13 @@ Future<void> openAppSettings() async {
     await _settingsChannel.invokeMethod<bool>('open');
   } catch (_) {}
 }
+
+/// Opens [url] in the browser through the platform channel. False when
+/// nothing can open it; the UI then shows the URL as selectable text.
+Future<bool> openUrl(String url) async {
+  try {
+    return await _settingsChannel.invokeMethod<bool>('openUrl', url) ?? false;
+  } catch (_) {
+    return false;
+  }
+}

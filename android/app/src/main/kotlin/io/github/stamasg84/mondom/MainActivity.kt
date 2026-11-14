@@ -41,8 +41,11 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             "mondom/app_settings"
         ).setMethodCallHandler { call, result ->
-            if (call.method == "open") result.success(openAppSettings())
-            else result.notImplemented()
+            when (call.method) {
+                "open" -> result.success(openAppSettings())
+                "openUrl" -> result.success(openUrl(call.arguments?.toString()))
+                else -> result.notImplemented()
+            }
         }
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -129,6 +132,17 @@ class MainActivity : FlutterActivity() {
                 runOnUiThread { result.error("copy", e.message, null) }
             }
         }.start()
+    }
+
+    /** Opens [url] in the browser; false when nothing can handle it. */
+    private fun openUrl(url: String?): Boolean {
+        if (url.isNullOrEmpty()) return false
+        return try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            true
+        } catch (e: ActivityNotFoundException) {
+            false
+        }
     }
 
     /** Opens this app's page in Android settings (to re-allow the microphone). */

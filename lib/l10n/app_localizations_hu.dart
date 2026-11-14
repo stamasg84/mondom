@@ -606,4 +606,71 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get elevenLabsDeleteKeyQuestion =>
       'Törlöd a kulcsot? A listákba mentett ElevenLabs-felvételek megmaradnak, a többi kimondott mondat legközelebb a tartalék hangon szól.';
+
+  @override
+  String get aboutTitle => 'Névjegy';
+
+  @override
+  String get aboutSubtitle => 'Verzió, licencek, tárhely';
+
+  @override
+  String get aboutTagline =>
+      'Ingyenes, reklám nélküli, nyílt forráskódú beszédsegítő. Nincs fiók, minden adat a telefonon marad.';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Verzió $version';
+  }
+
+  @override
+  String get aboutGithub => 'A projekt a GitHubon';
+
+  @override
+  String get aboutPrivacy => 'Adatkezelés';
+
+  @override
+  String get aboutVoices => 'Hangok';
+
+  @override
+  String aboutVoiceLine(String name, String license) {
+    return '$name: $license';
+  }
+
+  @override
+  String get aboutAlmaCredit =>
+      'Alma: a hangmodell az NST svéd beszédadatbázison (Språkbanken, Norvég Nemzeti Könyvtár) készült, licenc: CC BY 4.0.';
+
+  @override
+  String get aboutModelCard => 'Hangmodell adatlapja';
+
+  @override
+  String get aboutSystemVoiceLine =>
+      'Android alapértelmezett: a telefon saját hangja';
+
+  @override
+  String get aboutSoftware => 'Felhasznált szoftverek';
+
+  @override
+  String get aboutAllLicenses => 'Összes licenc';
+
+  @override
+  String get aboutStorage => 'Tárhely';
+
+  @override
+  String get aboutRecordings => 'Saját felvételek';
+
+  @override
+  String get aboutDownloadedVoices => 'Letöltött hangok';
+
+  @override
+  String aboutMegabytes(String mb) {
+    return '$mb MB';
+  }
+
+  @override
+  String get aboutTrademark =>
+      'Az ElevenLabs az ElevenLabs védjegye; a Mondom nem kapcsolódik hozzá.';
+
+  @override
+  String get aboutLinkFailed => 'Nem sikerült megnyitni. A cím:';
 }

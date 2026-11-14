@@ -611,4 +611,70 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get elevenLabsDeleteKeyQuestion =>
       'Delete the key? ElevenLabs recordings saved into lists are kept; other sentences will use the fallback voice next time.';
+
+  @override
+  String get aboutTitle => 'About';
+
+  @override
+  String get aboutSubtitle => 'Version, licenses, storage';
+
+  @override
+  String get aboutTagline =>
+      'A free, ad-free, open-source speech aid. No account, all data stays on the phone.';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutGithub => 'The project on GitHub';
+
+  @override
+  String get aboutPrivacy => 'Privacy policy';
+
+  @override
+  String get aboutVoices => 'Voices';
+
+  @override
+  String aboutVoiceLine(String name, String license) {
+    return '$name: $license';
+  }
+
+  @override
+  String get aboutAlmaCredit =>
+      'Alma: the voice model is trained on the NST Swedish speech dataset (Språkbanken, National Library of Norway), license CC BY 4.0.';
+
+  @override
+  String get aboutModelCard => 'Voice model card';
+
+  @override
+  String get aboutSystemVoiceLine => 'Android default: the phone\'s own voice';
+
+  @override
+  String get aboutSoftware => 'Software used';
+
+  @override
+  String get aboutAllLicenses => 'All licenses';
+
+  @override
+  String get aboutStorage => 'Storage';
+
+  @override
+  String get aboutRecordings => 'Own recordings';
+
+  @override
+  String get aboutDownloadedVoices => 'Downloaded voices';
+
+  @override
+  String aboutMegabytes(String mb) {
+    return '$mb MB';
+  }
+
+  @override
+  String get aboutTrademark =>
+      'ElevenLabs is a trademark of ElevenLabs. Mondom is not affiliated with ElevenLabs.';
+
+  @override
+  String get aboutLinkFailed => 'Could not open it. The address:';
 }

@@ -6,8 +6,10 @@ import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
 import '../storage/backup.dart';
 import '../storage/lists_repository.dart';
+import '../voices/catalog.dart';
 import '../voices/language_names.dart';
 import '../voices/voice.dart';
+import 'about_screen.dart';
 import 'lists_screen.dart';
 import 'settings_screen.dart';
 
@@ -26,6 +28,7 @@ class MainDrawer extends StatelessWidget {
     required this.recorderFactory,
     this.backup,
     this.sampleText,
+    this.catalog,
   });
 
   /// A sentence in the speech language, said when the speed slider is
@@ -33,6 +36,9 @@ class MainDrawer extends StatelessWidget {
   final String? Function()? sampleText;
 
   final BackupService? backup;
+
+  /// The voice catalog, for the About screen's credits.
+  final Catalog Function()? catalog;
 
   final VoiceRecorder Function() recorderFactory;
   final AlarmVolume alarmVolume;
@@ -116,6 +122,20 @@ class MainDrawer extends StatelessWidget {
               onTap: () {
                 navigator.pop();
                 onOpenVoicePicker();
+              },
+            ),
+            _DrawerRow(
+              icon: Icons.info_outline,
+              title: l10n.aboutTitle,
+              subtitle: l10n.aboutSubtitle,
+              onTap: () {
+                navigator.pop();
+                navigator.push(
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        AboutScreen(catalog: catalog?.call() ?? Catalog.empty),
+                  ),
+                );
               },
             ),
           ],

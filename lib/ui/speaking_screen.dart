@@ -12,6 +12,7 @@ import '../voices/elevenlabs_client.dart';
 import '../voices/voice.dart';
 import 'list_colors.dart';
 import 'main_drawer.dart';
+import '../voices/catalog.dart';
 import 'row_badges.dart';
 
 /// Main screen: list chips, big sentence rows, always-visible free text.
@@ -25,6 +26,7 @@ class SpeakingScreen extends StatefulWidget {
     this.recorderFactory = RecordPackageRecorder.new,
     this.backup,
     this.sampleText,
+    this.catalog,
   });
 
   /// Backup and restore in settings; null hides them (tests).
@@ -32,6 +34,9 @@ class SpeakingScreen extends StatefulWidget {
 
   /// The speed slider's sample sentence for the current speech language.
   final String? Function()? sampleText;
+
+  /// The voice catalog, for the About screen's credits.
+  final Catalog Function()? catalog;
 
   /// Creates the microphone recorder for the recording screen (tests fake it).
   final VoiceRecorder Function() recorderFactory;
@@ -224,6 +229,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
             recorderFactory: widget.recorderFactory,
             backup: widget.backup,
             sampleText: widget.sampleText,
+            catalog: widget.catalog,
           ),
           appBar: AppBar(
             leading: Builder(

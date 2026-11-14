@@ -805,5 +805,99 @@
   "elevenLabsDeleteKeyQuestion": "Törlöd a kulcsot? A listákba mentett ElevenLabs-felvételek megmaradnak, a többi kimondott mondat legközelebb a tartalék hangon szól.",
   "@elevenLabsDeleteKeyQuestion": {
     "description": "Setup screen: confirm dialog."
+  },
+  "aboutTitle": "Névjegy",
+  "@aboutTitle": {
+    "description": "Drawer row and screen title for the About screen."
+  },
+  "aboutSubtitle": "Verzió, licencek, tárhely",
+  "@aboutSubtitle": {
+    "description": "Subtitle of the About drawer row."
+  },
+  "aboutTagline": "Ingyenes, reklám nélküli, nyílt forráskódú beszédsegítő. Nincs fiók, minden adat a telefonon marad.",
+  "@aboutTagline": {
+    "description": "One-line description at the top of About."
+  },
+  "aboutVersion": "Verzió {version}",
+  "@aboutVersion": {
+    "description": "App version line.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutGithub": "A projekt a GitHubon",
+  "@aboutGithub": {
+    "description": "Link row in About."
+  },
+  "aboutPrivacy": "Adatkezelés",
+  "@aboutPrivacy": {
+    "description": "Link row in About."
+  },
+  "aboutVoices": "Hangok",
+  "@aboutVoices": {
+    "description": "About section header."
+  },
+  "aboutVoiceLine": "{name}: {license}",
+  "@aboutVoiceLine": {
+    "description": "One voice and its license in About.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutAlmaCredit": "Alma: a hangmodell az NST svéd beszédadatbázison (Språkbanken, Norvég Nemzeti Könyvtár) készült, licenc: CC BY 4.0.",
+  "@aboutAlmaCredit": {
+    "description": "CC BY 4.0 credit for the Alma voice."
+  },
+  "aboutModelCard": "Hangmodell adatlapja",
+  "@aboutModelCard": {
+    "description": "Link to the Alma model card."
+  },
+  "aboutSystemVoiceLine": "Android alapértelmezett: a telefon saját hangja",
+  "@aboutSystemVoiceLine": {
+    "description": "System voice line in About."
+  },
+  "aboutSoftware": "Felhasznált szoftverek",
+  "@aboutSoftware": {
+    "description": "About section header."
+  },
+  "aboutAllLicenses": "Összes licenc",
+  "@aboutAllLicenses": {
+    "description": "Opens Flutter's license page."
+  },
+  "aboutStorage": "Tárhely",
+  "@aboutStorage": {
+    "description": "About section header."
+  },
+  "aboutRecordings": "Saját felvételek",
+  "@aboutRecordings": {
+    "description": "Storage row."
+  },
+  "aboutDownloadedVoices": "Letöltött hangok",
+  "@aboutDownloadedVoices": {
+    "description": "Storage row."
+  },
+  "aboutMegabytes": "{mb} MB",
+  "@aboutMegabytes": {
+    "description": "Size in megabytes.",
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutTrademark": "Az ElevenLabs az ElevenLabs védjegye; a Mondom nem kapcsolódik hozzá.",
+  "@aboutTrademark": {
+    "description": "Trademark / non-affiliation line."
+  },
+  "aboutLinkFailed": "Nem sikerült megnyitni. A cím:",
+  "@aboutLinkFailed": {
+    "description": "Shown above a URL that could not be opened."
   }
 }
