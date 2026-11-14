@@ -59,7 +59,7 @@ Some voices talk faster than others (e.g. `nst` vs `imre`), so the speed is **st
 - ARB (hu + en). Tests: the drawer row opens the screen; voice credits come from the catalog; sizes render after computing; the link calls the channel.
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T42 (Agent): README in English and Hungarian
+### [x] T42 (Agent): README in English and Hungarian
 `README.md` (English, what GitHub shows) and `README.hu.md` (Hungarian), each linking the other in its first line. Same content in both:
 - One paragraph: what Mondom is and who it's for (from `CLAUDE.md`: literate adults who lost their speech; ALS, stroke, laryngectomy, MS; Hungarian-first).
 - Goals / why: free, no ads, no accounts, offline after setup; natural voices without setting up a TTS engine; everything in one install. Plain tone, no superlatives, no competitor names.
