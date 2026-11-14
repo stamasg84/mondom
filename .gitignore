@@ -53,3 +53,7 @@ assets/voices/
 # Sample generation
 tool/.venv/
 tool/.cache/
+
+# Release signing (see docs/release.md)
+key.properties
+*.jks

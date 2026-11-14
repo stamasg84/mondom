@@ -71,7 +71,7 @@ Some voices talk faster than others (e.g. `nst` vs `imre`), so the speed is **st
 - Write the Hungarian version natively, not sentence-by-sentence from the English; the human proofreads it.
 - **Checks:** links point at files in the repo (or are marked placeholders).
 
-### [ ] T43 (Agent): Privacy policy and release build setup
+### [x] T43 (Agent): Privacy policy and release build setup
 - `PRIVACY.md` (Hungarian first, English below, plain language): no accounts, no analytics, no ads, the developer collects nothing. The microphone is used only to record sentences the user chooses; recordings, lists and history stay on the phone; backups go only where the user saves them. Network: the voice catalog and voice downloads (GitHub), and only if the user sets it up, the text to be spoken goes to ElevenLabs with the user's own key, under ElevenLabs' privacy policy (link). The key is stored encrypted on the phone. Contact: GitHub issues.
 - `docs/release.md`: the Play data-safety answers matching the above (shared: the text spoken, with ElevenLabs, only when the user opts in; nothing collected by the developer; encrypted in transit), and the release steps from T44.
 - Release signing: `android/app/build.gradle.kts` reads `android/key.properties` (storeFile, storePassword, keyAlias, keyPassword) when it exists and signs `release` with it; otherwise it falls back to debug signing as now. Add `key.properties` and `*.jks` to `.gitignore`. Document in `docs/release.md` how to create the upload keystore (`keytool -genkey ...`), and that it must be backed up outside the PC (with Play App Signing a lost upload key can be reset, but it takes days).
