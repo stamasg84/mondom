@@ -20,6 +20,7 @@ A Mondom egy ingyenes, nyílt forráskódú beszédsegítő Androidra. Olyan fel
 
 - **Mondatlisták.** Ami egyetlen koppintással kimondható, az egy lista egy sora, egész mondatokkal. A mindennapi magyar mondatok előre fel vannak töltve, a saját listáidat (például „Orvos”, „Éjszaka”) te adod hozzá.
 - **Szabad szöveg.** A beírómező és a Mondom gomb mindig a főképernyőn van. Ha ugyanazzal a szöveggel újra megnyomod a gombot, azonnal megismétli.
+- **Mondat összerakása darabokból.** Egy gombnyomással bármelyik lista (vagy az előzmények) egy sorát kimondás helyett a beírómezőbe töltheted, így a mentett részeket gépelt szavakkal kiegészítve mondhatod ki.
 - **Előzmények.** Az utolsó 30 kimondott szöveg: újra kimondhatod, vagy elmentheted egy listába.
 - **Előre elkészített beszélgetések.** A mondatokat előre megírhatod, például a látogatás előtti este, aztán a „Következő” gombbal egyenként mondod ki őket. A már elhangzott mondatok szürkék lesznek.
 - **Saját hangú felvételek.** Bármelyik mondathoz felveheted a saját hangodat, ezt játssza le a gép a szintetikus hang helyett, internet nélkül is. A biztonsági mentés fájl a listáidat és a felvételeidet is megőrzi.
@@ -36,7 +37,7 @@ Képernyőképek: `docs/screenshots/*.png` (később kerülnek ide).
 
 1. **Első indítás.** A Mondom hangot kér választani. Az „Android alapértelmezett” azonnal működik, a többi hangot egyszer le kell tölteni (kb. 60 MB, érdemes wifin), utána internet nélkül is megy. A sor lejátszó gombjával előbb meghallgathatod a mintát. A hangot később is cserélheted: ☰ → „Hang és nyelv”.
 2. **Mondat kimondása.** Koppints egy mondatra, és kimondja. Ha még egyszer rákoppintasz, megismétli. A felül lévő listagombokkal a kitűzött listák között váltasz, a ▾ gombbal az összes listát látod.
-3. **Gépelés.** Írj a képernyő alján lévő mezőbe, és nyomd meg a Mondom gombot. A szöveg a mezőben marad, így újabb nyomásra megismétli; az ✕ törli. A mező melletti gombbal a következő megkoppintott sort kimondás helyett a mezőbe töltheted, így mondatot rakhatsz össze darabokból.
+3. **Gépelés.** Írj a képernyő alján lévő mezőbe, és nyomd meg a Mondom gombot. A szöveg a mezőben marad, így újabb nyomásra megismétli; az ✕ törli. A jobb felső sarokban, a listagombok fölött lévő ↓ gombbal a következő megkoppintott sort kimondás helyett a mezőbe töltheted, így mondatot rakhatsz össze darabokból.
 4. **Listák szerkesztése.** ☰ → „Listák”. Itt létrehozhatsz, átnevezhetsz, színezhetsz, kitűzhetsz és átrendezhetsz listákat; egy lista megnyitásával a mondatait szerkeszted. A szerkesztés szándékosan két koppintásra van, hogy egy véletlen érintés beszélgetés közben ne vigyen szerkesztőképernyőre.
 5. **Beszélgetés előkészítése.** A „Listák” között hozz létre beszélgetés típusú listát, és írj be soronként egy mondatot. A látogatáskor nyisd meg, és a „Következő” gombbal mondd ki a soron következő, még el nem hangzott mondatot, vagy koppints bármelyik sorra.
 6. **Saját hang felvétele.** A lista szerkesztőjében a mikrofon gombbal az egész listához, egy sor ⋮ menüjével egyetlen mondathoz vehetsz fel hangot. Koppints a kezdéshez, koppints a leállításhoz, hallgasd meg, majd mentsd. A felvett sorok a te hangodon szólnak a szintetikus helyett.

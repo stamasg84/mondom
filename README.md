@@ -20,6 +20,7 @@ Mondom ("I say it") is a free, open-source speech aid for Android. It is made fo
 
 - **Sentence lists.** Everything you can say with one tap is a row in a list of whole sentences. Hungarian everyday phrases are preloaded; you add your own lists ("Doctor", "Night").
 - **Free text.** A text field and a speak button are always on the main screen. Press the button again with the same text and it repeats instantly.
+- **Building sentences from pieces.** One button loads a row from any list (or history) into the text field instead of speaking it, so you can combine saved pieces with typed words before saying them.
 - **History.** The last 30 things you said, ready to say again or save to a list.
 - **Prepared conversations.** Write the sentences ahead of time, e.g. the evening before a visit, and say them one by one with a "Next" button. Sentences already said are greyed out.
 - **Message banking.** Record your own voice for any sentence; it is played instead of the synthetic voice, offline. A backup file keeps your lists and recordings.
@@ -36,7 +37,7 @@ Screenshots: `docs/screenshots/*.png` (to be added).
 
 1. **First launch.** Mondom asks you to pick a voice. "Android default" works immediately; the other voices are downloaded once (about 60 MB each, over Wi-Fi) and then work offline. Tap the play button on a row to hear a sample first. You can change the voice later in ☰ → "Hang és nyelv".
 2. **Speaking a row.** Tap a sentence and it is spoken. Tap it again to repeat it. The list chips at the top switch between your pinned lists; ▾ shows all lists.
-3. **Typing.** Type in the field at the bottom and press the speak button. The text stays in the field, so pressing again repeats it; ✕ clears it. The button left of the field loads the next tapped row into the text field instead of speaking it, so you can build a sentence from pieces.
+3. **Typing.** Type in the field at the bottom and press the speak button. The text stays in the field, so pressing again repeats it; ✕ clears it. The ↓ button in the top right corner, above the list chips, loads the next tapped row into the text field instead of speaking it, so you can build a sentence from pieces.
 4. **Editing lists.** ☰ → "Listák". Create, rename, color, pin and reorder lists; open a list to edit its sentences. Editing is deliberately two taps away, so a stray tap during a conversation can't leave you on an editing screen.
 5. **Preparing a conversation.** In "Listák" create a list of the conversation kind and add one sentence per line. During the visit open it and tap "Következő" (Next) to say the next unsaid sentence, or tap any row.
 6. **Recording your own voice.** In a list's editor, use the microphone button for the whole list or a row's ⋮ menu for one sentence. Tap to start, tap to stop, listen, then save. Recorded rows play your voice instead of the synthetic one.
