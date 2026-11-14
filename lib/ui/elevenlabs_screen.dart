@@ -212,16 +212,35 @@ class _ElevenLabsScreenState extends State<ElevenLabsScreen> {
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    l10n.elevenLabsPermissions,
-                    style: const TextStyle(fontSize: 18),
-                  ),
+                  _manualLink(l10n),
                   const SizedBox(height: 16),
                   _keyField(l10n),
                   if (_hasKey) ..._keySection(l10n),
                 ],
               ),
       ),
+    );
+  }
+
+  /// No url-opening channel yet (T41): the address is shown as selectable text.
+  Widget _manualLink(AppLocalizations l10n) {
+    final hu = Localizations.localeOf(context).languageCode == 'hu';
+    final url = hu
+        ? 'https://github.com/stamasg84/mondom/blob/main/README.hu.md#elevenlabs'
+        : 'https://github.com/stamasg84/mondom#elevenlabs';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.elevenLabsManualLink,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        SelectableText(
+          url,
+          key: const Key('elevenlabs-manual-url'),
+          style: const TextStyle(fontSize: 16),
+        ),
+      ],
     );
   }
 
@@ -239,6 +258,9 @@ class _ElevenLabsScreenState extends State<ElevenLabsScreen> {
           style: const TextStyle(fontSize: 20),
           decoration: InputDecoration(
             labelText: l10n.elevenLabsKeyLabel,
+            helperText: l10n.elevenLabsKeyHint,
+            helperMaxLines: 4,
+            helperStyle: const TextStyle(fontSize: 16),
             border: const OutlineInputBorder(),
           ),
         ),
@@ -330,6 +352,10 @@ class _ElevenLabsScreenState extends State<ElevenLabsScreen> {
         title: Text(
           l10n.elevenLabsExpressive,
           style: const TextStyle(fontSize: 20),
+        ),
+        subtitle: Text(
+          l10n.elevenLabsExpressiveSubtitle,
+          style: const TextStyle(fontSize: 16),
         ),
         contentPadding: EdgeInsets.zero,
       ),

@@ -480,12 +480,12 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String elevenLabsFallbackQuota(String voice) {
-    return 'Elfogyott az ElevenLabs kredit, $voice beszél helyette.';
+    return 'Elfogyott az ElevenLabs-kredit, $voice beszél helyette.';
   }
 
   @override
   String elevenLabsFallbackBadKey(String voice) {
-    return 'Az ElevenLabs kulcs nem érvényes, $voice beszél helyette.';
+    return 'Az ElevenLabs-kulcs nem érvényes, $voice beszél helyette.';
   }
 
   @override
@@ -500,20 +500,20 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get elevenLabsPaidOnly =>
-      'Ez a hang az ElevenLabs hangtárából való, és csak fizetős ElevenLabs-előfizetéssel használható.';
+      'Ez az ElevenLabs hangtárából való hang, és csak fizetős ElevenLabs-előfizetéssel használható.';
 
   @override
   String get elevenLabsSection => 'ElevenLabs';
 
   @override
   String get elevenLabsSectionSubtitle =>
-      'Internet és saját ElevenLabs-fiók kell';
+      'Saját ElevenLabs-fiókkal, internettel';
 
   @override
-  String get elevenLabsSetup => 'Beállítás';
+  String get elevenLabsSetup => 'ElevenLabs beállítása';
 
   @override
-  String get elevenLabsSettings => 'Beállítások';
+  String get elevenLabsSettings => 'ElevenLabs beállításai';
 
   @override
   String get elevenLabsTrial => 'Próba';
@@ -523,18 +523,21 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get elevenLabsListFailed =>
-      'Az ElevenLabs hangjai most nem érhetők el. Nézd meg a beállításokat.';
+      'Az ElevenLabs-hangok most nem érhetők el. Nézd meg a beállításokat.';
 
   @override
-  String get elevenLabsScreenTitle => 'ElevenLabs hang';
+  String get elevenLabsScreenTitle => 'ElevenLabs-hang';
 
   @override
   String get elevenLabsIntro =>
-      'Ez nem kötelező. Saját ElevenLabs-fiók és internet kell hozzá. Amit kimondatsz, azt a Mondom elküldi az ElevenLabsnek, és megjelenik az ElevenLabs-előzményeidben. Az ingyenes csomagban havi kreditkeret van. Ha nincs internet, egy másik hang beszél helyette; a korábban kimondott mondatok internet nélkül is az ElevenLabs hangján szólnak.';
+      'Az ElevenLabs egy külső, a Mondomtól független felhőszolgáltatás. Használatához saját ElevenLabs API-kulcs és internetkapcsolat kell. A felolvasandó szövegeket a Mondom elküldi az ElevenLabs szervereire, ezekre az ElevenLabs adatkezelési feltételei vonatkoznak.';
 
   @override
-  String get elevenLabsPermissions =>
-      'A kulcsnak ezek a jogosultságok kellenek: Text to Speech és Voices. A User (olvasás) nem kötelező, de akkor látszik a felhasznált kredit.';
+  String get elevenLabsManualLink => 'Részletek a súgóban';
+
+  @override
+  String get elevenLabsKeyHint =>
+      'Szükséges jogosultságok: Text to Speech, Voices (olvasás). Nem kötelező: User (olvasás), a kreditek kijelzéséhez.';
 
   @override
   String get elevenLabsKeyLabel => 'ElevenLabs API-kulcs';
@@ -543,17 +546,18 @@ class AppLocalizationsHu extends AppLocalizations {
   String get elevenLabsCheck => 'Ellenőrzés';
 
   @override
-  String get elevenLabsKeySaved => 'A kulcs működik, elmentettem.';
+  String get elevenLabsKeySaved => 'A kulcs működik, elmentve.';
 
   @override
   String get elevenLabsErrBadKey => 'Ez a kulcs nem érvényes.';
 
   @override
   String get elevenLabsErrPermission =>
-      'A kulcsnak nincs meg a Voices jogosultsága.';
+      'A kulcsnak nincs meg minden szükséges jogosultsága. Nézd meg a jogosultságait az ElevenLabs honlapján.';
 
   @override
-  String get elevenLabsErrOffline => 'Nincs internet, nem tudtam ellenőrizni.';
+  String get elevenLabsErrOffline =>
+      'Nincs internet, így nem lehet ellenőrizni a kulcsot.';
 
   @override
   String get elevenLabsErrOther =>
@@ -570,16 +574,19 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get elevenLabsFallbackChoice => 'Ha nincs internet, ez a hang beszél:';
+  String get elevenLabsFallbackChoice => 'Tartalék hang, ha nincs internet:';
 
   @override
-  String get elevenLabsExpressive =>
-      'Kifejezőbb hang (lassabb, kétszer annyi kredit)';
+  String get elevenLabsExpressive => 'Kifejezőbb hang';
+
+  @override
+  String get elevenLabsExpressiveSubtitle =>
+      'Lassabban indul, és kétszer annyi kreditbe kerül.';
 
   @override
   String get elevenLabsDeleteKey => 'Kulcs törlése';
 
   @override
   String get elevenLabsDeleteKeyQuestion =>
-      'Törlöd a kulcsot? Az ElevenLabs hangok gyorsítótára is törlődik.';
+      'Törlöd a kulcsot? A listákba mentett ElevenLabs-felvételek megmaradnak, a többi kimondott mondat legközelebb a tartalék hangon szól.';
 }

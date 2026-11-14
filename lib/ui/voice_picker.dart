@@ -579,28 +579,47 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
       Padding(
         key: const Key('elevenlabs-header'),
         padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              l10n.elevenLabsSection,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: scheme.primary,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.elevenLabsSection,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: scheme.primary,
+                    ),
+                  ),
+                  Text(l10n.elevenLabsSectionSubtitle),
+                ],
               ),
             ),
-            Text(l10n.elevenLabsSectionSubtitle),
+            if (_elHasKey)
+              IconButton(
+                key: const Key('elevenlabs-gear'),
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                iconSize: 28,
+                tooltip: l10n.elevenLabsSettings,
+                icon: const Icon(Icons.settings),
+                onPressed: () => _openElevenLabs(lang),
+              ),
           ],
         ),
       ),
       if (!_elHasKey)
-        _row(
-          key: const Key('elevenlabs-setup'),
-          title: l10n.elevenLabsSetup,
-          trailing: OutlinedButton(
+        SizedBox(
+          height: 56,
+          child: OutlinedButton.icon(
+            key: const Key('elevenlabs-setup'),
             onPressed: () => _openElevenLabs(lang),
-            child: Text(l10n.elevenLabsSetup),
+            icon: const Icon(Icons.settings),
+            label: Text(
+              l10n.elevenLabsSetup,
+              style: const TextStyle(fontSize: 20),
+            ),
           ),
         )
       else ...[
@@ -610,14 +629,6 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
             child: Text(_elNote!, key: const Key('elevenlabs-note')),
           ),
         for (final v in voices) _elevenLabsRow(v, lang, l10n),
-        _row(
-          key: const Key('elevenlabs-settings'),
-          title: l10n.elevenLabsSettings,
-          trailing: OutlinedButton(
-            onPressed: () => _openElevenLabs(lang),
-            child: Text(l10n.elevenLabsSettings),
-          ),
-        ),
       ],
     ];
   }

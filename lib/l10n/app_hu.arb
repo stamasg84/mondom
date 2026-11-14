@@ -622,7 +622,7 @@
       }
     }
   },
-  "elevenLabsFallbackQuota": "Elfogyott az ElevenLabs kredit, {voice} beszél helyette.",
+  "elevenLabsFallbackQuota": "Elfogyott az ElevenLabs-kredit, {voice} beszél helyette.",
   "@elevenLabsFallbackQuota": {
     "description": "Fallback dialog: ElevenLabs credits used up.",
     "placeholders": {
@@ -631,7 +631,7 @@
       }
     }
   },
-  "elevenLabsFallbackBadKey": "Az ElevenLabs kulcs nem érvényes, {voice} beszél helyette.",
+  "elevenLabsFallbackBadKey": "Az ElevenLabs-kulcs nem érvényes, {voice} beszél helyette.",
   "@elevenLabsFallbackBadKey": {
     "description": "Fallback dialog: no key stored or the key was rejected.",
     "placeholders": {
@@ -658,7 +658,7 @@
       }
     }
   },
-  "elevenLabsPaidOnly": "Ez a hang az ElevenLabs hangtárából való, és csak fizetős ElevenLabs-előfizetéssel használható.",
+  "elevenLabsPaidOnly": "Ez az ElevenLabs hangtárából való hang, és csak fizetős ElevenLabs-előfizetéssel használható.",
   "@elevenLabsPaidOnly": {
     "description": "Voice picker: the sample of a voice library voice failed because the ElevenLabs plan is free (402 paid_plan_required)."
   },
@@ -666,17 +666,17 @@
   "@elevenLabsSection": {
     "description": "Voice picker: header of the ElevenLabs section."
   },
-  "elevenLabsSectionSubtitle": "Internet és saját ElevenLabs-fiók kell",
+  "elevenLabsSectionSubtitle": "Saját ElevenLabs-fiókkal, internettel",
   "@elevenLabsSectionSubtitle": {
     "description": "Voice picker: subtitle under the ElevenLabs header."
   },
-  "elevenLabsSetup": "Beállítás",
+  "elevenLabsSetup": "ElevenLabs beállítása",
   "@elevenLabsSetup": {
-    "description": "Voice picker: opens the ElevenLabs setup screen when no key is stored."
+    "description": "Voice picker: full-width button that opens the ElevenLabs setup screen when no key is stored."
   },
-  "elevenLabsSettings": "Beállítások",
+  "elevenLabsSettings": "ElevenLabs beállításai",
   "@elevenLabsSettings": {
-    "description": "Voice picker: opens the ElevenLabs setup screen when a key is stored."
+    "description": "Voice picker: tooltip of the gear in the ElevenLabs header (opens the setup screen when a key is stored)."
   },
   "elevenLabsTrial": "Próba",
   "@elevenLabsTrial": {
@@ -686,21 +686,25 @@
   "@elevenLabsNoInternet": {
     "description": "Voice picker: the ElevenLabs voice list could not be fetched offline."
   },
-  "elevenLabsListFailed": "Az ElevenLabs hangjai most nem érhetők el. Nézd meg a beállításokat.",
+  "elevenLabsListFailed": "Az ElevenLabs-hangok most nem érhetők el. Nézd meg a beállításokat.",
   "@elevenLabsListFailed": {
     "description": "Voice picker: the ElevenLabs voice list failed for a reason other than being offline."
   },
-  "elevenLabsScreenTitle": "ElevenLabs hang",
+  "elevenLabsScreenTitle": "ElevenLabs-hang",
   "@elevenLabsScreenTitle": {
     "description": "Title of the ElevenLabs setup screen."
   },
-  "elevenLabsIntro": "Ez nem kötelező. Saját ElevenLabs-fiók és internet kell hozzá. Amit kimondatsz, azt a Mondom elküldi az ElevenLabsnek, és megjelenik az ElevenLabs-előzményeidben. Az ingyenes csomagban havi kreditkeret van. Ha nincs internet, egy másik hang beszél helyette; a korábban kimondott mondatok internet nélkül is az ElevenLabs hangján szólnak.",
+  "elevenLabsIntro": "Az ElevenLabs egy külső, a Mondomtól független felhőszolgáltatás. Használatához saját ElevenLabs API-kulcs és internetkapcsolat kell. A felolvasandó szövegeket a Mondom elküldi az ElevenLabs szervereire, ezekre az ElevenLabs adatkezelési feltételei vonatkoznak.",
   "@elevenLabsIntro": {
     "description": "Setup screen: what the ElevenLabs voice means."
   },
-  "elevenLabsPermissions": "A kulcsnak ezek a jogosultságok kellenek: Text to Speech és Voices. A User (olvasás) nem kötelező, de akkor látszik a felhasznált kredit.",
-  "@elevenLabsPermissions": {
-    "description": "Setup screen: required API key permissions."
+  "elevenLabsManualLink": "Részletek a súgóban",
+  "@elevenLabsManualLink": {
+    "description": "Setup screen: label of the link to the README's ElevenLabs section."
+  },
+  "elevenLabsKeyHint": "Szükséges jogosultságok: Text to Speech, Voices (olvasás). Nem kötelező: User (olvasás), a kreditek kijelzéséhez.",
+  "@elevenLabsKeyHint": {
+    "description": "Setup screen: helper text of the API key field, the permissions the key needs."
   },
   "elevenLabsKeyLabel": "ElevenLabs API-kulcs",
   "@elevenLabsKeyLabel": {
@@ -710,7 +714,7 @@
   "@elevenLabsCheck": {
     "description": "Setup screen: checks and saves the key."
   },
-  "elevenLabsKeySaved": "A kulcs működik, elmentettem.",
+  "elevenLabsKeySaved": "A kulcs működik, elmentve.",
   "@elevenLabsKeySaved": {
     "description": "Setup screen: shown after a successful check."
   },
@@ -718,11 +722,11 @@
   "@elevenLabsErrBadKey": {
     "description": "Setup screen: check failed, bad key."
   },
-  "elevenLabsErrPermission": "A kulcsnak nincs meg a Voices jogosultsága.",
+  "elevenLabsErrPermission": "A kulcsnak nincs meg minden szükséges jogosultsága. Nézd meg a jogosultságait az ElevenLabs honlapján.",
   "@elevenLabsErrPermission": {
     "description": "Setup screen: check failed, missing permission."
   },
-  "elevenLabsErrOffline": "Nincs internet, nem tudtam ellenőrizni.",
+  "elevenLabsErrOffline": "Nincs internet, így nem lehet ellenőrizni a kulcsot.",
   "@elevenLabsErrOffline": {
     "description": "Setup screen: check failed, offline."
   },
@@ -757,19 +761,23 @@
       }
     }
   },
-  "elevenLabsFallbackChoice": "Ha nincs internet, ez a hang beszél:",
+  "elevenLabsFallbackChoice": "Tartalék hang, ha nincs internet:",
   "@elevenLabsFallbackChoice": {
     "description": "Setup screen: fallback voice choice."
   },
-  "elevenLabsExpressive": "Kifejezőbb hang (lassabb, kétszer annyi kredit)",
+  "elevenLabsExpressive": "Kifejezőbb hang",
   "@elevenLabsExpressive": {
-    "description": "Setup screen: switch for eleven_v3."
+    "description": "Setup screen: switch title for eleven_v3."
+  },
+  "elevenLabsExpressiveSubtitle": "Lassabban indul, és kétszer annyi kreditbe kerül.",
+  "@elevenLabsExpressiveSubtitle": {
+    "description": "Setup screen: switch subtitle for eleven_v3."
   },
   "elevenLabsDeleteKey": "Kulcs törlése",
   "@elevenLabsDeleteKey": {
     "description": "Setup screen: removes the API key."
   },
-  "elevenLabsDeleteKeyQuestion": "Törlöd a kulcsot? Az ElevenLabs hangok gyorsítótára is törlődik.",
+  "elevenLabsDeleteKeyQuestion": "Törlöd a kulcsot? A listákba mentett ElevenLabs-felvételek megmaradnak, a többi kimondott mondat legközelebb a tartalék hangon szól.",
   "@elevenLabsDeleteKeyQuestion": {
     "description": "Setup screen: confirm dialog."
   }

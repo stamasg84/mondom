@@ -511,13 +511,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get elevenLabsSectionSubtitle =>
-      'Needs internet and your own ElevenLabs account';
+      'With your own ElevenLabs account, needs internet';
 
   @override
-  String get elevenLabsSetup => 'Set up';
+  String get elevenLabsSetup => 'Set up ElevenLabs';
 
   @override
-  String get elevenLabsSettings => 'Settings';
+  String get elevenLabsSettings => 'ElevenLabs settings';
 
   @override
   String get elevenLabsTrial => 'Try';
@@ -534,11 +534,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get elevenLabsIntro =>
-      'This is optional. It needs your own ElevenLabs account and internet. What you say is sent to ElevenLabs and appears in your ElevenLabs history. The free plan has a monthly credit limit. Without internet another voice speaks instead; sentences said before still use the ElevenLabs voice offline.';
+      'ElevenLabs is an external cloud service, independent of Mondom. It needs your own ElevenLabs API key and an internet connection. Mondom sends the texts to be spoken to ElevenLabs\' servers; ElevenLabs\' privacy terms apply to them.';
 
   @override
-  String get elevenLabsPermissions =>
-      'The key needs these permissions: Text to Speech and Voices. User (read) is optional, but then the used credit is shown.';
+  String get elevenLabsManualLink => 'More in the manual';
+
+  @override
+  String get elevenLabsKeyHint =>
+      'Required permissions: Text to Speech, Voices (read). Optional: User (read), to show your credits.';
 
   @override
   String get elevenLabsKeyLabel => 'ElevenLabs API key';
@@ -554,10 +557,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get elevenLabsErrPermission =>
-      'The key doesn\'t have the Voices permission.';
+      'The key is missing a required permission. Check its permissions on the ElevenLabs website.';
 
   @override
-  String get elevenLabsErrOffline => 'No internet, couldn\'t check.';
+  String get elevenLabsErrOffline =>
+      'No internet, so the key can\'t be checked.';
 
   @override
   String get elevenLabsErrOther =>
@@ -574,16 +578,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get elevenLabsFallbackChoice => 'Without internet, this voice speaks:';
+  String get elevenLabsFallbackChoice =>
+      'Fallback voice when there\'s no internet:';
 
   @override
-  String get elevenLabsExpressive =>
-      'More expressive voice (slower, twice the credit)';
+  String get elevenLabsExpressive => 'More expressive voice';
+
+  @override
+  String get elevenLabsExpressiveSubtitle =>
+      'Starts slower and costs twice the credit.';
 
   @override
   String get elevenLabsDeleteKey => 'Delete key';
 
   @override
   String get elevenLabsDeleteKeyQuestion =>
-      'Delete the key? The saved ElevenLabs audio is deleted too.';
+      'Delete the key? ElevenLabs recordings saved into lists are kept; other sentences will use the fallback voice next time.';
 }

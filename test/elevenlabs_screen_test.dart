@@ -182,13 +182,15 @@ void main() {
     await settle(tester);
   }
 
-  testWidgets('no key: header and one Beállítás row, no voices', (
+  testWidgets('no key: header and a setup button, no gear, no voices', (
     tester,
   ) async {
     await pumpPicker(tester);
     expect(find.byKey(const Key('elevenlabs-header')), findsOneWidget);
-    expect(find.text('Internet és saját ElevenLabs-fiók kell'), findsOneWidget);
+    expect(find.text('Saját ElevenLabs-fiókkal, internettel'), findsOneWidget);
     expect(find.byKey(const Key('elevenlabs-setup')), findsOneWidget);
+    expect(find.text('ElevenLabs beállítása'), findsOneWidget);
+    expect(find.byKey(const Key('elevenlabs-gear')), findsNothing);
     expect(find.byKey(const Key('elevenlabs-settings')), findsNothing);
     expect(requests, isEmpty);
   });
@@ -200,7 +202,10 @@ void main() {
     await pumpPicker(tester);
     expect(find.text('Máté'), findsOneWidget);
     expect(find.text('Brian'), findsOneWidget);
-    expect(find.byKey(const Key('elevenlabs-settings')), findsOneWidget);
+    expect(find.byKey(const Key('elevenlabs-gear')), findsOneWidget);
+    expect(find.byTooltip('ElevenLabs beállításai'), findsOneWidget);
+    expect(find.byKey(const Key('elevenlabs-settings')), findsNothing);
+    expect(find.byKey(const Key('elevenlabs-setup')), findsNothing);
 
     // Próba twice: one synthesis request, both play.
     final play = find.descendant(
@@ -235,18 +240,34 @@ void main() {
     expect(find.text('Nincs internet'), findsOneWidget);
     expect(find.text('Máté'), findsOneWidget);
     expect(find.text('Brian'), findsNothing);
-    expect(find.byKey(const Key('elevenlabs-settings')), findsOneWidget);
+    expect(find.byKey(const Key('elevenlabs-gear')), findsOneWidget);
   });
 
   group('setup screen', () {
     Future<void> openSetup(WidgetTester tester) async {
-      final row = find.byKey(const Key('elevenlabs-setup'));
-      await tester.ensureVisible(row);
-      await tester.tap(
-        find.descendant(of: row, matching: find.byType(OutlinedButton)),
-      );
+      final button = find.byKey(const Key('elevenlabs-setup'));
+      await tester.ensureVisible(button);
+      await tester.tap(button);
       await settle(tester);
     }
+
+    Future<void> openViaGear(WidgetTester tester) async {
+      final gear = find.byKey(const Key('elevenlabs-gear'));
+      await tester.ensureVisible(gear);
+      await tester.tap(gear);
+      await settle(tester);
+    }
+
+    testWidgets('setup screen: short intro, manual link, permission hint', (
+      tester,
+    ) async {
+      await pumpPicker(tester);
+      await openSetup(tester);
+      expect(find.textContaining('külső, a Mondomtól független'), findsOneWidget);
+      expect(find.text('Részletek a súgóban'), findsOneWidget);
+      expect(find.byKey(const Key('elevenlabs-manual-url')), findsOneWidget);
+      expect(find.textContaining('Szükséges jogosultságok'), findsOneWidget);
+    });
 
     testWidgets('a bad key is not stored', (tester) async {
       voicesStatus = 401;
@@ -292,7 +313,7 @@ void main() {
       await tester.tap(find.byKey(const Key('elevenlabs-check')));
       await settle(tester);
       expect(
-        find.text('Nincs internet, nem tudtam ellenőrizni.'),
+        find.text('Nincs internet, így nem lehet ellenőrizni a kulcsot.'),
         findsOneWidget,
       );
       expect(await keys.read(), isNull);
@@ -304,12 +325,7 @@ void main() {
       await tall(tester);
       await keys.write(_key);
       await pumpPicker(tester);
-      final settings = find.byKey(const Key('elevenlabs-settings'));
-      await tester.ensureVisible(settings);
-      await tester.tap(
-        find.descendant(of: settings, matching: find.byType(OutlinedButton)),
-      );
-      await settle(tester);
+      await openViaGear(tester);
       final imre = find.byKey(const Key('fallback-imre'));
       await tester.ensureVisible(imre);
       expect(find.byKey(const Key('fallback-system-hu')), findsOneWidget);
@@ -332,12 +348,7 @@ void main() {
       SharedPreferences.setMockInitialValues({elevenLabsFallbackKey: 'imre'});
       await tester.runAsync(() => cache.put('b1', 'm', 'x', Uint8List(100)));
       await pumpPicker(tester, selectedId: 'elevenlabs:hu:b1', label: 'Brian');
-      final settings = find.byKey(const Key('elevenlabs-settings'));
-      await tester.ensureVisible(settings);
-      await tester.tap(
-        find.descendant(of: settings, matching: find.byType(OutlinedButton)),
-      );
-      await settle(tester);
+      await openViaGear(tester);
       final delete = find.byKey(const Key('elevenlabs-delete'));
       await tester.ensureVisible(delete);
       await tester.tap(delete);

@@ -923,13 +923,13 @@ abstract class AppLocalizations {
   /// Fallback dialog: ElevenLabs credits used up.
   ///
   /// In hu, this message translates to:
-  /// **'Elfogyott az ElevenLabs kredit, {voice} beszél helyette.'**
+  /// **'Elfogyott az ElevenLabs-kredit, {voice} beszél helyette.'**
   String elevenLabsFallbackQuota(String voice);
 
   /// Fallback dialog: no key stored or the key was rejected.
   ///
   /// In hu, this message translates to:
-  /// **'Az ElevenLabs kulcs nem érvényes, {voice} beszél helyette.'**
+  /// **'Az ElevenLabs-kulcs nem érvényes, {voice} beszél helyette.'**
   String elevenLabsFallbackBadKey(String voice);
 
   /// Fallback dialog: any other ElevenLabs failure.
@@ -947,7 +947,7 @@ abstract class AppLocalizations {
   /// Voice picker: the sample of a voice library voice failed because the ElevenLabs plan is free (402 paid_plan_required).
   ///
   /// In hu, this message translates to:
-  /// **'Ez a hang az ElevenLabs hangtárából való, és csak fizetős ElevenLabs-előfizetéssel használható.'**
+  /// **'Ez az ElevenLabs hangtárából való hang, és csak fizetős ElevenLabs-előfizetéssel használható.'**
   String get elevenLabsPaidOnly;
 
   /// Voice picker: header of the ElevenLabs section.
@@ -959,19 +959,19 @@ abstract class AppLocalizations {
   /// Voice picker: subtitle under the ElevenLabs header.
   ///
   /// In hu, this message translates to:
-  /// **'Internet és saját ElevenLabs-fiók kell'**
+  /// **'Saját ElevenLabs-fiókkal, internettel'**
   String get elevenLabsSectionSubtitle;
 
-  /// Voice picker: opens the ElevenLabs setup screen when no key is stored.
+  /// Voice picker: full-width button that opens the ElevenLabs setup screen when no key is stored.
   ///
   /// In hu, this message translates to:
-  /// **'Beállítás'**
+  /// **'ElevenLabs beállítása'**
   String get elevenLabsSetup;
 
-  /// Voice picker: opens the ElevenLabs setup screen when a key is stored.
+  /// Voice picker: tooltip of the gear in the ElevenLabs header (opens the setup screen when a key is stored).
   ///
   /// In hu, this message translates to:
-  /// **'Beállítások'**
+  /// **'ElevenLabs beállításai'**
   String get elevenLabsSettings;
 
   /// Voice picker: tooltip of the play button of an ElevenLabs voice.
@@ -989,26 +989,32 @@ abstract class AppLocalizations {
   /// Voice picker: the ElevenLabs voice list failed for a reason other than being offline.
   ///
   /// In hu, this message translates to:
-  /// **'Az ElevenLabs hangjai most nem érhetők el. Nézd meg a beállításokat.'**
+  /// **'Az ElevenLabs-hangok most nem érhetők el. Nézd meg a beállításokat.'**
   String get elevenLabsListFailed;
 
   /// Title of the ElevenLabs setup screen.
   ///
   /// In hu, this message translates to:
-  /// **'ElevenLabs hang'**
+  /// **'ElevenLabs-hang'**
   String get elevenLabsScreenTitle;
 
   /// Setup screen: what the ElevenLabs voice means.
   ///
   /// In hu, this message translates to:
-  /// **'Ez nem kötelező. Saját ElevenLabs-fiók és internet kell hozzá. Amit kimondatsz, azt a Mondom elküldi az ElevenLabsnek, és megjelenik az ElevenLabs-előzményeidben. Az ingyenes csomagban havi kreditkeret van. Ha nincs internet, egy másik hang beszél helyette; a korábban kimondott mondatok internet nélkül is az ElevenLabs hangján szólnak.'**
+  /// **'Az ElevenLabs egy külső, a Mondomtól független felhőszolgáltatás. Használatához saját ElevenLabs API-kulcs és internetkapcsolat kell. A felolvasandó szövegeket a Mondom elküldi az ElevenLabs szervereire, ezekre az ElevenLabs adatkezelési feltételei vonatkoznak.'**
   String get elevenLabsIntro;
 
-  /// Setup screen: required API key permissions.
+  /// Setup screen: label of the link to the README's ElevenLabs section.
   ///
   /// In hu, this message translates to:
-  /// **'A kulcsnak ezek a jogosultságok kellenek: Text to Speech és Voices. A User (olvasás) nem kötelező, de akkor látszik a felhasznált kredit.'**
-  String get elevenLabsPermissions;
+  /// **'Részletek a súgóban'**
+  String get elevenLabsManualLink;
+
+  /// Setup screen: helper text of the API key field, the permissions the key needs.
+  ///
+  /// In hu, this message translates to:
+  /// **'Szükséges jogosultságok: Text to Speech, Voices (olvasás). Nem kötelező: User (olvasás), a kreditek kijelzéséhez.'**
+  String get elevenLabsKeyHint;
 
   /// Setup screen: label of the key field.
   ///
@@ -1025,7 +1031,7 @@ abstract class AppLocalizations {
   /// Setup screen: shown after a successful check.
   ///
   /// In hu, this message translates to:
-  /// **'A kulcs működik, elmentettem.'**
+  /// **'A kulcs működik, elmentve.'**
   String get elevenLabsKeySaved;
 
   /// Setup screen: check failed, bad key.
@@ -1037,13 +1043,13 @@ abstract class AppLocalizations {
   /// Setup screen: check failed, missing permission.
   ///
   /// In hu, this message translates to:
-  /// **'A kulcsnak nincs meg a Voices jogosultsága.'**
+  /// **'A kulcsnak nincs meg minden szükséges jogosultsága. Nézd meg a jogosultságait az ElevenLabs honlapján.'**
   String get elevenLabsErrPermission;
 
   /// Setup screen: check failed, offline.
   ///
   /// In hu, this message translates to:
-  /// **'Nincs internet, nem tudtam ellenőrizni.'**
+  /// **'Nincs internet, így nem lehet ellenőrizni a kulcsot.'**
   String get elevenLabsErrOffline;
 
   /// Setup screen: check failed, other reason.
@@ -1067,14 +1073,20 @@ abstract class AppLocalizations {
   /// Setup screen: fallback voice choice.
   ///
   /// In hu, this message translates to:
-  /// **'Ha nincs internet, ez a hang beszél:'**
+  /// **'Tartalék hang, ha nincs internet:'**
   String get elevenLabsFallbackChoice;
 
-  /// Setup screen: switch for eleven_v3.
+  /// Setup screen: switch title for eleven_v3.
   ///
   /// In hu, this message translates to:
-  /// **'Kifejezőbb hang (lassabb, kétszer annyi kredit)'**
+  /// **'Kifejezőbb hang'**
   String get elevenLabsExpressive;
+
+  /// Setup screen: switch subtitle for eleven_v3.
+  ///
+  /// In hu, this message translates to:
+  /// **'Lassabban indul, és kétszer annyi kreditbe kerül.'**
+  String get elevenLabsExpressiveSubtitle;
 
   /// Setup screen: removes the API key.
   ///
@@ -1085,7 +1097,7 @@ abstract class AppLocalizations {
   /// Setup screen: confirm dialog.
   ///
   /// In hu, this message translates to:
-  /// **'Törlöd a kulcsot? Az ElevenLabs hangok gyorsítótára is törlődik.'**
+  /// **'Törlöd a kulcsot? A listákba mentett ElevenLabs-felvételek megmaradnak, a többi kimondott mondat legközelebb a tartalék hangon szól.'**
   String get elevenLabsDeleteKeyQuestion;
 }
 
