@@ -2,7 +2,7 @@
 
 # Mondom
 
-A Mondom egy ingyenes, nyílt forráskódú beszédsegítő Androidra. Olyan felnőtteknek készült, akik írni-olvasni tudnak, de elvesztették a beszédüket vagy éppen elveszítik: ALS (főleg bulbáris), agyvérzés, gégeeltávolítás, SM. Beírod a szöveget vagy rábböksz egy kész mondatra, a telefon pedig kimondja. Elsősorban magyarul működik, de más nyelveken is használható.
+A Mondom ingyenes, nyílt forráskódú beszédsegítő alkalmazás Androidra. Olyan felnőtteknek készült, akik tudnak írni és olvasni, de a beszédük elveszett vagy fokozatosan romlik, például ALS (különösen bulbáris ALS), stroke, gégeeltávolítás vagy SM miatt. Beírod, amit mondani szeretnél, vagy rákoppintasz egy kész mondatra, és a telefon kimondja. Elsősorban magyar nyelvre készült, de más nyelveken is használható.
 
 <!-- Képernyőképek: a fájlokat az ember teszi be. -->
 <!-- ![Beszédképernyő](docs/screenshots/speaking.png) -->
@@ -11,72 +11,72 @@ A Mondom egy ingyenes, nyílt forráskódú beszédsegítő Androidra. Olyan fel
 
 ## Miért készült
 
-- Ingyenes, reklám nélkül, fiók nélkül. Semmi nincs fizetés vagy bejelentkezés mögé zárva.
-- Egy hang letöltése után internet nélkül is működik. Az adataid a telefonodon maradnak.
-- Természetes hangok, anélkül hogy hangmotort kellene beállítanod: telepíted az alkalmazást, kiválasztasz egy hangot egy rövid listából, és előtte meghallgathatod a mintáját.
-- Minden egy telepítésben: mondatok, hangok, felvételek, mentés.
+- Ingyenes, nincs benne reklám, és nem kell hozzá fiók. Egyetlen funkciója sincs fizetéshez vagy regisztrációhoz kötve.
+- Ha egyszer letöltöttél egy hangot, internet nélkül is működik. Az adataid a telefonodon maradnak.
+- Természetes hangok bonyolult beállítás nélkül: telepíted az alkalmazást, egy rövid listából kiválasztasz egy hangot, és előtte meg is hallgathatod.
+- Minden egy helyen van: mondatok, hangok, felvételek, biztonsági mentés.
 
-## Mit tud
+## Mit tud?
 
-- **Mondatlisták.** Ami egyetlen koppintással kimondható, az egy lista egy sora, egész mondatokkal. A mindennapi magyar mondatok előre fel vannak töltve, a saját listáidat (például „Orvos”, „Éjszaka”) te adod hozzá.
-- **Szabad szöveg.** A beírómező és a Mondom gomb mindig a főképernyőn van. Ha ugyanazzal a szöveggel újra megnyomod a gombot, azonnal megismétli.
-- **Mondat összerakása darabokból.** Egy gombnyomással bármelyik lista (vagy az előzmények) egy sorát kimondás helyett a beírómezőbe töltheted, így a mentett részeket gépelt szavakkal kiegészítve mondhatod ki.
-- **Előzmények.** Az utolsó 30 kimondott szöveg: újra kimondhatod, vagy elmentheted egy listába.
-- **Előre elkészített beszélgetések.** A mondatokat előre megírhatod, például a látogatás előtti este, aztán a „Következő” gombbal egyenként mondod ki őket. A már elhangzott mondatok szürkék lesznek.
-- **Saját hangú felvételek.** Bármelyik mondathoz felveheted a saját hangodat, ezt játssza le a gép a szintetikus hang helyett, internet nélkül is. A biztonsági mentés fájl a listáidat és a felvételeidet is megőrzi.
-- **Riasztás.** Egy sor lehet riasztás: szirénahang vagy csengő, esetleg egy mondat, amely hangosan, a telefon ébresztési hangerején szól.
+- **Mondatlisták.** Mindent, amit egy koppintással ki akarsz mondani, egész mondatként tárolhatsz listákban. A mindennapi mondatok előre be vannak töltve, és saját listákat is készíthetsz (például „Orvos” vagy „Éjszaka”).
+- **Szabad szöveg.** A szövegmező és a Mondom gomb mindig ott van a főképernyőn. Ha a szöveg változatlan, a gomb újbóli megnyomására azonnal megismétli.
+- **Mondatok összerakása.** Bármelyik lista vagy az előzmények egy sorát kimondás helyett betöltheted a szövegmezőbe, így a kész mondatrészeket kiegészítheted, mielőtt kimondod őket.
+- **Előzmények.** Az utolsó 30 kimondott szöveg. Bármelyiket újra kimondhatod, vagy elmentheted egy listába.
+- **Előre megírt beszélgetések.** A mondatokat előre megírhatod, például egy látogatás előtti este, aztán a „Következő” gombbal egyenként mondhatod ki őket. A már elhangzott mondatok kiszürkülnek.
+- **Felvételek a saját hangodon.** Bármelyik mondatot felveheted a saját hangodon, és a Mondom ezt játssza le a gépi hang helyett, internet nélkül is. A biztonsági mentés a listákat és a felvételeket is tartalmazza.
+- **Riasztás.** Bármelyik sorból lehet riasztás: sziréna, csengő, vagy egy mondat, amely hangosan, az ébresztő hangerején szól.
 - **Hangok.**
-  - Offline Piper-hangok (férfi és női magyar hang, más nyelveken is), az alkalmazásból letöltve, egyszer.
+  - Piper-hangok (magyar férfi- és női hang, valamint más nyelvek hangjai): az alkalmazásban egyszer kell letölteni őket, utána internet nélkül is működnek.
   - A telefon saját hangja („Android alapértelmezett”), amely azonnal használható.
-  - Ha akarod, a saját ElevenLabs-fiókod (lásd: [ElevenLabs](#elevenlabs)). Egy egész lista elmenthető felvételekként az ElevenLabs-hangodon, és ezek a felvételek internet nélkül is megmaradnak, akkor is, ha a kulcsot már letörölted.
-- **Beszédsebesség** hangonként, és opcionális hangosítás a telefon hangszórójához.
+  - Ha szeretnéd, a saját ElevenLabs-fiókod hangjai (lásd: [ElevenLabs](#elevenlabs)). Egy teljes listát felvételként elmenthetsz az ElevenLabs-hangodon, és ezek a felvételek internet nélkül is megmaradnak, akkor is, ha a kulcsot később törlöd.
+- **Beszédsebesség** hangonként külön, valamint igény szerint hangosítás a telefon hangszórójához.
 
 ## Használati útmutató
 
 Képernyőképek: `docs/screenshots/*.png` (később kerülnek ide).
 
-1. **Első indítás.** A Mondom hangot kér választani. Az „Android alapértelmezett” azonnal működik, a többi hangot egyszer le kell tölteni (kb. 60 MB, érdemes wifin), utána internet nélkül is megy. A sor lejátszó gombjával előbb meghallgathatod a mintát. A hangot később is cserélheted: ☰ → „Hang és nyelv”.
-2. **Mondat kimondása.** Koppints egy mondatra, és kimondja. Ha még egyszer rákoppintasz, megismétli. A felül lévő listagombokkal a kitűzött listák között váltasz, a ▾ gombbal az összes listát látod.
-3. **Gépelés.** Írj a képernyő alján lévő mezőbe, és nyomd meg a Mondom gombot. A szöveg a mezőben marad, így újabb nyomásra megismétli; az ✕ törli. A jobb felső sarokban, a listagombok fölött lévő ↓ gombbal a következő megkoppintott sort kimondás helyett a mezőbe töltheted, így mondatot rakhatsz össze darabokból.
-4. **Listák szerkesztése.** ☰ → „Listák”. Itt létrehozhatsz, átnevezhetsz, színezhetsz, kitűzhetsz és átrendezhetsz listákat; egy lista megnyitásával a mondatait szerkeszted. A szerkesztés szándékosan két koppintásra van, hogy egy véletlen érintés beszélgetés közben ne vigyen szerkesztőképernyőre.
-5. **Beszélgetés előkészítése.** A „Listák” között hozz létre beszélgetés típusú listát, és írj be soronként egy mondatot. A látogatáskor nyisd meg, és a „Következő” gombbal mondd ki a soron következő, még el nem hangzott mondatot, vagy koppints bármelyik sorra.
-6. **Saját hang felvétele.** A lista szerkesztőjében a mikrofon gombbal az egész listához, egy sor ⋮ menüjével egyetlen mondathoz vehetsz fel hangot. Koppints a kezdéshez, koppints a leállításhoz, hallgasd meg, majd mentsd. A felvett sorok a te hangodon szólnak a szintetikus helyett.
-7. **Biztonsági mentés.** ☰ → „Beállítások” → „Mentés”: készíts mentésfájlt (listák és felvételek), és tedd el Google Drive-ra vagy máshová. A visszaállítás csak hozzáad, a telefonon lévőket sosem írja felül.
-8. **Riasztás.** A kitűzött piros „Riasztás” listában vannak a riasztósorok (sziréna, csengő, kürt). A saját sorodat is megjelölheted riasztásnak. Amíg egy riasztás szól, nagy „Leállítás” gomb jelenik meg. A riasztás hangerejét a „Beállítások” között állíthatod.
-9. **Sebesség és hangerő.** ☰ → „Beállítások” → „Beszéd sebessége”: lassabbra vagy gyorsabbra állíthatod a beszédet. A sebességet minden hanghoz külön megjegyzi; a „Visszaállítás” visszaállítja a normálra. A „Hangosítás” hangosabbá teszi a beszédet a telefon hangszóróján; kapcsold ki, ha torznak hallod.
+1. **Első indítás.** A Mondom először azt kéri, hogy válassz hangot. Az „Android alapértelmezett” azonnal működik, a többi hangot egyszer le kell tölteni (egyenként kb. 60 MB, érdemes wifin), utána internet nélkül is szólnak. A sor lejátszás gombjával előbb meghallgathatod a hangmintát. A hangot később is lecserélheted: ☰ → „Hang és nyelv”.
+2. **Mondat kimondása.** Koppints egy mondatra, és a Mondom kimondja. Újabb koppintásra megismétli. A fenti listagombokkal a kitűzött listák között válthatsz, a ▾ gomb az összes listát megmutatja.
+3. **Gépelés.** Írd be a szöveget a képernyő alján lévő mezőbe, és nyomd meg a Mondom gombot. A szöveg a mezőben marad, így újabb gombnyomásra megismétli; az ✕ törli. A jobb felső sarokban, a listagombok fölött lévő ↓ gomb megnyomása után a következő sor, amelyre koppintasz, nem hangzik el, hanem bekerül a szövegmezőbe. Így darabokból is összerakhatsz egy mondatot.
+4. **Listák szerkesztése.** ☰ → „Listák”. Itt listákat hozhatsz létre, átnevezheted, kiszínezheted, kitűzheted és átrendezheted őket; egy listát megnyitva a mondatait szerkesztheted. A szerkesztés szándékosan két koppintásnyira van, hogy beszélgetés közben egy véletlen érintés ne vigyen át a szerkesztőbe.
+5. **Beszélgetés előkészítése.** A „Listák” képernyőn hozz létre egy beszélgetés típusú listát, és írj bele soronként egy mondatot. A látogatáskor nyisd meg a listát: a „Következő” gomb a soron következő, még el nem hangzott mondatot mondja ki, de bármelyik sorra rá is koppinthatsz.
+6. **Felvétel a saját hangodon.** A lista szerkesztőjében a mikrofon gombbal az egész lista mondatait, egy sor ⋮ menüjéből pedig csak azt az egy mondatot veheted fel. Koppints a felvétel indításához, majd újra a leállításához, hallgasd meg, és mentsd el. A felvett sorokat ezután a saját hangodon hallod a gépi hang helyett.
+7. **Biztonsági mentés.** ☰ → „Beállítások” → „Mentés”: itt készíthetsz mentésfájlt a listáidról és a felvételeidről, amelyet a Google Drive-on vagy máshol tárolhatsz. A visszaállítás csak hozzáadja a mentés tartalmát, a telefonon lévő adatokat soha nem írja felül.
+8. **Riasztás.** A kitűzött, piros „Riasztás” listában találod a riasztásokat (sziréna, csengő, duda). Bármelyik saját sorodat is megjelölheted riasztásként. Amíg a riasztás szól, egy nagy „Leállítás” gomb jelenik meg. A riasztás hangerejét a „Beállítások” között állíthatod be.
+9. **Sebesség és hangerő.** ☰ → „Beállítások” → „Beszéd sebessége”: itt lassíthatod vagy gyorsíthatod a beszédet. A sebességet a Mondom minden hanghoz külön megjegyzi, a „Visszaállítás” pedig visszaállítja az eredetit. A „Hangosítás” felerősíti a beszédet a telefon hangszóróján; ha torzan szól, kapcsold ki.
 
 ## ElevenLabs
 
-Az ElevenLabs egy online hangszolgáltatás. A Mondom használni tudja a **saját** ElevenLabs-fiókodat, például a saját hangodról készült másolatot. Ez nem kötelező, alapból ki van kapcsolva, és a Mondom minden más funkciója nélküle is működik. A Mondomnak nincs saját ElevenLabs-fiókja vagy kulcsa, és nem áll kapcsolatban az ElevenLabsszel. Az ElevenLabs időnként ingyenes hangklónozást kínált ALS-es és más beszédet érintő betegséggel élő embereknek; a jelenlegi lehetőségeket keresd az ő weboldalukon.
+Az ElevenLabs egy online hangszolgáltatás. A Mondom a **saját** ElevenLabs-fiókod hangjait is tudja használni, például egy, a saját hangodról készült klónt. Ez nem kötelező, alapból ki van kapcsolva, és a Mondom minden más funkciója nélküle is működik. A Mondomnak nincs saját ElevenLabs-fiókja vagy -kulcsa, és nem áll kapcsolatban az ElevenLabsszel. Az ElevenLabs időnként ingyenes hangklónozást kínált ALS-sel vagy más, a beszédet érintő betegséggel élőknek; a mostani lehetőségekről a weboldalukon tájékozódhatsz.
 
-Az ElevenLabs-hanggal kimondott szövegek az ElevenLabs szervereire kerülnek, és megjelennek az ElevenLabs-előzményeidben. Ehhez internet kell.
+Az ElevenLabs-hanggal kimondott szövegeket a Mondom elküldi az ElevenLabs szervereire, és ezek megjelennek az ElevenLabs-fiókod előzményeiben. Ehhez internetkapcsolat kell.
 
 **Beállítás**
-1. Az ElevenLabs-fiókodban hozz létre egy API-kulcsot (az ElevenLabs weboldalán: Developers → API Keys). Ezeket a jogosultságokat add neki: **Text to Speech** és **Voices (olvasás)**. Nem kötelező a **User (olvasás)**, ettől a Mondom ki tudja írni a megmaradt krediteket.
-2. A Mondomban nyisd meg: ☰ → „Hang és nyelv”. Az ElevenLabs szakaszban válaszd az „ElevenLabs beállítása” gombot, másold be a kulcsot, és mentsd. A Mondom ellenőrzi, hogy működik-e.
-3. Válaszd ki a fiókod egyik hangját a listából. A hangok név szerint szerepelnek; a saját klónod is köztük van.
-4. Válaszd ki a **tartalék hangot**: egy offline hangot, amely akkor szólal meg, ha az ElevenLabs nem érhető el (nincs internet, elfogyott a kredit, érvénytelen a kulcs). A Mondom így sosem marad néma; a felső sávban egy felhő ikon jelzi, ha a tartalék hang szólt, és megmondja, miért.
+1. Az ElevenLabs weboldalán, a fiókodban hozz létre egy API-kulcsot (Developers → API Keys), és add meg neki ezeket a jogosultságokat: **Text to Speech** és **Voices (Read)**. A **User (Read)** nem kötelező, de ha megadod, a Mondom ki tudja írni, mennyi kredited maradt.
+2. A Mondomban nyisd meg ezt: ☰ → „Hang és nyelv”. Az ElevenLabs részben koppints az „ElevenLabs beállítása” gombra, illeszd be a kulcsot, és mentsd el. A Mondom ellenőrzi, hogy a kulcs működik-e.
+3. Válaszd ki a listából a fiókod egyik hangját. A hangok a nevükkel szerepelnek, a saját klónod is köztük van.
+4. Válassz **tartalék hangot**: ez egy offline hang, amely akkor szólal meg, ha az ElevenLabs nem érhető el (nincs internet, elfogyott a kredit, vagy érvénytelen a kulcs). Így a Mondom sosem marad néma. Ha a tartalék hang szólalt meg, ezt egy felhő ikon jelzi a felső sávban, és rákoppintva megtudod, miért.
 
 **Jó tudni**
-- **A már kimondott mondatokat** a telefon megőrzi (gyorsítótár, legfeljebb 100 MB, a legrégebben használtak törlődnek először), ezért ezek internet nélkül is az ElevenLabs-hangodon szólnak, és nem fogyasztanak újra krediteket. A riasztósorok sosem várnak a hálózatra.
-- **„Kifejezőbb hang”**: lassabban induló, kifejezőbb modellt használ, és kétszer annyi kreditbe kerül.
-- **Egy lista felvételeinek elkészítése.** A lista szerkesztőjében a felhő gombbal a lista minden sorát elmentheted felvételként az ElevenLabs-hangodon. A Mondom előtte kiírja a becsült költséget. Azokat a sorokat, amelyekhez saját felvétel tartozik, csak akkor cseréli le, ha te is úgy akarod. Egyetlen sorhoz használd a ⋮ menü „ElevenLabs-hangon mentés” pontját; mentés előtt meghallgathatod.
-- **A generált felvételek végleg megmaradnak.** Közönséges felvételek: internet nélkül is lejátszódnak, benne vannak a biztonsági mentésben, és nem érinti őket a kulcs törlése, egy lejárt előfizetés vagy más hang kiválasztása. A későbbi sebesség- vagy modellváltoztatást nem követik.
-- **A kulcs törlése** csak a gyorsítótárat üríti. A listákba mentett felvételek megmaradnak, a többi mondatot ezután a tartalék hang mondja ki.
+- **A már kimondott mondatokat** a telefon megjegyzi (legfeljebb 100 MB-nyit; ha betelik, a legrégebben használtak törlődnek először). Ezek internet nélkül is az ElevenLabs-hangodon szólnak, és nem fogyasztanak újra kreditet. A riasztások soha nem várnak a hálózatra.
+- **„Kifejezőbb hang”**: kifejezőbb, de lassabban induló modellt használ, és kétszer annyi kreditbe kerül.
+- **Felvételek készítése egy egész listához.** A lista szerkesztőjében a felhő gombbal a lista minden sorát elmentheted felvételként az ElevenLabs-hangodon. A Mondom előtte kiírja, nagyjából mennyi kreditbe kerül. A saját hangodon felvett sorokat csak akkor cseréli le, ha ezt kifejezetten kéred. Egyetlen sorhoz a sor ⋮ menüjében válaszd az „ElevenLabs-hangon mentés” pontot; mentés előtt meg is hallgathatod.
+- **Az így készült felvételek végleg megmaradnak.** Ugyanolyan felvételek, mint a többi: internet nélkül is lejátszhatók, bekerülnek a biztonsági mentésbe, és nem tűnnek el akkor sem, ha törlöd a kulcsot, lejár az előfizetésed, vagy másik hangot választasz. Ha később sebességet vagy modellt váltasz, az rájuk már nem hat.
+- **A kulcs törlésekor** csak a megjegyzett mondatok törlődnek. A listákba mentett felvételek megmaradnak, minden más mondatot ezután a tartalék hang mond ki.
 
 ## Telepítés
 
 - Google Play: _a link hamarosan_ (helyőrző).
-- APK-fájlok: [GitHub Releases](https://github.com/stamasg84/mondom/releases). Válaszd a telefonodnak megfelelő fájlt (a legtöbb mai telefonhoz az `arm64-v8a` való).
-- Fordítás forrásból (Flutter): `flutter build apk --split-per-abi`
+- APK-fájlok: [GitHub Releases](https://github.com/stamasg84/mondom/releases). Válaszd a telefonodhoz illő fájlt (a legtöbb mai telefonhoz az `arm64-v8a` kell).
+- Fordítás forráskódból (Flutter): `flutter build apk --split-per-abi`
 
 ## Adatkezelés
 
-A Mondomnak nincs fiókja, nincs reklámja és nem követ, minden, amit írsz és felveszel, a telefonodon marad. A hálózatot csak az opcionális hangletöltésekhez használja, és ha bekapcsolod, az ElevenLabshez. A részletek: [PRIVACY.md](PRIVACY.md).
+A Mondom nem kér fiókot, nem jelenít meg reklámot és nem követ téged: minden, amit beírsz vagy felveszel, a telefonodon marad. Internetet csak a választható hangletöltésekhez használ, és az ElevenLabshez, ha bekapcsolod. Részletek: [PRIVACY.md](PRIVACY.md).
 
 ## Licenc
 
-GPL-3.0, lásd: [LICENSE](LICENSE). A hangoknak saját licencük van, ezek hangonként a [voices/catalog.json](voices/catalog.json) fájlban és az alkalmazás „Névjegy” képernyőjén találhatók.
+GPL-3.0, lásd: [LICENSE](LICENSE). A hangoknak saját licencük van; ezek hangonként a [voices/catalog.json](voices/catalog.json) fájlban és az alkalmazás „Névjegy” képernyőjén olvashatók.
 
 ## Visszajelzés
 
