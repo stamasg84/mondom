@@ -11,6 +11,7 @@ import '../voices/voice.dart';
 import '../voices/voice_engine.dart';
 import 'alarm_volume.dart';
 import 'loudness.dart';
+import 'speech_speed.dart';
 import 'recording_store.dart';
 import 'sounds.dart';
 
@@ -351,9 +352,11 @@ class Speaker extends ChangeNotifier {
     final engine = _engine;
     final voice = _voice;
     if (normalized.isEmpty || engine == null || voice == null || _busy) return;
-    // The boost setting is part of the key, so toggling it re-synthesizes.
+    // The boost and speed settings are part of the key, so changing them
+    // re-synthesizes.
     final boost = await speechBoostEnabled();
-    final key = '${voice.id}\u0000$boost\u0000$normalized';
+    final speed = await speechSpeed(voice.id);
+    final key = '${voice.id}\u0000$boost\u0000$speed\u0000$normalized';
     try {
       await _stopAll(restoreVolume: !alarm);
       if (key == _lastKey && _lastPath != null) {
@@ -365,7 +368,11 @@ class Speaker extends ChangeNotifier {
       }
       _busy = true;
       notifyListeners();
-      final result = await engine.synthesizeToWav(normalized, urgent: alarm);
+      final result = await engine.synthesizeToWav(
+        normalized,
+        urgent: alarm,
+        speed: speed,
+      );
       final old = _lastPath;
       _lastKey = key;
       _lastPath = result.path;

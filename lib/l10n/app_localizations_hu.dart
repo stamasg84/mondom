@@ -155,6 +155,23 @@ class AppLocalizationsHu extends AppLocalizations {
       'Hangosabb beszéd. Kapcsold ki, ha torznak hallod.';
 
   @override
+  String get settingsSpeedTitle => 'Beszéd sebessége';
+
+  @override
+  String settingsSpeedFor(String voice) {
+    return '$voice hangjára';
+  }
+
+  @override
+  String get settingsSpeedSlower => 'Lassabb';
+
+  @override
+  String get settingsSpeedFaster => 'Gyorsabb';
+
+  @override
+  String get settingsSpeedReset => 'Visszaállítás';
+
+  @override
   String get settingsAlarmSection => 'Riasztás';
 
   @override

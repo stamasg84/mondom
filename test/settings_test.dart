@@ -143,7 +143,7 @@ void main() {
     final prefs = await tester.runAsync(SharedPreferences.getInstance);
     expect(prefs!.getBool('speechBoost'), false);
     expect(
-      find.text('Kipróbálás'),
+      find.text('Kipróbálás', skipOffstage: false),
       findsOneWidget,
     ); // alarm controls still there
     await finish(tester);

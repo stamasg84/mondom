@@ -269,6 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
       repo: repo,
       voice: () => _voice,
       onOpenVoicePicker: _openPicker,
+      sampleText: () => _catalog.sampleText[_voice.languageCode],
       backup: BackupService(repo: repo, recordings: _recordings),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../speech/loudness.dart';
+import '../speech/speech_speed.dart';
 import 'elevenlabs_cache.dart';
 import 'elevenlabs_client.dart';
 import 'voice.dart';
@@ -17,6 +18,15 @@ const elevenLabsExpressiveModel = 'eleven_v3';
 /// offline; otherwise one request is made, and any failure (or an urgent
 /// alarm row) is spoken by [fallback] instead, with the reason in
 /// [lastFallback]. `load()` loads only the fallback (no network).
+/// The `voice_settings.speed` sent for [modelId] (API range 0.7-1.2), or null
+/// when it isn't sent: `eleven_v3` is not documented to accept it (the
+/// official docs disagree), so it is omitted there.
+double? elevenLabsApiSpeed(String modelId, double speed) {
+  if (modelId == elevenLabsExpressiveModel) return null;
+  final s = speed.clamp(0.7, 1.2).toDouble();
+  return (s * 100).round() / 100;
+}
+
 class ElevenLabsEngine implements VoiceEngine {
   ElevenLabsEngine({
     required this.voice,
@@ -66,12 +76,14 @@ class ElevenLabsEngine implements VoiceEngine {
   Future<SynthResult> synthesizeToWav(
     String text, {
     bool urgent = false,
+    double speed = 1.0,
   }) async {
     final sw = Stopwatch()..start();
     final model = await modelId();
     final id = voice.elevenLabsVoiceId;
+    final apiSpeed = elevenLabsApiSpeed(model, speed);
 
-    final hit = cache.lookup(id, model, text);
+    final hit = cache.lookup(id, model, text, speed: apiSpeed);
     if (hit != null) {
       try {
         final bytes = await hit.readAsBytes();
@@ -83,19 +95,25 @@ class ElevenLabsEngine implements VoiceEngine {
       }
     }
     // An alarm never waits on the network.
-    if (urgent) return fallback.synthesizeToWav(text, urgent: true);
+    if (urgent) return _fallbackSynth(text, urgent: true);
 
     final c = client;
     if (c == null) return _fallBack(text, ElevenLabsFailure.badKey);
     final Uint8List wav;
     try {
-      wav = await c.synthesize(text, id, model, voice.languageCode);
+      wav = await c.synthesize(
+        text,
+        id,
+        model,
+        voice.languageCode,
+        speed: apiSpeed,
+      );
     } on ElevenLabsException catch (e) {
       return _fallBack(text, e.reason);
     } catch (_) {
       return _fallBack(text, ElevenLabsFailure.server);
     }
-    await cache.put(id, model, text, wav);
+    await cache.put(id, model, text, wav, speed: apiSpeed);
     unawaited(cache.evict());
     try {
       final result = await _playable(wav, sw);
@@ -107,10 +125,20 @@ class ElevenLabsEngine implements VoiceEngine {
   }
 
   Future<SynthResult> _fallBack(String text, ElevenLabsFailure why) async {
-    final result = await fallback.synthesizeToWav(text);
+    final result = await _fallbackSynth(text);
     lastFallback = why;
     return result;
   }
+
+  /// The fallback voice speaks at its own stored speed.
+  Future<SynthResult> _fallbackSynth(
+    String text, {
+    bool urgent = false,
+  }) async => fallback.synthesizeToWav(
+    text,
+    urgent: urgent,
+    speed: await speechSpeed(fallbackVoice.id),
+  );
 
   /// Writes [wav] to a fresh temp file (never the cache file), boosted when
   /// Hangosítás is on.

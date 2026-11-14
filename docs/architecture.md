@@ -155,6 +155,13 @@ Editing screens (used with no time pressure, e.g. the evening before a visit):
 - From any list or history: copy or move a sentence to another list (one per-row ⋮ sheet, same everywhere). There is no "save free text" button on the speaking screen: spoken free text is in history, and is saved from there.
 - Conversation lists: "reset" (clear `said`) for reuse; carry unsaid sentences over to the next conversation.
 
+## Speech speed (T40, 2026-11-14)
+Stored per voice in `shared_preferences` (`speechSpeed:<voiceId>`, default 1.0, range 0.7-1.3; see `lib/speech/speech_speed.dart`). `Speaker` reads it on each utterance, passes it to `VoiceEngine.synthesizeToWav(speed:)` and includes it in the replay key, so a speed change re-synthesizes. No model reload is needed.
+- Piper: `generate(speed:)` (the configured `lengthScale` 1.2 stays the baseline).
+- System TTS: `setSpeechRate(speed / 2)` before `synthesizeToFile` (flutter_tts maps 0.5 to Android's normal rate). Not verified on a device that it affects `synthesizeToFile`: check in T44.
+- ElevenLabs: `voice_settings.speed`, clamped to 0.7-1.2, and part of the cache key. Omitted for `eleven_v3` (support unconfirmed; the official docs disagree). The fallback engine speaks at the fallback voice's own stored speed.
+- Recordings and built-in sounds are not time-stretched.
+
 ## Loudness (T28, 2026-11-08)
 `lib/speech/loudness.dart`, applied to Piper output (`boostLoudness`) and system-TTS WAVs (`boostWavFile`) when Hangosítás is on. Chain: (1) 2nd-order Butterworth high-pass at 120 Hz (`speechHighPassHz`): phone speakers can't play it, it only eats headroom; (2) peak-normalize + `speechGainDb`; (3) look-ahead limiter `limitPeaks` (~5 ms look-ahead, needed gain = sliding-window minimum, smoothed by a 5 ms moving average so it never exceeds the needed gain, ~80 ms release, final clamp to `speechCeilingDb`). The earlier per-sample `tanh` waveshaper bent every sample separately and so made harmonic distortion ("overdriven speakers"); the limiter scales whole stretches of the waveform instead. All time constants derive from the sample rate. No expander: it would pump breathing noise. Trade-off: a true limiter is a little less loud than the tanh on peaky voices (it can't win level by squashing peaks).
 

@@ -104,6 +104,7 @@ class PiperEngine implements VoiceEngine {
   Future<SynthResult> synthesizeToWav(
     String text, {
     bool urgent = false,
+    double speed = 1.0,
   }) async {
     if (_disposed || _ready == null) throw StateError('TTS not loaded');
     // Wait for the load (requests arriving mid-load wait here).
@@ -114,7 +115,7 @@ class PiperEngine implements VoiceEngine {
     if (_disposed) throw StateError('TTS not loaded');
     final id = _nextId++;
     final completer = _pending[id] = Completer<SynthResult>();
-    port.send(_SynthRequest(id, text, '$_tmpDir/tts_$id.wav', boost));
+    port.send(_SynthRequest(id, text, '$_tmpDir/tts_$id.wav', boost, speed));
     return completer.future;
   }
 
@@ -168,9 +169,10 @@ class _LoadFailedMessage {
 }
 
 class _SynthRequest {
-  const _SynthRequest(this.id, this.text, this.path, this.boost);
+  const _SynthRequest(this.id, this.text, this.path, this.boost, this.speed);
   final int id;
   final bool boost;
+  final double speed;
   final String text;
   final String path;
 }
@@ -229,7 +231,7 @@ void _isolateMain(_InitMessage init) {
     if (msg is _SynthRequest) {
       try {
         final sw = Stopwatch()..start();
-        final audio = tts!.generate(text: msg.text, sid: 0, speed: 1.0);
+        final audio = tts!.generate(text: msg.text, sid: 0, speed: msg.speed);
         final synthMs = sw.elapsedMilliseconds;
         final ok = sherpa.writeWave(
           filename: msg.path,

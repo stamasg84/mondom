@@ -356,6 +356,36 @@ abstract class AppLocalizations {
   /// **'Hangosabb beszéd. Kapcsold ki, ha torznak hallod.'**
   String get settingsBoostHelp;
 
+  /// Title of the speech speed slider.
+  ///
+  /// In hu, this message translates to:
+  /// **'Beszéd sebessége'**
+  String get settingsSpeedTitle;
+
+  /// Under the speed slider title: the speed is stored per voice, this names the selected one.
+  ///
+  /// In hu, this message translates to:
+  /// **'{voice} hangjára'**
+  String settingsSpeedFor(String voice);
+
+  /// Left end label of the speed slider.
+  ///
+  /// In hu, this message translates to:
+  /// **'Lassabb'**
+  String get settingsSpeedSlower;
+
+  /// Right end label of the speed slider.
+  ///
+  /// In hu, this message translates to:
+  /// **'Gyorsabb'**
+  String get settingsSpeedFaster;
+
+  /// Button that sets the speech speed back to normal.
+  ///
+  /// In hu, this message translates to:
+  /// **'Visszaállítás'**
+  String get settingsSpeedReset;
+
   /// Section header for alarm settings.
   ///
   /// In hu, this message translates to:

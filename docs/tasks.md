@@ -11,7 +11,7 @@ Mark tasks done by changing `[ ]` to `[x]`. When a phase is finished, move it to
 
 Goal: polish what testers will see first, give the project a public face (About, README, license, privacy policy), and produce a signed release build. No new features beyond these.
 
-### [ ] T39 (Agent): ElevenLabs picker section and setup screen wording
+### [x] T39 (Agent): ElevenLabs picker section and setup screen wording
 Problems found in T38: the "Beállítások" entry is drawn like a voice row (with a play button area), and as the section's last row it's hard to find under a long voice list. The setup screen's Hungarian reads like a translation.
 - Voice picker, ElevenLabs section (`_elevenLabsSection` in `voice_picker.dart`):
   - The section header gets a trailing gear `IconButton` (tooltip "ElevenLabs beállításai", ≥48 dp) that opens the setup screen. It's in the header, so it's visible as soon as the section is reached, however many voices follow. Remove the "Beállítások" row.
@@ -33,7 +33,7 @@ Problems found in T38: the "Beállítások" entry is drawn like a voice row (wit
 - Tests: update `voice_picker_test.dart` / `elevenlabs_screen_test.dart` (gear opens the setup screen; the no-key button opens it; no row with key `elevenlabs-settings`).
 - **Checks:** `flutter analyze`, `flutter test`.
 
-### [ ] T40 (Agent): Speech speed
+### [x] T40 (Agent): Speech speed
 Some voices talk faster than others (e.g. `nst` vs `imre`), so the speed is **stored per voice** (`shared_preferences` key `speechSpeed:<voiceId>`, default 1.0), and switching voices brings back that voice's speed.
 - Beállítások, section Beszéd: "Beszéd sebessége" slider with "Lassabb" / "Gyorsabb" end labels (no numbers), 0.7–1.3 in 0.05 steps, with the selected voice's name under the title ("Imre hangjára"). Releasing the slider says the language's `sampleText` at the new speed. A "Visszaállítás" text button when ≠ 1.0. Hidden when no voice is selected.
 - Per source (`VoiceEngine` gets a `speed` it applies on each `synthesizeToWav`, so changing it needs no model reload):

@@ -263,7 +263,10 @@ void main() {
     ) async {
       await pumpPicker(tester);
       await openSetup(tester);
-      expect(find.textContaining('külső, a Mondomtól független'), findsOneWidget);
+      expect(
+        find.textContaining('külső, a Mondomtól független'),
+        findsOneWidget,
+      );
       expect(find.text('Részletek a súgóban'), findsOneWidget);
       expect(find.byKey(const Key('elevenlabs-manual-url')), findsOneWidget);
       expect(find.textContaining('Szükséges jogosultságok'), findsOneWidget);

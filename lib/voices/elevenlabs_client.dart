@@ -112,8 +112,9 @@ class ElevenLabsClient {
     String text,
     String voiceId,
     String modelId,
-    String languageCode,
-  ) async {
+    String languageCode, {
+    double? speed,
+  }) async {
     final res = await _send(
       () => _http.post(
         Uri.parse(
@@ -129,6 +130,7 @@ class ElevenLabsClient {
             'text': text,
             'model_id': modelId,
             'language_code': languageCode,
+            if (speed != null) 'voice_settings': {'speed': speed},
           }),
         ),
       ),

@@ -163,10 +163,7 @@ void main() {
 
   test('export and restore go through the picker', () async {
     await fill();
-    expect(
-      await a.service.export(now: DateTime(2026, 11, 9)),
-      1,
-    );
+    expect(await a.service.export(now: DateTime(2026, 11, 9)), 1);
     expect(picker.savedName, 'mondom-mentes-2026-11-09.zip');
 
     picker.toPick = picker.saved;
@@ -235,28 +232,31 @@ void main() {
     expect(await b.lists(), isEmpty);
   });
 
-  test('entries outside recordings/ are rejected, nothing is written', () async {
-    for (final name in [
-      'recordings/../evil.wav',
-      '../evil.wav',
-      'recordings/sub/evil.wav',
-      '/etc/evil.wav',
-      'other.txt',
-    ]) {
-      final zip = await makeZip({
-        'backup.json': json(1),
-        'recordings/good.wav': 'ok',
-        name: 'bad',
-      });
-      await expectLater(
-        b.service.importZip(zip),
-        throwsA(isA<BackupException>().having((e) => e.code, 'code', 'path')),
-        reason: name,
-      );
-    }
-    expect(await b.lists(), isEmpty);
-    expect(b.recDir.listSync(), isEmpty);
-    expect(File('${tmp.path}/evil.wav').existsSync(), isFalse);
-    expect(File('${tmp.path}/b/evil.wav').existsSync(), isFalse);
-  });
+  test(
+    'entries outside recordings/ are rejected, nothing is written',
+    () async {
+      for (final name in [
+        'recordings/../evil.wav',
+        '../evil.wav',
+        'recordings/sub/evil.wav',
+        '/etc/evil.wav',
+        'other.txt',
+      ]) {
+        final zip = await makeZip({
+          'backup.json': json(1),
+          'recordings/good.wav': 'ok',
+          name: 'bad',
+        });
+        await expectLater(
+          b.service.importZip(zip),
+          throwsA(isA<BackupException>().having((e) => e.code, 'code', 'path')),
+          reason: name,
+        );
+      }
+      expect(await b.lists(), isEmpty);
+      expect(b.recDir.listSync(), isEmpty);
+      expect(File('${tmp.path}/evil.wav').existsSync(), isFalse);
+      expect(File('${tmp.path}/b/evil.wav').existsSync(), isFalse);
+    },
+  );
 }

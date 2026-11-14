@@ -21,7 +21,14 @@ abstract class VoiceEngine {
   /// Synthesizes [text] into a WAV file and returns its path and timings.
   /// [urgent] (alarm rows) must never wait on the network; only the
   /// ElevenLabs engine cares, the others ignore it.
-  Future<SynthResult> synthesizeToWav(String text, {bool urgent = false});
+  ///
+  /// [speed] (1.0 = normal) is the user's per-voice speech speed; applying it
+  /// needs no model reload.
+  Future<SynthResult> synthesizeToWav(
+    String text, {
+    bool urgent = false,
+    double speed = 1.0,
+  });
 
   void dispose();
 }

@@ -351,7 +351,6 @@ void main() {
     await finish(tester);
   });
 
-
   testWidgets('batch: progress, Kihagyom saves nothing, summary counts', (
     tester,
   ) async {

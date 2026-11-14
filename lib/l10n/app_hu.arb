@@ -211,6 +211,31 @@
   "@settingsBoostHelp": {
     "description": "Help text under the speech boost switch."
   },
+  "settingsSpeedTitle": "Beszéd sebessége",
+  "@settingsSpeedTitle": {
+    "description": "Title of the speech speed slider."
+  },
+  "settingsSpeedFor": "{voice} hangjára",
+  "@settingsSpeedFor": {
+    "description": "Under the speed slider title: the speed is stored per voice, this names the selected one.",
+    "placeholders": {
+      "voice": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSpeedSlower": "Lassabb",
+  "@settingsSpeedSlower": {
+    "description": "Left end label of the speed slider."
+  },
+  "settingsSpeedFaster": "Gyorsabb",
+  "@settingsSpeedFaster": {
+    "description": "Right end label of the speed slider."
+  },
+  "settingsSpeedReset": "Visszaállítás",
+  "@settingsSpeedReset": {
+    "description": "Button that sets the speech speed back to normal."
+  },
   "settingsAlarmSection": "Riasztás",
   "@settingsAlarmSection": {
     "description": "Section header for alarm settings."

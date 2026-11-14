@@ -24,10 +24,14 @@ class SpeakingScreen extends StatefulWidget {
     this.onOpenVoicePicker,
     this.recorderFactory = RecordPackageRecorder.new,
     this.backup,
+    this.sampleText,
   });
 
   /// Backup and restore in settings; null hides them (tests).
   final BackupService? backup;
+
+  /// The speed slider's sample sentence for the current speech language.
+  final String? Function()? sampleText;
 
   /// Creates the microphone recorder for the recording screen (tests fake it).
   final VoiceRecorder Function() recorderFactory;
@@ -219,6 +223,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
             speaker: widget.speaker,
             recorderFactory: widget.recorderFactory,
             backup: widget.backup,
+            sampleText: widget.sampleText,
           ),
           appBar: AppBar(
             leading: Builder(

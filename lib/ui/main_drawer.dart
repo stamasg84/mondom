@@ -25,7 +25,12 @@ class MainDrawer extends StatelessWidget {
     required this.speaker,
     required this.recorderFactory,
     this.backup,
+    this.sampleText,
   });
+
+  /// A sentence in the speech language, said when the speed slider is
+  /// released.
+  final String? Function()? sampleText;
 
   final BackupService? backup;
 
@@ -94,6 +99,8 @@ class MainDrawer extends StatelessWidget {
                       alarmVolume: alarmVolume,
                       speaker: speaker,
                       backup: backup,
+                      voice: v,
+                      sampleText: sampleText?.call(),
                     ),
                   ),
                 );

@@ -12,7 +12,7 @@ abstract class ElevenLabsKeyStore {
 /// manifest's backup rules).
 class SecureElevenLabsKeyStore implements ElevenLabsKeyStore {
   SecureElevenLabsKeyStore([FlutterSecureStorage? storage])
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   static const _name = 'elevenlabs_api_key';
   final FlutterSecureStorage _storage;

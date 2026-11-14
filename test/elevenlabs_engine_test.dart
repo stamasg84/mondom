@@ -21,6 +21,7 @@ class _Fallback implements VoiceEngine {
   final Directory dir;
   final texts = <String>[];
   final urgentFlags = <bool>[];
+  final speeds = <double>[];
   @override
   int get loadMs => 0;
   @override
@@ -31,9 +32,11 @@ class _Fallback implements VoiceEngine {
   Future<SynthResult> synthesizeToWav(
     String text, {
     bool urgent = false,
+    double speed = 1.0,
   }) async {
     texts.add(text);
     urgentFlags.add(urgent);
+    speeds.add(speed);
     final f = File('${dir.path}/fb_${texts.length}.wav')
       ..writeAsStringSync(text);
     return SynthResult(f.path, 1, 1);

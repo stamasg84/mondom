@@ -22,6 +22,7 @@ class _NoEngine implements VoiceEngine {
   Future<SynthResult> synthesizeToWav(
     String text, {
     bool urgent = false,
+    double speed = 1.0,
   }) async => throw UnimplementedError();
   @override
   void dispose() {}

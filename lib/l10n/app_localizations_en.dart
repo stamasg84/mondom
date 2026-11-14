@@ -154,6 +154,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Makes speech louder. Turn off if it sounds distorted.';
 
   @override
+  String get settingsSpeedTitle => 'Speech speed';
+
+  @override
+  String settingsSpeedFor(String voice) {
+    return 'For the voice $voice';
+  }
+
+  @override
+  String get settingsSpeedSlower => 'Slower';
+
+  @override
+  String get settingsSpeedFaster => 'Faster';
+
+  @override
+  String get settingsSpeedReset => 'Reset';
+
+  @override
   String get settingsAlarmSection => 'Alarm';
 
   @override

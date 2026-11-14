@@ -38,12 +38,15 @@ class SystemEngine implements VoiceEngine {
   Future<SynthResult> synthesizeToWav(
     String text, {
     bool urgent = false,
+    double speed = 1.0,
   }) async {
     if (!_loaded) throw StateError('TTS not loaded');
     final tmp = await getTemporaryDirectory();
     final path = '${tmp.path}/sys_${_counter++}.wav';
     final file = File(path);
     if (file.existsSync()) file.deleteSync();
+    // flutter_tts on Android maps 0.5 to the normal rate 1.0.
+    await _tts.setSpeechRate(speed / 2);
     final sw = Stopwatch()..start();
     // isFullPath: true writes to the given path (app cache, no permission).
     final result = await _tts.synthesizeToFile(text, path, true);
