@@ -207,7 +207,7 @@
     }
   },
   "aboutAlmaCredit": "Alma: the voice model is trained on the NST Swedish speech dataset (Språkbanken, National Library of Norway), license CC BY 4.0.",
-  "aboutModelCard": "Voice model card",
+  "aboutModelCard": "Model card",
   "aboutSystemVoiceLine": "Android default: the phone's own voice",
   "aboutSoftware": "Software used",
   "aboutAllLicenses": "All licenses",

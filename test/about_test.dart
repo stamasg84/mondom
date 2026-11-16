@@ -23,7 +23,7 @@ const _catalogJson = '''
   "license":"MIT"},
  {"id":"sv_SE-alma-medium","language":"sv","gender":"female","label":"Alma",
   "url":"u","sizeBytes":1,"sha256":"aa","modelFile":"m","sampleUrl":"s",
-  "license":"CC BY 4.0"}]}''';
+  "license":"CC BY 4.0","modelCardUrl":"https://example.org/alma"}]}''';
 
 class _FakeSpeaker extends Speaker {
   _FakeSpeaker()
@@ -130,6 +130,11 @@ void main() {
     await tester.tap(find.text('Adatkezelés'));
     await settle(tester);
     expect(opened, [projectUrl, privacyUrl]);
+    // Only Alma has a model card in the test catalog.
+    expect(find.text('Adatlap'), findsOneWidget);
+    await tester.tap(find.text('Adatlap'));
+    await settle(tester);
+    expect(opened.last, 'https://example.org/alma');
   });
 
   testWidgets('drawer row Névjegy is last and opens the screen', (

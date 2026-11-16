@@ -641,7 +641,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Alma: a hangmodell az NST svéd beszédadatbázison (Språkbanken, Norvég Nemzeti Könyvtár) készült, licenc: CC BY 4.0.';
 
   @override
-  String get aboutModelCard => 'Hangmodell adatlapja';
+  String get aboutModelCard => 'Adatlap';
 
   @override
   String get aboutSystemVoiceLine =>

@@ -855,7 +855,7 @@
   "@aboutAlmaCredit": {
     "description": "CC BY 4.0 credit for the Alma voice."
   },
-  "aboutModelCard": "Hangmodell adatlapja",
+  "aboutModelCard": "Adatlap",
   "@aboutModelCard": {
     "description": "Link to the Alma model card."
   },

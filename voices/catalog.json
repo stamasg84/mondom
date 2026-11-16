@@ -64,6 +64,7 @@
       "modelFile": "sv_SE-alma-medium.onnx",
       "sampleUrl": "https://raw.githubusercontent.com/stamasg84/mondom/main/voices/samples/sv_SE-alma-medium.wav",
       "license": "CC-BY-4.0",
+      "modelCardUrl": "https://huggingface.co/rhasspy/piper-voices/blob/main/sv/sv_SE/alma/medium/MODEL_CARD",
       "minAppVersion": "1.0.0"
     }
   ],

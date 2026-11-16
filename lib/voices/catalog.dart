@@ -29,6 +29,7 @@ class CatalogVoice {
     required this.sampleUrl,
     required this.license,
     required this.minAppVersion,
+    this.modelCardUrl,
   });
 
   final String id;
@@ -42,6 +43,10 @@ class CatalogVoice {
   final String sampleUrl;
   final String license;
   final String minAppVersion;
+
+  /// The voice's model card, linked from About (e.g. where the license
+  /// asks for credit to the training data).
+  final String? modelCardUrl;
 
   factory CatalogVoice.fromJson(Map<String, dynamic> j) => CatalogVoice(
     id: j['id'] as String,
@@ -58,6 +63,7 @@ class CatalogVoice {
     sampleUrl: j['sampleUrl'] as String,
     license: j['license'] as String,
     minAppVersion: j['minAppVersion'] as String? ?? '0.0.0',
+    modelCardUrl: j['modelCardUrl'] as String?,
   );
 
   Voice toVoice() => Voice(

@@ -646,7 +646,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Alma: the voice model is trained on the NST Swedish speech dataset (Språkbanken, National Library of Norway), license CC BY 4.0.';
 
   @override
-  String get aboutModelCard => 'Voice model card';
+  String get aboutModelCard => 'Model card';
 
   @override
   String get aboutSystemVoiceLine => 'Android default: the phone\'s own voice';

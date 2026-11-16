@@ -1187,7 +1187,7 @@ abstract class AppLocalizations {
   /// Link to the Alma model card.
   ///
   /// In hu, this message translates to:
-  /// **'Hangmodell adatlapja'**
+  /// **'Adatlap'**
   String get aboutModelCard;
 
   /// System voice line in About.

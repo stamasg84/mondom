@@ -8,12 +8,11 @@ import 'package:path_provider/path_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../speech/voice_recorder.dart' as platform;
 import '../voices/catalog.dart';
+import 'app_theme.dart';
+import 'speak_glyph.dart';
 
 const projectUrl = 'https://github.com/stamasg84/mondom';
 const privacyUrl = 'https://github.com/stamasg84/mondom/blob/main/PRIVACY.md';
-const almaModelCardUrl =
-    'https://huggingface.co/rhasspy/piper-voices/blob/main/sv/sv_SE/alma/'
-    'medium/MODEL_CARD';
 
 /// Sizes in bytes of the app's own recordings and the downloaded voices.
 typedef StorageSizes = ({int recordings, int voices});
@@ -103,103 +102,188 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final header = theme.textTheme.titleLarge;
+    final scheme = Theme.of(context).colorScheme;
     const body = TextStyle(fontSize: 18);
+    final muted = TextStyle(fontSize: 16, color: scheme.onSurfaceVariant);
     final sizes = _sizes;
     final voices = widget.catalog.voices;
+    Widget line(String text, {TextStyle style = body}) => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Text(text, style: style),
+    );
     return Scaffold(
       appBar: AppBar(title: Text(l10n.aboutTitle)),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
-            Text(l10n.appTitle, style: theme.textTheme.headlineMedium),
-            if (_version != null)
-              Text(l10n.aboutVersion(_version!), style: body),
-            const SizedBox(height: 8),
-            Text(l10n.aboutTagline, style: body),
-            const SizedBox(height: 8),
-            _LinkRow(
-              icon: Icons.code,
-              label: l10n.aboutGithub,
-              onTap: () => _open(projectUrl),
+            Row(
+              children: [
+                SpeakGlyph(size: 56, color: scheme.primary),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.appTitle,
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (_version != null)
+                        Text(
+                          l10n.aboutVersion(_version!),
+                          style: muted.copyWith(fontSize: 17),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            _LinkRow(
-              icon: Icons.privacy_tip_outlined,
-              label: l10n.aboutPrivacy,
-              onTap: () => _open(privacyUrl),
+            const SizedBox(height: 12),
+            Text(l10n.aboutTagline, style: body),
+            const SizedBox(height: 16),
+            _Card(
+              children: [
+                _LinkRow(
+                  icon: Icons.code,
+                  label: l10n.aboutGithub,
+                  onTap: () => _open(projectUrl),
+                ),
+                _LinkRow(
+                  icon: Icons.privacy_tip_outlined,
+                  label: l10n.aboutPrivacy,
+                  onTap: () => _open(privacyUrl),
+                ),
+              ],
             ),
             for (final url in _failed)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.only(top: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [Text(l10n.aboutLinkFailed), SelectableText(url)],
                 ),
               ),
-            const SizedBox(height: 16),
-            Text(l10n.aboutVoices, style: header),
-            const SizedBox(height: 4),
-            for (final v in voices)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Text(
-                  l10n.aboutVoiceLine(v.label, v.license),
-                  style: body,
+            _Heading(l10n.aboutVoices),
+            _Card(
+              children: [
+                for (final v in voices) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: line(l10n.aboutVoiceLine(v.label, v.license)),
+                      ),
+                      if (v.modelCardUrl case final url?)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: TextButton(
+                            onPressed: () => _open(url),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  l10n.aboutModelCard,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const Icon(Icons.chevron_right),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  if (v.id == 'sv_SE-alma-medium')
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: line(l10n.aboutAlmaCredit, style: muted),
+                    ),
+                ],
+                line(l10n.aboutSystemVoiceLine),
+              ],
+            ),
+            _Heading(l10n.aboutSoftware),
+            _Card(
+              children: [
+                for (final s in const [
+                  'sherpa-onnx (Apache-2.0)',
+                  'Piper (MIT)',
+                  'espeak-ng (GPL-3.0)',
+                  'Flutter (BSD-3-Clause)',
+                  'record (BSD-3-Clause)',
+                  'flutter_secure_storage (BSD-3-Clause)',
+                ])
+                  line(s),
+                _LinkRow(
+                  icon: Icons.description_outlined,
+                  label: l10n.aboutAllLicenses,
+                  onTap: () => showLicensePage(
+                    context: context,
+                    applicationName: l10n.appTitle,
+                    applicationVersion: _version,
+                  ),
                 ),
-              ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Text(l10n.aboutSystemVoiceLine, style: body),
+              ],
             ),
-            if (voices.any((v) => v.id == 'sv_SE-alma-medium')) ...[
-              const SizedBox(height: 8),
-              Text(l10n.aboutAlmaCredit, style: body),
-              _LinkRow(
-                icon: Icons.open_in_new,
-                label: l10n.aboutModelCard,
-                onTap: () => _open(almaModelCardUrl),
-              ),
-            ],
-            const SizedBox(height: 16),
-            Text(l10n.aboutSoftware, style: header),
-            const SizedBox(height: 4),
-            for (final s in const [
-              'sherpa-onnx (Apache-2.0)',
-              'Piper (MIT)',
-              'espeak-ng (GPL-3.0)',
-              'Flutter (BSD-3-Clause)',
-              'record (BSD-3-Clause)',
-              'flutter_secure_storage (BSD-3-Clause)',
-            ])
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Text(s, style: body),
-              ),
-            _LinkRow(
-              icon: Icons.description_outlined,
-              label: l10n.aboutAllLicenses,
-              onTap: () => showLicensePage(
-                context: context,
-                applicationName: l10n.appTitle,
-                applicationVersion: _version,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(l10n.aboutStorage, style: header),
-            const SizedBox(height: 4),
-            Text(
-              '${l10n.aboutRecordings}: ${_mb(l10n, sizes?.recordings)}',
-              style: body,
-            ),
-            Text(
-              '${l10n.aboutDownloadedVoices}: ${_mb(l10n, sizes?.voices)}',
-              style: body,
+            _Heading(l10n.aboutStorage),
+            _Card(
+              children: [
+                line(
+                  '${l10n.aboutRecordings}: ${_mb(l10n, sizes?.recordings)}',
+                ),
+                line(
+                  '${l10n.aboutDownloadedVoices}: ${_mb(l10n, sizes?.voices)}',
+                ),
+              ],
             ),
             const SizedBox(height: 24),
-            Text(l10n.aboutTrademark, style: theme.textTheme.bodySmall),
+            Text(l10n.aboutTrademark, style: muted.copyWith(fontSize: 14)),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Heading extends StatelessWidget {
+  const _Heading(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 24, 4, 8),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+    ),
+  );
+}
+
+/// A white bordered card, as on the list screens, holding a section's rows.
+class _Card extends StatelessWidget {
+  const _Card({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(
+        borderRadius: kBorderRadius,
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
         ),
       ),
     );
@@ -219,26 +303,30 @@ class _LinkRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 48),
-        child: Row(
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: color,
-                  decoration: TextDecoration.underline,
+        constraints: const BoxConstraints(minHeight: 56),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: scheme.primary),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: scheme.primary,
+                  ),
                 ),
               ),
-            ),
-          ],
+              Icon(Icons.chevron_right, color: scheme.outline),
+            ],
+          ),
         ),
       ),
     );
