@@ -62,12 +62,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _level = level;
       _boost = boost;
     });
-    if (widget.showElevenLabs) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final ctx = _elevenLabsKey.currentContext;
-        if (ctx != null) Scrollable.ensureVisible(ctx);
-      });
-    }
   }
 
   void _changed() {
@@ -240,12 +234,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Last: optional, and depends on an external provider.
                   if (elevenLabs != null) ...[
                     _heading(l10n.elevenLabsSection, key: _elevenLabsKey),
-                    ElevenLabsSection(settings: elevenLabs),
+                    ElevenLabsSection(
+                      settings: elevenLabs,
+                      // Scroll once it has its full height (it is last, so
+                      // earlier the list can't scroll far enough).
+                      onLoaded: widget.showElevenLabs
+                          ? _scrollToElevenLabs
+                          : null,
+                    ),
                   ],
                 ],
               ),
       ),
     );
+  }
+
+  void _scrollToElevenLabs() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = _elevenLabsKey.currentContext;
+      if (ctx != null) Scrollable.ensureVisible(ctx);
+    });
   }
 
   static const _title = TextStyle(fontSize: 20, fontWeight: FontWeight.w600);

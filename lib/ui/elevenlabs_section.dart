@@ -50,7 +50,11 @@ class ElevenLabsSection extends StatefulWidget {
     super.key,
     required this.settings,
     this.openUrl = platform.openUrl,
+    this.onLoaded,
   });
+
+  /// Called once the section has loaded and shows its full content.
+  final VoidCallback? onLoaded;
 
   final ElevenLabsSettings settings;
   final Future<bool> Function(String url) openUrl;
@@ -103,6 +107,7 @@ class _ElevenLabsSectionState extends State<ElevenLabsSection> {
           : _systemVoice.id;
       _loaded = true;
     });
+    widget.onLoaded?.call();
     if (key != null) _loadCredit(key);
   }
 
