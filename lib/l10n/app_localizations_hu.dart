@@ -145,7 +145,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settingsTitle => 'Beállítások';
 
   @override
-  String get settingsSubtitle => 'Hangosítás, riasztás hangereje';
+  String get settingsSubtitle => 'Hangosítás, megjelenés, riasztás';
 
   @override
   String get settingsSpeechSection => 'Beszéd';
@@ -168,6 +168,18 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get settingsSpeedReset => 'Visszaállítás';
+
+  @override
+  String get settingsAppearanceSection => 'Megjelenés';
+
+  @override
+  String get themeSystem => 'A telefon beállítása szerint';
+
+  @override
+  String get themeLight => 'Világos';
+
+  @override
+  String get themeDark => 'Sötét';
 
   @override
   String get settingsAlarmSection => 'Riasztás';

@@ -341,7 +341,7 @@ abstract class AppLocalizations {
   /// Subtitle of the settings drawer row.
   ///
   /// In hu, this message translates to:
-  /// **'Hangosítás, riasztás hangereje'**
+  /// **'Hangosítás, megjelenés, riasztás'**
   String get settingsSubtitle;
 
   /// Section header for speech settings.
@@ -385,6 +385,30 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Visszaállítás'**
   String get settingsSpeedReset;
+
+  /// Section header for the light/dark theme choice.
+  ///
+  /// In hu, this message translates to:
+  /// **'Megjelenés'**
+  String get settingsAppearanceSection;
+
+  /// Theme radio: follow the phone's light/dark setting.
+  ///
+  /// In hu, this message translates to:
+  /// **'A telefon beállítása szerint'**
+  String get themeSystem;
+
+  /// Theme radio: always light.
+  ///
+  /// In hu, this message translates to:
+  /// **'Világos'**
+  String get themeLight;
+
+  /// Theme radio: always dark.
+  ///
+  /// In hu, this message translates to:
+  /// **'Sötét'**
+  String get themeDark;
 
   /// Section header for alarm settings.
   ///

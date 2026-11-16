@@ -8,6 +8,7 @@ import '../speech/speaker.dart';
 import '../storage/backup.dart';
 import 'app_theme.dart';
 import 'elevenlabs_section.dart';
+import 'theme_mode.dart';
 
 /// Settings: speech boost, the optional ElevenLabs voice, the alarm volume
 /// (the phone's own level, or Mondom's own level raised while an alarm
@@ -161,6 +162,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
+                      ),
+                    ),
+                  ),
+                  _heading(l10n.settingsAppearanceSection),
+                  _card(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: ValueListenableBuilder<ThemeMode>(
+                        valueListenable: themeModeSetting,
+                        builder: (context, themeMode, _) =>
+                            RadioGroup<ThemeMode>(
+                              groupValue: themeMode,
+                              onChanged: (m) {
+                                if (m != null) setThemeMode(m);
+                              },
+                              child: Column(
+                                children: [
+                                  _themeRadio(
+                                    ThemeMode.system,
+                                    l10n.themeSystem,
+                                  ),
+                                  _themeRadio(ThemeMode.light, l10n.themeLight),
+                                  _themeRadio(ThemeMode.dark, l10n.themeDark),
+                                ],
+                              ),
+                            ),
                       ),
                     ),
                   ),
@@ -336,6 +363,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: child,
     );
   }
+
+  Widget _themeRadio(ThemeMode value, String title) => RadioListTile<ThemeMode>(
+    key: Key('theme-${value.name}'),
+    value: value,
+    title: Text(title, style: const TextStyle(fontSize: 20)),
+    contentPadding: const EdgeInsets.fromLTRB(6, 0, 16, 0),
+  );
 
   Widget _radio(AlarmVolumeMode value, String title) =>
       RadioListTile<AlarmVolumeMode>(

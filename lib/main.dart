@@ -19,6 +19,7 @@ import 'ui/app_theme.dart';
 import 'ui/elevenlabs_section.dart';
 import 'ui/settings_screen.dart';
 import 'ui/speaking_screen.dart';
+import 'ui/theme_mode.dart';
 import 'ui/voice_picker.dart';
 import 'voices/catalog.dart';
 import 'voices/elevenlabs_access.dart';
@@ -33,8 +34,10 @@ import 'voices/voice.dart';
 import 'voices/voice_engine.dart';
 import 'voices/voice_installer.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   registerExtraLicenses();
+  await loadThemeMode();
   runApp(const MondomApp());
 }
 
@@ -46,6 +49,13 @@ class MondomApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeModeSetting,
+      builder: (context, mode, _) => _app(mode),
+    );
+  }
+
+  Widget _app(ThemeMode mode) {
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -57,6 +67,7 @@ class MondomApp extends StatelessWidget {
           : const Locale('en'),
       theme: buildLightTheme(),
       darkTheme: buildDarkTheme(),
+      themeMode: mode,
       home: home,
     );
   }

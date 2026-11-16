@@ -199,7 +199,7 @@
   "@settingsTitle": {
     "description": "Drawer row and screen title for the sound settings."
   },
-  "settingsSubtitle": "Hangosítás, riasztás hangereje",
+  "settingsSubtitle": "Hangosítás, megjelenés, riasztás",
   "@settingsSubtitle": {
     "description": "Subtitle of the settings drawer row."
   },
@@ -230,6 +230,22 @@
   "settingsSpeedReset": "Visszaállítás",
   "@settingsSpeedReset": {
     "description": "Button that sets the speech speed back to normal."
+  },
+  "settingsAppearanceSection": "Megjelenés",
+  "@settingsAppearanceSection": {
+    "description": "Section header for the light/dark theme choice."
+  },
+  "themeSystem": "A telefon beállítása szerint",
+  "@themeSystem": {
+    "description": "Theme radio: follow the phone's light/dark setting."
+  },
+  "themeLight": "Világos",
+  "@themeLight": {
+    "description": "Theme radio: always light."
+  },
+  "themeDark": "Sötét",
+  "@themeDark": {
+    "description": "Theme radio: always dark."
   },
   "settingsAlarmSection": "Riasztás",
   "@settingsAlarmSection": {

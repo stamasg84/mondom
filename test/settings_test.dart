@@ -11,6 +11,7 @@ import 'package:mondom/storage/database.dart';
 import 'package:mondom/storage/lists_repository.dart';
 import 'package:mondom/ui/list_colors.dart';
 import 'package:mondom/ui/speaking_screen.dart';
+import 'package:mondom/ui/theme_mode.dart';
 import 'package:mondom/voices/voice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -58,6 +59,7 @@ void main() {
     db = AppDatabase(NativeDatabase.memory(), loadSeed: fixtureSeed);
     repo = ListsRepository(db);
     pickerOpened = 0;
+    themeModeSetting.value = ThemeMode.system;
   });
 
   Future<void> finish(WidgetTester tester) async {
@@ -146,6 +148,26 @@ void main() {
       find.text('Kipróbálás', skipOffstage: false),
       findsOneWidget,
     ); // alarm controls still there
+    await finish(tester);
+  });
+
+  testWidgets('Beállítások: Megjelenés switches and saves the theme', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    ThemeMode appMode() =>
+        tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode!;
+    expect(appMode(), ThemeMode.system);
+    await tester.tap(find.byTooltip('Menü'));
+    await settle(tester);
+    await tester.tap(find.text('Beállítások'));
+    await settle(tester);
+    expect(find.text('Megjelenés'), findsOneWidget);
+    await tester.tap(find.text('Sötét'));
+    await settle(tester);
+    expect(appMode(), ThemeMode.dark);
+    final prefs = await tester.runAsync(SharedPreferences.getInstance);
+    expect(prefs!.getString(themeModeKey), 'dark');
     await finish(tester);
   });
 

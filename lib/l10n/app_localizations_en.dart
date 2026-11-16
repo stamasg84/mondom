@@ -144,7 +144,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get settingsSubtitle => 'Louder speech, alarm volume';
+  String get settingsSubtitle => 'Louder speech, appearance, alarm';
 
   @override
   String get settingsSpeechSection => 'Speech';
@@ -167,6 +167,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSpeedReset => 'Reset';
+
+  @override
+  String get settingsAppearanceSection => 'Appearance';
+
+  @override
+  String get themeSystem => 'Same as the phone';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
 
   @override
   String get settingsAlarmSection => 'Alarm';
