@@ -5,9 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../speech/alarm_volume.dart';
 import '../speech/loudness.dart';
 import '../speech/speaker.dart';
-import '../speech/speech_speed.dart';
 import '../storage/backup.dart';
-import '../voices/voice.dart';
 
 /// Small sound settings: speech boost, and the alarm volume (the phone's own
 /// level, or Mondom's own level raised while an alarm plays, restored after).
@@ -17,8 +15,6 @@ class SettingsScreen extends StatefulWidget {
     required this.alarmVolume,
     required this.speaker,
     this.backup,
-    this.voice,
-    this.sampleText,
   });
 
   final AlarmVolume alarmVolume;
@@ -26,12 +22,6 @@ class SettingsScreen extends StatefulWidget {
 
   /// Null hides the backup section.
   final BackupService? backup;
-
-  /// The selected voice; null hides the speed slider.
-  final Voice? voice;
-
-  /// Said when the speed slider is released.
-  final String? sampleText;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -42,7 +32,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _level = 1.0;
   bool _boost = true;
   bool _busy = false;
-  double _speed = 1.0;
 
   @override
   void initState() {
@@ -55,14 +44,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final mode = await widget.alarmVolume.mode();
     final level = await widget.alarmVolume.level();
     final boost = await speechBoostEnabled();
-    final v = widget.voice;
-    final speed = v == null ? 1.0 : await speechSpeed(v.id);
     if (!mounted) return;
     setState(() {
       _mode = mode;
       _level = level;
       _boost = boost;
-      _speed = speed;
     });
   }
 
@@ -90,20 +76,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(speechBoostKey, v);
     } catch (_) {}
-  }
-
-  Future<void> _saveSpeed(double v) async {
-    final voice = widget.voice;
-    if (voice == null) return;
-    await setSpeechSpeed(voice.id, v);
-    // Hear the new speed.
-    final text = widget.sampleText;
-    if (text != null && text.isNotEmpty) await widget.speaker.speak(text);
-  }
-
-  Future<void> _resetSpeed() async {
-    setState(() => _speed = 1.0);
-    await _saveSpeed(1.0);
   }
 
   Future<void> _run(Future<String?> Function() job, String failed) async {
@@ -180,7 +152,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       vertical: 8,
                     ),
                   ),
-                  if (widget.voice != null) ..._speedSection(l10n),
                   _header(l10n.settingsAlarmSection),
                   RadioGroup<AlarmVolumeMode>(
                     groupValue: mode,
@@ -233,69 +204,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
       ),
     );
-  }
-
-  List<Widget> _speedSection(AppLocalizations l10n) {
-    final v = widget.voice!;
-    final name = v.kind == VoiceKind.system ? l10n.systemVoice : v.label;
-    const divisions =
-        ((speechSpeedMax - speechSpeedMin) / speechSpeedStep + 0.5) ~/ 1;
-    return [
-      ListTile(
-        title: Text(
-          l10n.settingsSpeedTitle,
-          style: const TextStyle(fontSize: 22),
-        ),
-        subtitle: Text(
-          l10n.settingsSpeedFor(name),
-          style: const TextStyle(fontSize: 16),
-        ),
-        contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Slider(
-          key: const Key('speech-speed'),
-          value: _speed.clamp(speechSpeedMin, speechSpeedMax).toDouble(),
-          min: speechSpeedMin,
-          max: speechSpeedMax,
-          divisions: divisions,
-          onChanged: (x) => setState(() => _speed = x),
-          onChangeEnd: (x) => _saveSpeed((x * 100).round() / 100),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.settingsSpeedSlower,
-              style: const TextStyle(fontSize: 16),
-            ),
-            Text(
-              l10n.settingsSpeedFaster,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-      if ((_speed - 1.0).abs() > 0.001)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: TextButton(
-              key: const Key('speech-speed-reset'),
-              onPressed: _resetSpeed,
-              child: Text(
-                l10n.settingsSpeedReset,
-                style: const TextStyle(fontSize: 18),
-              ),
-            ),
-          ),
-        ),
-    ];
   }
 
   List<Widget> _backupSection(AppLocalizations l10n) => [

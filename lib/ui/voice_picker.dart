@@ -6,6 +6,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 
 import '../l10n/app_localizations.dart';
+import '../speech/speech_speed.dart';
 import '../voices/catalog.dart';
 import '../voices/elevenlabs_access.dart';
 import '../voices/elevenlabs_client.dart';
@@ -13,6 +14,7 @@ import '../voices/language_names.dart';
 import '../voices/system_tts_info.dart';
 import '../voices/voice.dart';
 import '../voices/voice_installer.dart';
+import 'app_theme.dart';
 import 'elevenlabs_screen.dart';
 
 /// Plays voice previews. Replaceable in tests.
@@ -95,7 +97,16 @@ class VoicePickerScreen extends StatefulWidget {
     this.systemInfo,
     this.elevenLabs,
     this.selectedLabel,
+    this.speak,
+    this.reloadCatalog,
   });
+
+  /// Fetches the remote catalog again. Called when the picker opens on the
+  /// bundled fallback (e.g. the network wasn't up yet at app start).
+  final Future<Catalog> Function()? reloadCatalog;
+
+  /// Says [text] with the active voice; used to hear a new speed.
+  final Future<void> Function(String text)? speak;
 
   final Catalog catalog;
   final VoiceInstaller installer;
@@ -126,6 +137,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     with WidgetsBindingObserver {
   late final VoicePreviewer _previewer;
   late final SystemTtsInfo _systemInfo;
+  late Catalog _catalog = widget.catalog;
   late String _selectedId = widget.selectedId;
   final _availability = <String, SystemVoiceAvailability>{};
   final _installed = <String>{};
@@ -142,6 +154,9 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   List<ElevenLabsVoice>? _elVoices;
   String? _elNote;
 
+  /// The selected voice's speech speed (shown in its card).
+  double _speed = 1.0;
+
   @override
   void initState() {
     super.initState();
@@ -150,6 +165,19 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     WidgetsBinding.instance.addObserver(this);
     _refreshInstalled();
     _loadElevenLabs();
+    _loadSpeed();
+    _retryCatalog();
+  }
+
+  Future<void> _retryCatalog() async {
+    final reload = widget.reloadCatalog;
+    if (reload == null || !(_catalog.isBundled || _catalog.voices.isEmpty)) {
+      return;
+    }
+    final fresh = await reload();
+    if (!mounted || fresh.isBundled || fresh.voices.isEmpty) return;
+    setState(() => _catalog = fresh);
+    await _refreshInstalled();
   }
 
   @override
@@ -182,7 +210,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   String _initialLanguage() {
     final id = widget.selectedId;
     final fromVoice =
-        widget.catalog.byId(id)?.language ??
+        _catalog.byId(id)?.language ??
         (id.startsWith('system-') ? id.substring('system-'.length) : null);
     return fromVoice != null && _languages.contains(fromVoice)
         ? fromVoice
@@ -193,7 +221,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   /// UI-language name. Without a catalog (offline) just the UI language.
   List<String> get _languages {
     final ui = _uiLanguage;
-    final codes = {for (final v in widget.catalog.voices) v.language};
+    final codes = {for (final v in _catalog.voices) v.language};
     if (codes.isEmpty) return [ui];
     final others = codes.where((c) => c != ui).toList()
       ..sort((a, b) => languageName(a, ui).compareTo(languageName(b, ui)));
@@ -201,7 +229,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   }
 
   Future<void> _refreshInstalled() async {
-    for (final v in widget.catalog.voices) {
+    for (final v in _catalog.voices) {
       if (await widget.installer.isInstalled(v.id)) _installed.add(v.id);
     }
     if (mounted) setState(() => _checkedInstalled = true);
@@ -282,7 +310,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
       MaterialPageRoute<void>(
         builder: (_) => ElevenLabsScreen(
           access: access,
-          catalog: widget.catalog,
+          catalog: _catalog,
           installer: widget.installer,
           language: lang,
           selected: _selectedVoice,
@@ -297,7 +325,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   }
 
   Future<void> _playElevenLabs(ElevenLabsVoice v, String lang) async {
-    final text = widget.catalog.sampleText[lang];
+    final text = _catalog.sampleText[lang];
     final access = widget.elevenLabs;
     if (text == null || access == null) return;
     var paidOnly = false;
@@ -314,8 +342,31 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     }, why: (l10n) => paidOnly ? l10n.elevenLabsPaidOnly : null);
   }
 
+  Future<void> _loadSpeed() async {
+    final id = _selectedId;
+    if (id.isEmpty) return;
+    final speed = await speechSpeed(id);
+    if (mounted && id == _selectedId) setState(() => _speed = speed);
+  }
+
+  Future<void> _saveSpeed(double v) async {
+    await setSpeechSpeed(_selectedId, v);
+    // Hear the new speed.
+    final text = _catalog.sampleText[_language ?? _uiLanguage];
+    if (text != null) await widget.speak?.call(text);
+  }
+
+  Future<void> _resetSpeed() async {
+    setState(() => _speed = 1.0);
+    await _saveSpeed(1.0);
+  }
+
   Future<void> _select(Voice v) async {
-    setState(() => _selectedId = v.id);
+    setState(() {
+      _selectedId = v.id;
+      _speed = 1.0;
+    });
+    _loadSpeed();
     await widget.onSelect(v);
     if (widget.firstRun && mounted) Navigator.of(context).pop();
   }
@@ -412,7 +463,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
   ) {
     final name = languageName(code, ui);
     final native = nativeLanguageName(code);
-    final count = widget.catalog.voices
+    final count = _catalog.voices
         .where((v) => v.language == code && _installed.contains(v.id))
         .length;
     return ListTile(
@@ -434,7 +485,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     final l10n = AppLocalizations.of(context);
     final ui = _uiLanguage;
     final lang = _language ?? ui;
-    final voices = widget.catalog.forLanguage(lang);
+    final voices = _catalog.forLanguage(lang);
 
     return Scaffold(
       appBar: AppBar(
@@ -445,15 +496,17 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
         child: ListView(
           padding: const EdgeInsets.all(12),
           children: [
-            if (_languages.length > 1)
+            _voicesHeading(l10n, ui, lang),
+            if (_catalog.isBundled || _catalog.voices.isEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: _languageSelector(l10n, ui, lang),
-              ),
-            if (widget.catalog.isBundled || widget.catalog.voices.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(l10n.downloadsNeedInternet),
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+                child: Text(
+                  l10n.downloadsNeedInternet,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
             if (_message != null)
               Padding(
@@ -475,37 +528,42 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     );
   }
 
-  /// The main control of the screen (it decides which voices are listed), so
-  /// it is the most prominent element: tall, tinted, with a globe and arrow.
-  Widget _languageSelector(AppLocalizations l10n, String ui, String lang) {
+  /// Heading of the voice list naming the language, with a link that
+  /// switches it (only when the catalog has other languages).
+  Widget _voicesHeading(AppLocalizations l10n, String ui, String lang) {
     final scheme = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: double.infinity,
-      height: 64,
-      child: FilledButton(
-        key: const Key('language-selector'),
-        style: FilledButton.styleFrom(
-          backgroundColor: scheme.primaryContainer,
-          foregroundColor: scheme.onPrimaryContainer,
-          side: BorderSide(color: scheme.primary, width: 2),
-        ),
-        onPressed: _chooseLanguage,
-        child: Row(
-          children: [
-            const Icon(Icons.language, size: 28),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.languageSelectorLabel(languageName(lang, ui)),
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+    final name = languageName(lang, ui);
+    // Hungarian language names are lowercase inside a sentence.
+    final inText = ui == 'hu' ? name.toLowerCase() : name;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 8, 0, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              l10n.voicesForLanguage(inText),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+          ),
+          if (_languages.length > 1)
+            TextButton(
+              key: const Key('language-selector'),
+              onPressed: _chooseLanguage,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.changeLanguage,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Icon(Icons.chevron_right, color: scheme.outline),
+                ],
               ),
             ),
-            const Icon(Icons.arrow_drop_down, size: 36),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -515,7 +573,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     final isSelected = _selectedId == system.id;
     // Unknown yet (check running or failed) counts as installed.
     final status = _availability[lang] ?? SystemVoiceAvailability.installed;
-    final sample = widget.catalog.sampleText[lang];
+    final sample = _catalog.sampleText[lang];
 
     // A selected system voice keeps working whatever the check says.
     if (isSelected || status == SystemVoiceAvailability.installed) {
@@ -526,12 +584,8 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
         onPlay: sample == null
             ? null
             : () => _previewer.speakSystem(sample, lang),
-        trailing: isSelected
-            ? _selectedLabel(l10n)
-            : OutlinedButton(
-                onPressed: () => _select(system),
-                child: Text(l10n.select),
-              ),
+        selected: isSelected,
+        onSelect: () => _select(system),
       );
     }
     if (status == SystemVoiceAvailability.missingData) {
@@ -539,7 +593,6 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
         key: const Key('voice-system'),
         title: l10n.systemVoice,
         subtitle: l10n.systemVoiceMissing,
-        trailing: const SizedBox.shrink(),
         // Too long for the trailing slot: it would squeeze the title.
         footer: Padding(
           padding: const EdgeInsets.only(top: 4),
@@ -578,7 +631,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     return [
       Padding(
         key: const Key('elevenlabs-header'),
-        padding: const EdgeInsets.fromLTRB(4, 16, 4, 8),
+        padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
         child: Row(
           children: [
             Expanded(
@@ -587,13 +640,18 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
                 children: [
                   Text(
                     l10n.elevenLabsSection,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: scheme.primary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(l10n.elevenLabsSectionSubtitle),
+                  Text(
+                    l10n.elevenLabsSectionSubtitle,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -603,6 +661,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 iconSize: 28,
                 tooltip: l10n.elevenLabsSettings,
+                color: scheme.primary,
                 icon: const Icon(Icons.settings),
                 onPressed: () => _openElevenLabs(lang),
               ),
@@ -610,15 +669,38 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
         ),
       ),
       if (!_elHasKey)
-        SizedBox(
-          height: 56,
-          child: OutlinedButton.icon(
+        Material(
+          color: scheme.surfaceContainerLowest,
+          shape: RoundedRectangleBorder(
+            borderRadius: kBorderRadius,
+            side: BorderSide(color: scheme.outlineVariant),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
             key: const Key('elevenlabs-setup'),
-            onPressed: () => _openElevenLabs(lang),
-            icon: const Icon(Icons.settings),
-            label: Text(
-              l10n.elevenLabsSetup,
-              style: const TextStyle(fontSize: 20),
+            onTap: () => _openElevenLabs(lang),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 64),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Icon(Icons.settings, color: scheme.primary, size: 28),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        l10n.elevenLabsSetup,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.primary,
+                        ),
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, color: scheme.outline),
+                  ],
+                ),
+              ),
             ),
           ),
         )
@@ -639,23 +721,14 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     return _row(
       key: Key('voice-${voice.id}'),
       title: v.name,
-      onPlay: widget.catalog.sampleText[lang] == null
+      onPlay: _catalog.sampleText[lang] == null
           ? null
           : () => _playElevenLabs(v, lang),
       playTooltip: l10n.elevenLabsTrial,
-      trailing: isSelected
-          ? _selectedLabel(l10n)
-          : OutlinedButton(
-              onPressed: () => _select(voice),
-              child: Text(l10n.select),
-            ),
+      selected: isSelected,
+      onSelect: () => _select(voice),
     );
   }
-
-  Widget _selectedLabel(AppLocalizations l10n) => Chip(
-    avatar: const Icon(Icons.check, size: 18),
-    label: Text(l10n.selected),
-  );
 
   Widget _catalogRow(CatalogVoice v, AppLocalizations l10n) {
     final installed = _installed.contains(v.id);
@@ -668,19 +741,14 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     final size = l10n.voiceSizeMb((v.sizeBytes / 1000000).round());
     final subtitle = [?gender, size].join(' · ');
 
-    Widget trailing;
+    Widget? trailing;
     if (downloading) {
       trailing = TextButton(
         onPressed: _token?.cancel,
         child: Text(l10n.cancel),
       );
-    } else if (installed && _selectedId == v.id) {
-      trailing = _selectedLabel(l10n);
     } else if (installed) {
-      trailing = OutlinedButton(
-        onPressed: () => _select(v.toVoice()),
-        child: Text(l10n.select),
-      );
+      trailing = null; // the selection radio
     } else {
       trailing = FilledButton(
         onPressed: _downloadingId == null && _checkedInstalled
@@ -701,17 +769,24 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
           ? l10n.installing
           : null,
       trailing: trailing,
+      selected: installed && !downloading && _selectedId == v.id,
+      onSelect: installed && !downloading ? () => _select(v.toVoice()) : null,
       onDelete: installed && !downloading ? () => _delete(v) : null,
       deleteTooltip: l10n.deleteVoice,
       playTooltip: l10n.playSample,
     );
   }
 
+  /// A white voice card. A selectable voice (onSelect != null) gets a radio
+  /// at the end and the whole card selects it; the selected card has a
+  /// brand-blue border and holds that voice's speed slider.
   Widget _row({
     required Key key,
     required String title,
     String? subtitle,
-    required Widget trailing,
+    Widget? trailing,
+    bool selected = false,
+    VoidCallback? onSelect,
     VoidCallback? onPlay,
     bool showProgress = false,
     double? progress,
@@ -721,59 +796,155 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     String? playTooltip,
     Widget? footer,
   }) {
-    return Card(
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
       key: key,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            Row(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: scheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(
+          borderRadius: kBorderRadius,
+          side: selected
+              ? BorderSide(color: scheme.primary, width: 2)
+              : BorderSide(color: scheme.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: selected ? null : onSelect,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 8, 8, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                IconButton(
-                  iconSize: 36,
-                  tooltip:
-                      playTooltip ?? AppLocalizations.of(context).playSample,
-                  icon: const Icon(Icons.play_circle_outline),
-                  onPressed: onPlay,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: const TextStyle(fontSize: 20)),
-                      if (subtitle != null) Text(subtitle),
-                    ],
-                  ),
-                ),
-                trailing,
-                if (onDelete != null)
-                  IconButton(
-                    tooltip: deleteTooltip,
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: onDelete,
-                  ),
-              ],
-            ),
-            ?footer,
-            if (showProgress)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    // value == null → indeterminate (unpacking has no
-                    // measurable progress).
-                    LinearProgressIndicator(value: progress),
-                    if (progressLabel != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(progressLabel),
+                    IconButton(
+                      iconSize: 36,
+                      color: scheme.primary,
+                      tooltip: playTooltip ?? l10n.playSample,
+                      icon: const Icon(Icons.play_circle_outline),
+                      onPressed: onPlay,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (subtitle != null)
+                            Text(
+                              subtitle,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (onDelete != null)
+                      IconButton(
+                        tooltip: deleteTooltip,
+                        color: scheme.onSurfaceVariant,
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: onDelete,
+                      ),
+                    ?trailing,
+                    if (onSelect != null)
+                      IconButton(
+                        iconSize: 30,
+                        tooltip: selected ? l10n.selected : l10n.select,
+                        color: scheme.outline,
+                        disabledColor: scheme.primary,
+                        icon: Icon(
+                          selected
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                        ),
+                        onPressed: selected ? null : onSelect,
                       ),
                   ],
                 ),
-              ),
-          ],
+                ?footer,
+                if (showProgress)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // value == null → indeterminate (unpacking has no
+                        // measurable progress).
+                        LinearProgressIndicator(value: progress),
+                        if (progressLabel != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(progressLabel),
+                          ),
+                      ],
+                    ),
+                  ),
+                if (selected) _speedControl(l10n, scheme),
+              ],
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _speedControl(AppLocalizations l10n, ColorScheme scheme) {
+    const divisions =
+        ((speechSpeedMax - speechSpeedMin) / speechSpeedStep + 0.5) ~/ 1;
+    final muted = TextStyle(fontSize: 16, color: scheme.onSurfaceVariant);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 4, 4, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Divider(height: 16, color: scheme.outlineVariant),
+          Text(
+            l10n.settingsSpeedTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          Slider(
+            key: const Key('speech-speed'),
+            // Track ends line up with the Lassabb / Gyorsabb labels.
+            padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+            value: _speed.clamp(speechSpeedMin, speechSpeedMax).toDouble(),
+            min: speechSpeedMin,
+            max: speechSpeedMax,
+            divisions: divisions,
+            onChanged: (x) => setState(() => _speed = x),
+            onChangeEnd: (x) => _saveSpeed((x * 100).round() / 100),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.settingsSpeedSlower, style: muted),
+              Text(l10n.settingsSpeedFaster, style: muted),
+            ],
+          ),
+          if ((_speed - 1.0).abs() > 0.001)
+            TextButton(
+              key: const Key('speech-speed-reset'),
+              style: TextButton.styleFrom(padding: EdgeInsets.zero),
+              onPressed: _resetSpeed,
+              child: Text(
+                l10n.settingsSpeedReset,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

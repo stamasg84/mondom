@@ -60,14 +60,18 @@
   "@voicePickerTitle": {
     "description": "Title of the voice picker screen."
   },
-  "languageSelectorLabel": "Nyelv: {name}",
-  "@languageSelectorLabel": {
-    "description": "Button at the top of the voice picker showing the chosen language.",
+  "voicesForLanguage": "Elérhető hangok {name} nyelvhez",
+  "@voicesForLanguage": {
+    "description": "Heading above the voice list; {name} is the chosen language's name (lowercase in Hungarian).",
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
+  },
+  "changeLanguage": "Másik nyelv",
+  "@changeLanguage": {
+    "description": "Link next to the voice list heading; opens the language list."
   },
   "installedVoicesCount": "{count} letöltve",
   "@installedVoicesCount": {
@@ -214,15 +218,6 @@
   "settingsSpeedTitle": "Beszéd sebessége",
   "@settingsSpeedTitle": {
     "description": "Title of the speech speed slider."
-  },
-  "settingsSpeedFor": "{voice} hangjára",
-  "@settingsSpeedFor": {
-    "description": "Under the speed slider title: the speed is stored per voice, this names the selected one.",
-    "placeholders": {
-      "voice": {
-        "type": "String"
-      }
-    }
   },
   "settingsSpeedSlower": "Lassabb",
   "@settingsSpeedSlower": {

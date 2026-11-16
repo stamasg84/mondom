@@ -225,7 +225,7 @@ void main() {
 
     final select = find.descendant(
       of: find.byKey(const Key('voice-elevenlabs:hu:b1')),
-      matching: find.text('Kiválasztás'),
+      matching: find.byTooltip('Kiválasztás'),
     );
     await tester.tap(select);
     await settle(tester);

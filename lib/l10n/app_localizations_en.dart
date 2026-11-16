@@ -47,9 +47,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voicePickerTitle => 'Choose a voice';
 
   @override
-  String languageSelectorLabel(String name) {
-    return 'Language: $name';
+  String voicesForLanguage(String name) {
+    return 'Voices for $name';
   }
+
+  @override
+  String get changeLanguage => 'Other language';
 
   @override
   String installedVoicesCount(int count) {
@@ -155,11 +158,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSpeedTitle => 'Speech speed';
-
-  @override
-  String settingsSpeedFor(String voice) {
-    return 'For the voice $voice';
-  }
 
   @override
   String get settingsSpeedSlower => 'Slower';

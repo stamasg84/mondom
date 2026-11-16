@@ -47,9 +47,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get voicePickerTitle => 'Hang kiválasztása';
 
   @override
-  String languageSelectorLabel(String name) {
-    return 'Nyelv: $name';
+  String voicesForLanguage(String name) {
+    return 'Elérhető hangok $name nyelvhez';
   }
+
+  @override
+  String get changeLanguage => 'Másik nyelv';
 
   @override
   String installedVoicesCount(int count) {
@@ -156,11 +159,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get settingsSpeedTitle => 'Beszéd sebessége';
-
-  @override
-  String settingsSpeedFor(String voice) {
-    return '$voice hangjára';
-  }
 
   @override
   String get settingsSpeedSlower => 'Lassabb';

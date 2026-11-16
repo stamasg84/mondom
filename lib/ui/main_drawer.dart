@@ -29,13 +29,8 @@ class MainDrawer extends StatelessWidget {
     required this.speaker,
     required this.recorderFactory,
     this.backup,
-    this.sampleText,
     this.catalog,
   });
-
-  /// A sentence in the speech language, said when the speed slider is
-  /// released.
-  final String? Function()? sampleText;
 
   final BackupService? backup;
 
@@ -75,7 +70,9 @@ class MainDrawer extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 20, 16, 16),
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: scheme.outlineVariant)),
+                border: Border(
+                  bottom: BorderSide(color: scheme.outlineVariant),
+                ),
               ),
               child: Row(
                 children: [
@@ -83,10 +80,7 @@ class MainDrawer extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     l10n.appTitle,
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
@@ -122,8 +116,6 @@ class MainDrawer extends StatelessWidget {
                       alarmVolume: alarmVolume,
                       speaker: speaker,
                       backup: backup,
-                      voice: v,
-                      sampleText: sampleText?.call(),
                     ),
                   ),
                 );

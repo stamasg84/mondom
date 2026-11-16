@@ -2,15 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:mondom/main.dart';
-import 'package:mondom/speech/alarm_volume.dart';
 import 'package:mondom/speech/speaker.dart';
 import 'package:mondom/speech/speech_speed.dart';
-import 'package:mondom/ui/settings_screen.dart';
 import 'package:mondom/voices/elevenlabs_cache.dart';
 import 'package:mondom/voices/elevenlabs_client.dart';
 import 'package:mondom/voices/elevenlabs_engine.dart';
@@ -126,49 +122,6 @@ void main() {
       );
       await e.synthesizeToWav('Szia', speed: 1.2);
       expect(fallback.engine.speeds, [0.75]);
-    });
-  });
-
-  group('settings slider', () {
-    Future<void> pump(WidgetTester tester, {Voice? voice}) async {
-      await tester.pumpWidget(
-        MondomApp(
-          home: SettingsScreen(
-            alarmVolume: AlarmVolume(),
-            speaker: Speaker(
-              engineFactory: (_) async => throw UnimplementedError(),
-              player: FakePlayer(),
-              soundPlayer: FakeSoundPlayer(),
-              alarmPlayer: FakeSoundPlayer(),
-            ),
-            voice: voice,
-          ),
-        ),
-      );
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 100)),
-      );
-      await tester.pump();
-    }
-
-    testWidgets('hidden without a voice', (tester) async {
-      await pump(tester);
-      expect(find.byKey(const Key('speech-speed')), findsNothing);
-    });
-
-    testWidgets('shown with a voice; reset only when not 1.0', (tester) async {
-      final voice = Voice.system('hu');
-      await setSpeechSpeed(voice.id, 1.2);
-      await pump(tester, voice: voice);
-      expect(find.byKey(const Key('speech-speed')), findsOneWidget);
-      expect(find.byKey(const Key('speech-speed-reset')), findsOneWidget);
-      await tester.tap(find.byKey(const Key('speech-speed-reset')));
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 100)),
-      );
-      await tester.pump();
-      expect(await speechSpeed(voice.id), 1.0);
-      expect(find.byKey(const Key('speech-speed-reset')), findsNothing);
     });
   });
 }

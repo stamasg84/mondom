@@ -78,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _installer = VoiceInstaller();
   Catalog _catalog = Catalog.empty;
+  String _appVersion = '0.0.0';
 
   Voice _voice = Voice.system('hu');
 
@@ -106,7 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
     unawaited(_sweepRecordings(repo));
     await _installer.cleanupStaging();
     final info = await PackageInfo.fromPlatform();
-    _catalog = await CatalogRepository(appVersion: info.version).load();
+    _appVersion = info.version;
+    _catalog = await CatalogRepository(appVersion: _appVersion).load();
     if (!mounted) return;
     final uiLang = Localizations.localeOf(context).languageCode;
     final savedId = prefs.getString(_prefKey);
@@ -149,6 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (_) {}
   }
 
+  /// Retries the remote catalog if start-up fell back to the bundled copy.
+  Future<Catalog> _reloadCatalog() async {
+    if (!_catalog.isBundled && _catalog.voices.isNotEmpty) return _catalog;
+    final fresh = await CatalogRepository(appVersion: _appVersion).load();
+    if (!fresh.isBundled) _catalog = fresh;
+    return _catalog;
+  }
+
   Future<void> _openPicker({bool firstRun = false}) async {
     final support = await getApplicationSupportDirectory();
     if (!mounted) return;
@@ -168,6 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
           onSelect: _selectVoice,
           elevenLabs: access,
           selectedLabel: _voice.label,
+          speak: _speaker.speak,
+          reloadCatalog: _reloadCatalog,
         ),
       ),
     );
@@ -274,7 +286,6 @@ class _HomeScreenState extends State<HomeScreen> {
       repo: repo,
       voice: () => _voice,
       onOpenVoicePicker: _openPicker,
-      sampleText: () => _catalog.sampleText[_voice.languageCode],
       catalog: () => _catalog,
       backup: BackupService(repo: repo, recordings: _recordings),
     );

@@ -3,7 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mondom/l10n/app_localizations.dart';
+import 'package:mondom/speech/speech_speed.dart';
 import 'package:mondom/ui/voice_picker.dart';
 import 'package:mondom/voices/catalog.dart';
 import 'package:mondom/voices/system_tts_info.dart';
@@ -94,6 +96,8 @@ void main() {
     String selectedId = '',
     Catalog? withCatalog,
     Set<String> installedIds = const {},
+    List<String>? said,
+    Future<Catalog> Function()? reload,
   }) async {
     info = FakeSystemInfo();
     final previewer = FakePreviewer();
@@ -121,6 +125,8 @@ void main() {
           firstRun: firstRun,
           previewer: previewer,
           onSelect: (v) async => selected.add(v),
+          speak: (t) async => said?.add(t),
+          reloadCatalog: reload,
         ),
       ),
     );
@@ -148,7 +154,7 @@ void main() {
     tester,
   ) async {
     await pump(tester);
-    expect(find.text('Nyelv: Magyar'), findsOneWidget);
+    expect(find.text('Elérhető hangok magyar nyelvhez'), findsOneWidget);
     expect(find.text('Android alapértelmezett'), findsOneWidget);
     expect(find.text('imre'), findsOneWidget);
     expect(find.text('berta'), findsOneWidget);
@@ -173,7 +179,7 @@ void main() {
     tester,
   ) async {
     await pump(tester, firstRun: false, selectedId: 'alma');
-    expect(find.text('Nyelv: Svéd'), findsOneWidget);
+    expect(find.text('Elérhető hangok svéd nyelvhez'), findsOneWidget);
     expect(find.text('imre'), findsNothing);
   });
 
@@ -189,7 +195,7 @@ void main() {
     await tester.tap(find.byKey(const Key('language-sv')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Nyelv: Svéd'), findsOneWidget);
+    expect(find.text('Elérhető hangok svéd nyelvhez'), findsOneWidget);
     expect(find.byKey(const Key('voice-system')), findsOneWidget);
     expect(find.text('nst'), findsOneWidget);
     expect(find.text('alma'), findsOneWidget);
@@ -202,7 +208,7 @@ void main() {
     await tester.pump();
     expect(previewer.spoken, ['Hej, det här är ett prov.']);
 
-    await tester.tap(inSystemRow(find.text('Kiválasztás')));
+    await tester.tap(inSystemRow(find.byTooltip('Kiválasztás')));
     await tester.pumpAndSettle();
     expect(selected.single.id, 'system-sv');
     expect(selected.single.languageCode, 'sv');
@@ -218,13 +224,13 @@ void main() {
       inSystemRow(find.text('A hang nincs letöltve a telefonon.')),
       findsOneWidget,
     );
-    expect(inSystemRow(find.text('Kiválasztás')), findsNothing);
+    expect(inSystemRow(find.byTooltip('Kiválasztás')), findsNothing);
     await tester.tap(find.text('Letöltés az Android beállításaiban'));
     expect(info.opened, 1);
 
     info.status['sv'] = SystemVoiceAvailability.installed;
     await resume(tester);
-    expect(inSystemRow(find.text('Kiválasztás')), findsOneWidget);
+    expect(inSystemRow(find.byTooltip('Kiválasztás')), findsOneWidget);
   });
 
   testWidgets('unsupported: hidden for sv, hint for the UI language', (
@@ -253,7 +259,7 @@ void main() {
     info.status['sv'] = SystemVoiceAvailability.unsupported;
     await resume(tester);
     expect(find.byKey(const Key('voice-system')), findsOneWidget);
-    expect(inSystemRow(find.text('Kiválasztva')), findsOneWidget);
+    expect(inSystemRow(find.byTooltip('Kiválasztva')), findsOneWidget);
   });
 
   testWidgets('installed marker on a language with a downloaded voice', (
@@ -284,7 +290,7 @@ void main() {
   ) async {
     final (_, selected) = await pump(tester);
     expect(find.byKey(const Key('skip')), findsNothing);
-    await tester.tap(inSystemRow(find.text('Kiválasztás')));
+    await tester.tap(inSystemRow(find.byTooltip('Kiválasztás')));
     await tester.pumpAndSettle();
     expect(selected.single.kind, VoiceKind.system);
     expect(find.byType(VoicePickerScreen), findsNothing);
@@ -308,7 +314,7 @@ void main() {
 
   testWidgets('not first run: selecting keeps the picker open', (tester) async {
     final (_, selected) = await pump(tester, firstRun: false);
-    await tester.tap(inSystemRow(find.text('Kiválasztás')));
+    await tester.tap(inSystemRow(find.byTooltip('Kiválasztás')));
     await tester.pumpAndSettle();
     expect(selected.single.kind, VoiceKind.system);
     expect(find.byType(VoicePickerScreen), findsOneWidget);
@@ -329,5 +335,72 @@ void main() {
     );
     await tester.pump();
     expect(find.text('A minta nem érhető el'), findsOneWidget);
+  });
+
+  group('speed slider', () {
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    testWidgets('only in the selected card', (tester) async {
+      await pump(tester, firstRun: false, selectedId: 'system-hu');
+      expect(
+        inSystemRow(find.byKey(const Key('speech-speed'))),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('speech-speed')), findsOneWidget);
+    });
+
+    testWidgets('nothing selected: no slider', (tester) async {
+      await pump(tester);
+      expect(find.byKey(const Key('speech-speed')), findsNothing);
+    });
+
+    testWidgets('reset only when not 1.0; resetting saves and speaks', (
+      tester,
+    ) async {
+      final id = Voice.system('hu').id;
+      await setSpeechSpeed(id, 1.2);
+      final said = <String>[];
+      await pump(tester, firstRun: false, selectedId: id, said: said);
+      expect(find.byKey(const Key('speech-speed-reset')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('speech-speed-reset')));
+      await tester.pumpAndSettle();
+      expect(await speechSpeed(id), 1.0);
+      expect(said, ['Szia, ez egy minta.']);
+      expect(find.byKey(const Key('speech-speed-reset')), findsNothing);
+    });
+  });
+
+  testWidgets('bundled catalog: retried on open, note gone when it loads', (
+    tester,
+  ) async {
+    final bundled = Catalog(
+      voices: [cv('imre', 'hu', VoiceGender.male)],
+      sampleText: const {'hu': 'Szia!'},
+      isBundled: true,
+    );
+    var calls = 0;
+    await pump(
+      tester,
+      withCatalog: bundled,
+      reload: () async {
+        calls++;
+        return catalog;
+      },
+    );
+    expect(calls, 1);
+    expect(find.textContaining('internet kell'), findsNothing);
+    expect(find.text('berta'), findsOneWidget);
+  });
+
+  testWidgets('bundled catalog: note stays when the retry fails too', (
+    tester,
+  ) async {
+    final bundled = Catalog(
+      voices: [cv('imre', 'hu', VoiceGender.male)],
+      sampleText: const {'hu': 'Szia!'},
+      isBundled: true,
+    );
+    await pump(tester, withCatalog: bundled, reload: () async => bundled);
+    expect(find.textContaining('internet kell'), findsOneWidget);
   });
 }

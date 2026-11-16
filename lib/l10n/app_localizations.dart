@@ -164,11 +164,17 @@ abstract class AppLocalizations {
   /// **'Hang kiválasztása'**
   String get voicePickerTitle;
 
-  /// Button at the top of the voice picker showing the chosen language.
+  /// Heading above the voice list; {name} is the chosen language's name (lowercase in Hungarian).
   ///
   /// In hu, this message translates to:
-  /// **'Nyelv: {name}'**
-  String languageSelectorLabel(String name);
+  /// **'Elérhető hangok {name} nyelvhez'**
+  String voicesForLanguage(String name);
+
+  /// Link next to the voice list heading; opens the language list.
+  ///
+  /// In hu, this message translates to:
+  /// **'Másik nyelv'**
+  String get changeLanguage;
 
   /// Marker on a language in the language list: downloaded voices.
   ///
@@ -361,12 +367,6 @@ abstract class AppLocalizations {
   /// In hu, this message translates to:
   /// **'Beszéd sebessége'**
   String get settingsSpeedTitle;
-
-  /// Under the speed slider title: the speed is stored per voice, this names the selected one.
-  ///
-  /// In hu, this message translates to:
-  /// **'{voice} hangjára'**
-  String settingsSpeedFor(String voice);
 
   /// Left end label of the speed slider.
   ///
