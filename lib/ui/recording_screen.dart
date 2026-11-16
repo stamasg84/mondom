@@ -412,8 +412,18 @@ class _RecordingScreenState extends State<RecordingScreen>
           );
     return SizedBox(
       height: 76,
+      // Secondary actions: white card buttons with blue text, so only Save
+      // (and Record) is a solid blue button.
       child: tonal
-          ? FilledButton.tonal(onPressed: onPressed, child: child)
+          ? OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerLowest,
+              ),
+              onPressed: onPressed,
+              child: child,
+            )
           : FilledButton(onPressed: onPressed, child: child),
     );
   }

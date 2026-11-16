@@ -93,6 +93,11 @@ ThemeData _build(ColorScheme scheme) {
       style: OutlinedButton.styleFrom(
         shape: kShape,
         side: BorderSide(color: scheme.outlineVariant),
+        textStyle: const TextStyle(
+          fontFamily: _font,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
