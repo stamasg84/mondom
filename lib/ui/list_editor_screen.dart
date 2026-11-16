@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
+import 'app_theme.dart';
 import 'recording_screen.dart';
 import 'row_badges.dart';
 
@@ -182,9 +183,9 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: kBorderRadius,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: kBorderRadius,
           onTap: isHistory ? null : () => _edit(l10n, s),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 72),

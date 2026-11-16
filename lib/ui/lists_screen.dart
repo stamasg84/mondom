@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
+import 'app_theme.dart';
 import 'list_colors.dart';
 import 'list_editor_screen.dart';
 
@@ -173,7 +174,7 @@ class _ListsScreenState extends State<ListsScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: tones.row,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: kBorderRadius,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => _openEditor(l.id),

@@ -10,10 +10,12 @@ import '../storage/backup.dart';
 import '../storage/lists_repository.dart';
 import '../voices/elevenlabs_client.dart';
 import '../voices/voice.dart';
+import 'app_theme.dart';
 import 'list_colors.dart';
 import 'main_drawer.dart';
 import '../voices/catalog.dart';
 import 'row_badges.dart';
+import 'speak_glyph.dart';
 
 /// Main screen: list chips, big sentence rows, always-visible free text.
 class SpeakingScreen extends StatefulWidget {
@@ -326,9 +328,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     final scheme = Theme.of(context).colorScheme;
     // Same corner radius as the sentence rows and the banner, not the
     // default circular IconButton shape.
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    );
+    final shape = kShape;
     return IconButton(
       iconSize: 32,
       tooltip: l10n.loadSentence,
@@ -340,7 +340,8 @@ class _SpeakingScreenState extends State<SpeakingScreen>
               shape: shape,
             )
           : IconButton.styleFrom(
-              side: BorderSide(color: scheme.outline),
+              backgroundColor: scheme.surfaceContainerLowest,
+              side: BorderSide(color: scheme.outlineVariant),
               shape: shape,
             ),
       icon: const Icon(Icons.arrow_downward),
@@ -354,7 +355,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Material(
         color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: kBorderRadius,
         child: Row(
           children: [
             const SizedBox(width: 16),
@@ -384,7 +385,23 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     );
   }
 
+  /// The list's colour as a small dot: lists stay recognisable by colour
+  /// without the screen turning into a row of pastel tiles.
+  Widget _colorDot(SentenceList l, {required bool selected}) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: 14,
+      height: 14,
+      decoration: BoxDecoration(
+        color: listColor(context, l.color).stripe,
+        shape: BoxShape.circle,
+        border: selected ? Border.all(color: scheme.onPrimary, width: 2) : null,
+      ),
+    );
+  }
+
   Widget _chipRow(AppLocalizations l10n, List<SentenceList> lists) {
+    final scheme = Theme.of(context).colorScheme;
     final shown = [
       for (final l in lists)
         if (l.pinned || l.id == _currentId) l,
@@ -392,6 +409,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             // Wraps instead of scrolling sideways: a chip scrolled off-screen
@@ -402,33 +420,44 @@ class _SpeakingScreenState extends State<SpeakingScreen>
               children: [
                 for (final l in shown)
                   ChoiceChip(
+                    avatar: _colorDot(l, selected: l.id == _currentId),
                     label: Text(
                       _title(l10n, l),
-                      style: const TextStyle(fontSize: 20),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: l.id == _currentId
+                            ? scheme.onPrimary
+                            : scheme.onSurface,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 12,
-                    ),
+                    // Tight: the dot and the text sit close, so three short
+                    // chips fit a row; the tap target stays >= 48 dp.
+                    padding: const EdgeInsets.fromLTRB(10, 8, 6, 8),
+                    labelPadding: const EdgeInsets.only(left: 4, right: 6),
                     selected: l.id == _currentId,
                     showCheckmark: false,
-                    backgroundColor: listColor(context, l.color).chip,
-                    selectedColor: listColor(context, l.color).chip,
-                    side: l.id == _currentId
-                        ? BorderSide(
-                            width: 4,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          )
-                        : BorderSide.none,
+                    side: BorderSide(
+                      color: l.id == _currentId
+                          ? scheme.primary
+                          : scheme.outlineVariant,
+                    ),
                     onSelected: (_) => _showList(l),
                   ),
               ],
             ),
           ),
           IconButton(
-            iconSize: 36,
+            iconSize: 30,
+            style: IconButton.styleFrom(
+              backgroundColor: scheme.surfaceContainerLowest,
+              side: BorderSide(color: scheme.outlineVariant),
+              shape: kShape,
+            ),
             tooltip: l10n.allLists,
-            icon: Icon(_expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+            // A grid, not ▾: it opens the grid of all lists, and a down
+            // arrow would collide with builder mode's ↓ right above it.
+            icon: Icon(_expanded ? Icons.close : Icons.grid_view),
             onPressed: () => setState(() => _expanded = !_expanded),
           ),
         ],
@@ -437,6 +466,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
   }
 
   Widget _listGrid(AppLocalizations l10n, List<SentenceList> lists) {
+    final scheme = Theme.of(context).colorScheme;
     return GridView.count(
       padding: const EdgeInsets.all(12),
       crossAxisCount: 2,
@@ -447,20 +477,32 @@ class _SpeakingScreenState extends State<SpeakingScreen>
         for (final l in lists)
           FilledButton.tonal(
             style: FilledButton.styleFrom(
-              backgroundColor: listColor(context, l.color).chip,
-              foregroundColor: Theme.of(context).colorScheme.onSurface,
-              side: l.id == _currentId
-                  ? BorderSide(
-                      width: 4,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    )
-                  : null,
+              backgroundColor: l.id == _currentId
+                  ? scheme.primary
+                  : scheme.surfaceContainerLowest,
+              foregroundColor: l.id == _currentId
+                  ? scheme.onPrimary
+                  : scheme.onSurface,
+              side: BorderSide(
+                color: l.id == _currentId
+                    ? scheme.primary
+                    : scheme.outlineVariant,
+              ),
             ),
             onPressed: () => _showList(l),
-            child: Text(
-              _title(l10n, l),
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _colorDot(l, selected: l.id == _currentId),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    _title(l10n, l),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 22),
+                  ),
+                ),
+              ],
             ),
           ),
       ],
@@ -654,80 +696,101 @@ class _SpeakingScreenState extends State<SpeakingScreen>
     final scheme = Theme.of(context).colorScheme;
     final tones = listColor(context, colorKey);
     final active = _tappedId == s.id;
+    // White card with the list's colour as a strip on the left edge; only
+    // the tapped/speaking row is tinted, so it stands out.
     return Material(
       key: isNext ? _nextKey : null,
+      clipBehavior: Clip.antiAlias,
       color: active
           ? tones.rowActive
           : s.said
-          ? Color.alphaBlend(scheme.surface.withValues(alpha: 0.7), tones.row)
-          : tones.row,
+          ? scheme.surfaceContainerLow
+          : scheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: kBorderRadius,
         side: _loadArmed
             ? BorderSide(width: 3, color: scheme.primary)
             : isNext
             ? BorderSide(width: 3, color: scheme.onSurface)
-            : BorderSide.none,
+            : BorderSide(color: scheme.outlineVariant),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
         onTap: () =>
             _loadArmed ? _loadIntoField(s.body) : _speak(s.body, row: s),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: 72,
-            minWidth: double.infinity,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: 6,
+                color: s.said
+                    ? tones.stripe.withValues(alpha: 0.35)
+                    : tones.stripe,
+              ),
+              Expanded(child: _rowContent(s, active: active)),
+            ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                if (s.alarm)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: AlarmBadge(),
-                  ),
-                Expanded(
-                  child: Text(
-                    s.body,
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: s.said
-                          ? scheme.onSurface.withValues(alpha: saidTextAlpha)
-                          : null,
-                    ),
-                  ),
+        ),
+      ),
+    );
+  }
+
+  Widget _rowContent(Sentence s, {required bool active}) {
+    final scheme = Theme.of(context).colorScheme;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: 72,
+        minWidth: double.infinity,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            if (s.alarm)
+              const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: AlarmBadge(),
+              ),
+            Expanded(
+              child: Text(
+                s.body,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                  color: s.said
+                      ? scheme.onSurface.withValues(alpha: saidTextAlpha)
+                      : null,
                 ),
-                if (s.said && !_loadArmed)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 28,
-                      color: scheme.onSurface.withValues(alpha: 0.5),
-                    ),
-                  ),
-                if (_loadArmed)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: Icon(
-                      Icons.arrow_downward,
-                      size: 32,
-                      color: scheme.primary,
-                    ),
-                  ),
-                if (active && widget.speaker.busy)
-                  const Padding(
-                    padding: EdgeInsets.only(left: 12),
-                    child: SizedBox(
-                      height: 28,
-                      width: 28,
-                      child: CircularProgressIndicator(strokeWidth: 3),
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
+            if (s.said && !_loadArmed)
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Icon(
+                  Icons.check_circle,
+                  size: 28,
+                  color: scheme.onSurface.withValues(alpha: 0.5),
+                ),
+              ),
+            if (_loadArmed)
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Icon(
+                  Icons.arrow_downward,
+                  size: 32,
+                  color: scheme.primary,
+                ),
+              ),
+            if (active && widget.speaker.busy)
+              const Padding(
+                padding: EdgeInsets.only(left: 12),
+                child: SizedBox(
+                  height: 28,
+                  width: 28,
+                  child: CircularProgressIndicator(strokeWidth: 3),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -739,10 +802,15 @@ class _SpeakingScreenState extends State<SpeakingScreen>
       builder: (context, _) {
         final speaker = widget.speaker;
         final error = speaker.error;
+        // Same grey as the page with a hairline on top: the field and the
+        // button sit on the page like the cards do, and the list slides
+        // under a line instead of under a white band.
+        final scheme = Theme.of(context).colorScheme;
         return Material(
-          elevation: 8,
+          color: scheme.surface,
+          shape: Border(top: BorderSide(color: scheme.outlineVariant)),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -766,7 +834,6 @@ class _SpeakingScreenState extends State<SpeakingScreen>
                         style: const TextStyle(fontSize: 24),
                         textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
                           hintText: l10n.textHint,
                           suffixIcon: ValueListenableBuilder<TextEditingValue>(
                             valueListenable: _controller,
@@ -792,24 +859,34 @@ class _SpeakingScreenState extends State<SpeakingScreen>
                         ),
                       )
                     else
-                      SizedBox(
-                        height: 56,
-                        child: FilledButton(
-                          onPressed: speaker.ready
-                              ? () => _speak(_controller.text)
-                              : null,
-                          child: speaker.busy && _tappedId == null
-                              ? const SizedBox(
-                                  height: 28,
-                                  width: 28,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 3,
-                                  ),
-                                )
-                              : Text(
-                                  l10n.speak,
-                                  style: const TextStyle(fontSize: 26),
-                                ),
+                      // Icon-only, like a chat app's send button: no label
+                      // to translate, and the text field gets the width.
+                      // The tooltip is also TalkBack's label.
+                      Tooltip(
+                        message: l10n.speak,
+                        child: SizedBox(
+                          height: 64,
+                          width: 80,
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                            ),
+                            onPressed: speaker.ready
+                                ? () => _speak(_controller.text)
+                                : null,
+                            child: speaker.busy && _tappedId == null
+                                ? SizedBox(
+                                    height: 28,
+                                    width: 28,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                    ),
+                                  )
+                                : const SpeakGlyph(size: 60),
+                          ),
                         ),
                       ),
                   ],

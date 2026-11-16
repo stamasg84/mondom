@@ -15,6 +15,7 @@ import 'storage/backup.dart';
 import 'storage/database.dart';
 import 'storage/lists_repository.dart';
 import 'ui/about_licenses.dart';
+import 'ui/app_theme.dart';
 import 'ui/speaking_screen.dart';
 import 'ui/voice_picker.dart';
 import 'voices/catalog.dart';
@@ -52,7 +53,7 @@ class MondomApp extends StatelessWidget {
           locale?.languageCode == 'hu'
           ? const Locale('hu')
           : const Locale('en'),
-      theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
+      theme: buildLightTheme(),
       home: home,
     );
   }

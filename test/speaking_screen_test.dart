@@ -174,7 +174,7 @@ void main() {
     // Free text while history is shown goes in at the top.
     await tester.enterText(find.byType(TextField), 'Új');
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilledButton, 'Mondom'));
+    await tester.tap(find.byTooltip('Mondom'));
     await settle(tester);
     expect(await historyBodies(), ['Új', 'A', 'B', 'C']);
 
@@ -226,7 +226,7 @@ void main() {
     await pumpScreen(tester);
     await tester.enterText(find.byType(TextField), 'Szia!');
     await tester.pump();
-    await tester.tap(find.widgetWithText(FilledButton, 'Mondom'));
+    await tester.tap(find.byTooltip('Mondom'));
     await settle(tester);
     expect(speaker.spoken, ['Szia!']);
     expect(find.text('Szia!'), findsOneWidget); // text stays for repeat
@@ -306,7 +306,7 @@ void main() {
       await tester.tap(load);
       await tester.pump();
       await tester.enterText(find.byType(TextField), 'Szia!');
-      await tester.tap(find.widgetWithText(FilledButton, 'Mondom'));
+      await tester.tap(find.byTooltip('Mondom'));
       await settle(tester);
       expect(banner, findsNothing);
       expect(speaker.spoken, ['Szia!']);
@@ -426,7 +426,7 @@ void main() {
       await openConversation(tester);
       await tester.enterText(find.byType(TextField), 'Szia!');
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'Mondom'));
+      await tester.tap(find.byTooltip('Mondom'));
       await settle(tester);
       expect(await saidFlags(), [false, false, false]);
       expect(find.text(c), findsOneWidget);

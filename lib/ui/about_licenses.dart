@@ -55,5 +55,12 @@ void registerExtraLicenses() {
       'sv_SE/alma/medium/MODEL_CARD\n'
       'https://creativecommons.org/licenses/by/4.0/',
     );
+    yield const LicenseEntryWithLineBreaks(
+      ['Atkinson Hyperlegible Next (font)'],
+      'Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors '
+      '(https://github.com/googlefonts/atkinson-hyperlegible-next).\n'
+      'Licensed under the SIL Open Font License, Version 1.1.\n'
+      'https://openfontlicense.org',
+    );
   });
 }

@@ -461,22 +461,28 @@ void main() {
     expect(inAppBar('Alap'), findsOneWidget);
     expect(inAppBar('Mondom'), findsNothing);
 
+    // Rows are white cards; the list's colour is the strip on the left.
     Color? rowColor() => tester
-        .widget<Material>(
+        .widget<Container>(
           find
-              .ancestor(
-                of: find.text('Kérek vizet!'),
-                matching: find.byType(Material),
+              .descendant(
+                of: find
+                    .ancestor(
+                      of: find.text('Kérek vizet!'),
+                      matching: find.byType(IntrinsicHeight),
+                    )
+                    .first,
+                matching: find.byType(Container),
               )
               .first,
         )
         .color;
-    expect(rowColor(), listColorFor('blue', Brightness.light)!.row);
+    expect(rowColor(), listColorFor('blue', Brightness.light)!.stripe);
 
     final alap = (await lists(tester)).firstWhere((l) => l.title == 'Alap');
     await tester.runAsync(() => repo.setColor(alap.id, 'green'));
     await settle(tester);
-    expect(rowColor(), listColorFor('green', Brightness.light)!.row);
+    expect(rowColor(), listColorFor('green', Brightness.light)!.stripe);
 
     // Switching lists changes the title.
     await tester.tap(
