@@ -722,7 +722,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                width: 6,
+                width: 8,
                 color: s.said
                     ? tones.stripe.withValues(alpha: 0.35)
                     : tones.stripe,

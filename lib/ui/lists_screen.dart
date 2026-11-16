@@ -169,96 +169,120 @@ class _ListsScreenState extends State<ListsScreen> {
     final scheme = Theme.of(context).colorScheme;
     final isOpen = l.id == widget.currentListId;
     final tones = listColor(context, l.color);
+    final meta = TextStyle(fontSize: 17, color: scheme.onSurfaceVariant);
+    // Same language as the speaking screen's rows: white card, the list's
+    // colour as a thin strip on the left; the open list gets a blue border.
     return Padding(
       key: ValueKey(l.id),
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: tones.row,
-        borderRadius: kBorderRadius,
+        color: scheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(
+          borderRadius: kBorderRadius,
+          side: isOpen
+              ? BorderSide(width: 2, color: scheme.primary)
+              : BorderSide(color: scheme.outlineVariant),
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => _openEditor(l.id),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 72),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(width: 12, color: tones.stripe),
-                ),
-              ),
-              padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _title(l10n, l),
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 2,
-                          children: [
-                            Text(
-                              l10n.sentenceCount(count),
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            if (l.pinned)
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.push_pin, size: 18),
-                                  const SizedBox(width: 2),
-                                  Text(
-                                    l10n.pinnedLabel,
-                                    style: const TextStyle(fontSize: 16),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 8, color: tones.stripe),
+                Expanded(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 72),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 14,
+                        top: 10,
+                        bottom: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _title(l10n, l),
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ],
-                              ),
-                            if (isOpen)
-                              Text(
-                                l10n.currentlyOpen,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: scheme.primary,
+                                ),
+                                const SizedBox(height: 2),
+                                Wrap(
+                                  spacing: 14,
+                                  runSpacing: 2,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      l10n.sentenceCount(count),
+                                      style: meta,
+                                    ),
+                                    if (l.pinned)
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.push_pin_outlined,
+                                            size: 17,
+                                            color: scheme.onSurfaceVariant,
+                                          ),
+                                          const SizedBox(width: 3),
+                                          Text(l10n.pinnedLabel, style: meta),
+                                        ],
+                                      ),
+                                    if (isOpen)
+                                      Text(
+                                        l10n.currentlyOpen,
+                                        style: meta.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: scheme.primary,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            iconSize: 28,
+                            constraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
+                            tooltip: l10n.moreActions,
+                            color: scheme.onSurfaceVariant,
+                            icon: const Icon(Icons.more_vert),
+                            onPressed: () => _actions(l, count),
+                          ),
+                          ReorderableDragStartListener(
+                            index: index,
+                            child: Semantics(
+                              label: l10n.reorderHandle,
+                              child: SizedBox(
+                                width: 48,
+                                height: 48,
+                                child: Icon(
+                                  Icons.drag_indicator,
+                                  size: 28,
+                                  color: scheme.outline,
                                 ),
                               ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    iconSize: 28,
-                    constraints: const BoxConstraints(
-                      minWidth: 48,
-                      minHeight: 48,
-                    ),
-                    tooltip: l10n.moreActions,
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () => _actions(l, count),
-                  ),
-                  ReorderableDragStartListener(
-                    index: index,
-                    child: Semantics(
-                      label: l10n.reorderHandle,
-                      child: const SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: Icon(Icons.drag_handle, size: 28),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 4),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
