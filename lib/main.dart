@@ -56,6 +56,7 @@ class MondomApp extends StatelessWidget {
           ? const Locale('hu')
           : const Locale('en'),
       theme: buildLightTheme(),
+      darkTheme: buildDarkTheme(),
       home: home,
     );
   }

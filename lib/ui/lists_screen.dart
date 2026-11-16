@@ -5,6 +5,7 @@ import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
 import 'app_theme.dart';
+import 'sheet_action.dart';
 import 'list_colors.dart';
 import 'list_editor_screen.dart';
 
@@ -304,19 +305,21 @@ class _ListsScreenState extends State<ListsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!isHistory)
-                _sheetRow(context, Icons.edit, l10n.renameList, 'rename'),
-              _sheetRow(
-                context,
-                l.pinned ? Icons.push_pin_outlined : Icons.push_pin,
-                l.pinned ? l10n.unpinList : l10n.pinList,
-                'pin',
+                SheetAction(
+                  icon: Icons.edit_outlined,
+                  label: l10n.renameList,
+                  value: 'rename',
+                ),
+              SheetAction(
+                icon: l.pinned ? Icons.push_pin_outlined : Icons.push_pin,
+                label: l.pinned ? l10n.unpinList : l10n.pinList,
+                value: 'pin',
               ),
               if (!isHistory)
-                _sheetRow(
-                  context,
-                  Icons.palette,
-                  l10n.listColorLabel,
-                  'color',
+                SheetAction(
+                  icon: Icons.palette_outlined,
+                  label: l10n.listColorLabel,
+                  value: 'color',
                   trailing: _Swatch(
                     color: listColor(context, l.color).stripe,
                     size: 28,
@@ -324,16 +327,24 @@ class _ListsScreenState extends State<ListsScreen> {
                   ),
                 ),
               if (canRestore)
-                _sheetRow(
-                  context,
-                  Icons.restore,
-                  l10n.restoreDefaultSentences,
-                  'restore',
+                SheetAction(
+                  icon: Icons.restore,
+                  label: l10n.restoreDefaultSentences,
+                  value: 'restore',
                 ),
               if (isConversation)
-                _sheetRow(context, Icons.replay, l10n.resetSaid, 'reset'),
+                SheetAction(
+                  icon: Icons.replay,
+                  label: l10n.resetSaid,
+                  value: 'reset',
+                ),
               if (!isHistory)
-                _sheetRow(context, Icons.delete, l10n.deleteList, 'delete'),
+                SheetAction(
+                  icon: Icons.delete_outline,
+                  label: l10n.deleteList,
+                  value: 'delete',
+                  danger: true,
+                ),
             ],
           ),
         ),
@@ -356,37 +367,6 @@ class _ListsScreenState extends State<ListsScreen> {
       case 'delete':
         await _delete(l, count);
     }
-  }
-
-  Widget _sheetRow(
-    BuildContext context,
-    IconData icon,
-    String label,
-    String value, {
-    Widget? trailing,
-  }) {
-    return InkWell(
-      onTap: () => Navigator.of(context).pop(value),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: 64,
-          minWidth: double.infinity,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            children: [
-              Icon(icon, size: 28),
-              const SizedBox(width: 16),
-              Flexible(
-                child: Text(label, style: const TextStyle(fontSize: 22)),
-              ),
-              if (trailing != null) ...[const SizedBox(width: 12), trailing],
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   /// Grid of swatches; tapping one saves at once and closes the dialog.

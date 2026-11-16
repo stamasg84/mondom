@@ -205,6 +205,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ? FilledButton.icon(
                                       style: FilledButton.styleFrom(
                                         backgroundColor: Colors.red.shade700,
+                                        foregroundColor: Colors.white,
                                       ),
                                       onPressed: widget.speaker.stop,
                                       icon: const Icon(Icons.stop, size: 32),

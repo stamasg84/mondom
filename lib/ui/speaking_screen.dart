@@ -820,7 +820,9 @@ class _SpeakingScreenState extends State<SpeakingScreen>
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
                       error,
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ),
                 Row(

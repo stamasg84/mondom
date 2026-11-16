@@ -8,6 +8,7 @@ import 'app_theme.dart';
 import 'list_colors.dart';
 import 'recording_screen.dart';
 import 'row_badges.dart';
+import 'sheet_action.dart';
 
 /// Per-list sentence editor: edit, reorder, delete, copy/move, add lines.
 /// List-level actions (rename, pin, delete) live in the lists overview.
@@ -401,30 +402,45 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
             children: [
               if (!isHistory) _AlarmSwitch(repo: widget.repo, sentence: s),
               if (!isHistory && s.recordingPath == null)
-                _sheetRow(context, Icons.mic, l10n.recordOwnVoice, 'record'),
-              if (!isHistory && s.recordingPath != null) ...[
-                _sheetRow(
-                  context,
-                  Icons.play_arrow,
-                  l10n.recordingListen,
-                  'listen',
+                SheetAction(
+                  icon: Icons.mic_none,
+                  label: l10n.recordOwnVoice,
+                  value: 'record',
                 ),
-                _sheetRow(context, Icons.mic, l10n.recordingNew, 'record'),
-                _sheetRow(
-                  context,
-                  Icons.mic_off,
-                  l10n.recordingDelete,
-                  'deleteRecording',
+              if (!isHistory && s.recordingPath != null) ...[
+                SheetAction(
+                  icon: Icons.play_arrow_outlined,
+                  label: l10n.recordingListen,
+                  value: 'listen',
+                ),
+                SheetAction(
+                  icon: Icons.mic_none,
+                  label: l10n.recordingNew,
+                  value: 'record',
+                ),
+                SheetAction(
+                  icon: Icons.mic_off_outlined,
+                  label: l10n.recordingDelete,
+                  value: 'deleteRecording',
+                  danger: true,
                 ),
               ],
-              _sheetRow(context, Icons.copy, l10n.copyToList, 'copy'),
-              _sheetRow(
-                context,
-                Icons.drive_file_move_outline,
-                l10n.moveToList,
-                'move',
+              SheetAction(
+                icon: Icons.content_copy,
+                label: l10n.copyToList,
+                value: 'copy',
               ),
-              _sheetRow(context, Icons.delete, l10n.deleteAction, 'delete'),
+              SheetAction(
+                icon: Icons.drive_file_move_outline,
+                label: l10n.moveToList,
+                value: 'move',
+              ),
+              SheetAction(
+                icon: Icons.delete_outline,
+                label: l10n.deleteAction,
+                value: 'delete',
+                danger: true,
+              ),
             ],
           ),
         ),
@@ -488,17 +504,31 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
             children: [
               for (final l in targets)
                 InkWell(
+                  borderRadius: kBorderRadius,
                   onTap: () => Navigator.of(context).pop(l.id),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 64),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Text(
-                          l.title,
-                          style: const TextStyle(fontSize: 22),
-                        ),
+                    constraints: const BoxConstraints(minHeight: 60),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Row(
+                        children: [
+                          // Same dot as the list's chip on the main screen.
+                          Container(
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: listColor(context, l.color).stripe,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              l.title,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -512,33 +542,6 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
             child: Text(l10n.cancel),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _sheetRow(
-    BuildContext context,
-    IconData icon,
-    String label,
-    String value,
-  ) {
-    return InkWell(
-      onTap: () => Navigator.of(context).pop(value),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: 64,
-          minWidth: double.infinity,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            children: [
-              Icon(icon, size: 28),
-              const SizedBox(width: 16),
-              Text(label, style: const TextStyle(fontSize: 22)),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -562,7 +565,10 @@ class _AlarmSwitchState extends State<_AlarmSwitch> {
     final l10n = AppLocalizations.of(context);
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      title: Text(l10n.alarmToggle, style: const TextStyle(fontSize: 22)),
+      title: Text(
+        l10n.alarmToggle,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+      ),
       subtitle: Text(
         l10n.alarmToggleHelp,
         style: const TextStyle(fontSize: 16),
