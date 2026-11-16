@@ -7,7 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mondom/l10n/app_localizations.dart';
+import 'package:mondom/speech/alarm_volume.dart';
+import 'package:mondom/speech/speaker.dart';
 import 'package:mondom/ui/elevenlabs_section.dart';
+import 'package:mondom/ui/settings_screen.dart';
 import 'package:mondom/ui/voice_picker.dart';
 import 'package:mondom/voices/catalog.dart';
 import 'package:mondom/voices/elevenlabs_access.dart';
@@ -52,6 +55,15 @@ class _Installer extends VoiceInstaller {
   final Set<String> done;
   @override
   Future<bool> isInstalled(String id) async => done.contains(id);
+}
+
+class _NoPlayer implements WavPlayer {
+  @override
+  Future<void> play(String path) async {}
+  @override
+  Future<void> stop() async {}
+  @override
+  void dispose() {}
 }
 
 http.Response _json(int code, Object body) => http.Response.bytes(
@@ -406,5 +418,46 @@ void main() {
       expect(cache.dir.existsSync(), isFalse);
       expect(selected.single.id, 'imre');
     });
+  });
+
+  // Guards the voice picker's "open at ElevenLabs": it must land there no
+  // matter how many sections sit above it.
+  testWidgets('settings opened at ElevenLabs scrolls it into view', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(600, 500);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final speaker = Speaker(
+      engineFactory: (Voice _) async => throw UnimplementedError(),
+      player: _NoPlayer(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('hu'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SettingsScreen(
+          alarmVolume: AlarmVolume(),
+          speaker: speaker,
+          showElevenLabs: true,
+          elevenLabs: ElevenLabsSettings(
+            access: access(),
+            catalog: () => catalog,
+            installer: _Installer(dir, {}),
+            voice: () => Voice.system('hu'),
+            onSelect: (_) async {},
+          ),
+        ),
+      ),
+    );
+    await settle(tester);
+    final heading = find.text('ElevenLabs');
+    expect(heading, findsOneWidget);
+    // At the top of the screen, or as high as the page can scroll when the
+    // section is last and shorter than the screen.
+    final top = tester.getTopLeft(heading).dy;
+    expect(top, greaterThanOrEqualTo(kToolbarHeight));
+    expect(top, lessThan(250));
   });
 }

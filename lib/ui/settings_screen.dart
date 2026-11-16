@@ -149,129 +149,141 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SafeArea(
         child: mode == null
             ? const Center(child: CircularProgressIndicator())
-            : ListView(
+            // Not a ListView: that builds lazily, so a section further down
+            // than the screen doesn't exist yet and can't be scrolled to
+            // (the "open at ElevenLabs" jump broke whenever a section was
+            // added above it). The page is short, so building it all is cheap.
+            : SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                children: [
-                  _heading(l10n.settingsSpeechSection),
-                  _card(
-                    SwitchListTile(
-                      value: _boost,
-                      onChanged: _setBoost,
-                      title: Text(l10n.settingsBoostTitle, style: _title),
-                      subtitle: Text(l10n.settingsBoostHelp, style: muted),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _heading(l10n.settingsSpeechSection),
+                    _card(
+                      SwitchListTile(
+                        value: _boost,
+                        onChanged: _setBoost,
+                        title: Text(l10n.settingsBoostTitle, style: _title),
+                        subtitle: Text(l10n.settingsBoostHelp, style: muted),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                       ),
                     ),
-                  ),
-                  _heading(l10n.settingsAppearanceSection),
-                  _card(
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: ValueListenableBuilder<ThemeMode>(
-                        valueListenable: themeModeSetting,
-                        builder: (context, themeMode, _) =>
-                            RadioGroup<ThemeMode>(
-                              groupValue: themeMode,
-                              onChanged: (m) {
-                                if (m != null) setThemeMode(m);
-                              },
+                    _heading(l10n.settingsAppearanceSection),
+                    _card(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: ValueListenableBuilder<ThemeMode>(
+                          valueListenable: themeModeSetting,
+                          builder: (context, themeMode, _) =>
+                              RadioGroup<ThemeMode>(
+                                groupValue: themeMode,
+                                onChanged: (m) {
+                                  if (m != null) setThemeMode(m);
+                                },
+                                child: Column(
+                                  children: [
+                                    _themeRadio(
+                                      ThemeMode.system,
+                                      l10n.themeSystem,
+                                    ),
+                                    _themeRadio(
+                                      ThemeMode.light,
+                                      l10n.themeLight,
+                                    ),
+                                    _themeRadio(ThemeMode.dark, l10n.themeDark),
+                                  ],
+                                ),
+                              ),
+                        ),
+                      ),
+                    ),
+                    _heading(l10n.settingsAlarmSection),
+                    _card(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4, bottom: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            RadioGroup<AlarmVolumeMode>(
+                              groupValue: mode,
+                              onChanged: _setMode,
                               child: Column(
                                 children: [
-                                  _themeRadio(
-                                    ThemeMode.system,
-                                    l10n.themeSystem,
+                                  _radio(
+                                    AlarmVolumeMode.system,
+                                    l10n.alarmVolumeSystem,
                                   ),
-                                  _themeRadio(ThemeMode.light, l10n.themeLight),
-                                  _themeRadio(ThemeMode.dark, l10n.themeDark),
+                                  _radio(
+                                    AlarmVolumeMode.custom,
+                                    l10n.alarmVolumeCustom,
+                                  ),
                                 ],
                               ),
                             ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Slider(
+                                value: _level,
+                                onChanged: mode == AlarmVolumeMode.custom
+                                    ? (v) => setState(() => _level = v)
+                                    : null,
+                                onChangeEnd: widget.alarmVolume.setLevel,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                              child: SizedBox(
+                                height: 64,
+                                child: playing
+                                    ? FilledButton.icon(
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: Colors.red.shade700,
+                                          foregroundColor: Colors.white,
+                                        ),
+                                        onPressed: widget.speaker.stop,
+                                        icon: const Icon(Icons.stop, size: 32),
+                                        label: Text(
+                                          l10n.stopAlarm,
+                                          style: const TextStyle(fontSize: 22),
+                                        ),
+                                      )
+                                    : FilledButton.icon(
+                                        onPressed: _test,
+                                        icon: const Icon(
+                                          Icons.campaign,
+                                          size: 32,
+                                        ),
+                                        label: Text(
+                                          l10n.alarmVolumeTest,
+                                          style: const TextStyle(fontSize: 22),
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  _heading(l10n.settingsAlarmSection),
-                  _card(
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4, bottom: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          RadioGroup<AlarmVolumeMode>(
-                            groupValue: mode,
-                            onChanged: _setMode,
-                            child: Column(
-                              children: [
-                                _radio(
-                                  AlarmVolumeMode.system,
-                                  l10n.alarmVolumeSystem,
-                                ),
-                                _radio(
-                                  AlarmVolumeMode.custom,
-                                  l10n.alarmVolumeCustom,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Slider(
-                              value: _level,
-                              onChanged: mode == AlarmVolumeMode.custom
-                                  ? (v) => setState(() => _level = v)
-                                  : null,
-                              onChangeEnd: widget.alarmVolume.setLevel,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                            child: SizedBox(
-                              height: 64,
-                              child: playing
-                                  ? FilledButton.icon(
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: Colors.red.shade700,
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      onPressed: widget.speaker.stop,
-                                      icon: const Icon(Icons.stop, size: 32),
-                                      label: Text(
-                                        l10n.stopAlarm,
-                                        style: const TextStyle(fontSize: 22),
-                                      ),
-                                    )
-                                  : FilledButton.icon(
-                                      onPressed: _test,
-                                      icon: const Icon(
-                                        Icons.campaign,
-                                        size: 32,
-                                      ),
-                                      label: Text(
-                                        l10n.alarmVolumeTest,
-                                        style: const TextStyle(fontSize: 22),
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
+                    if (widget.backup != null) ..._backupSection(l10n, muted),
+                    // Last: optional, and depends on an external provider.
+                    if (elevenLabs != null) ...[
+                      _heading(l10n.elevenLabsSection, key: _elevenLabsKey),
+                      ElevenLabsSection(
+                        settings: elevenLabs,
+                        // Scroll once it has its full height (it is last, so
+                        // earlier the list can't scroll far enough).
+                        onLoaded: widget.showElevenLabs
+                            ? _scrollToElevenLabs
+                            : null,
                       ),
-                    ),
-                  ),
-                  if (widget.backup != null) ..._backupSection(l10n, muted),
-                  // Last: optional, and depends on an external provider.
-                  if (elevenLabs != null) ...[
-                    _heading(l10n.elevenLabsSection, key: _elevenLabsKey),
-                    ElevenLabsSection(
-                      settings: elevenLabs,
-                      // Scroll once it has its full height (it is last, so
-                      // earlier the list can't scroll far enough).
-                      onLoaded: widget.showElevenLabs
-                          ? _scrollToElevenLabs
-                          : null,
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
       ),
     );
