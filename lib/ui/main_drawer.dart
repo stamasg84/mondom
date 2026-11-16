@@ -10,8 +10,10 @@ import '../voices/catalog.dart';
 import '../voices/language_names.dart';
 import '../voices/voice.dart';
 import 'about_screen.dart';
+import 'app_theme.dart';
 import 'lists_screen.dart';
 import 'settings_screen.dart';
+import 'speak_glyph.dart';
 
 /// The speaking screen's menu: a plain list of large rows. Editing lives
 /// behind it, never on the speaking screen itself. Opened only by the app bar
@@ -62,16 +64,31 @@ class MainDrawer extends StatelessWidget {
     // Close the drawer first, then push, so back returns to the speaking
     // screen and not to an open drawer.
     final navigator = Navigator.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Drawer(
+      backgroundColor: scheme.surface,
       child: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-              child: Text(
-                l10n.appTitle,
-                style: Theme.of(context).textTheme.headlineSmall,
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 20, 16, 16),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: scheme.outlineVariant)),
+              ),
+              child: Row(
+                children: [
+                  SpeakGlyph(size: 40, color: scheme.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    l10n.appTitle,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
             _DrawerRow(
@@ -160,27 +177,51 @@ class _DrawerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 72),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Icon(icon, size: 32),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontSize: 22)),
-                    const SizedBox(height: 2),
-                    Text(subtitle, style: const TextStyle(fontSize: 16)),
-                  ],
-                ),
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      child: Material(
+        color: scheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(
+          borderRadius: kBorderRadius,
+          side: BorderSide(color: scheme.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 72),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(icon, size: 28, color: scheme.primary),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
