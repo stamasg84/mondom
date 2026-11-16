@@ -710,11 +710,7 @@
   "@elevenLabsListFailed": {
     "description": "Voice picker: the ElevenLabs voice list failed for a reason other than being offline."
   },
-  "elevenLabsScreenTitle": "ElevenLabs-hang",
-  "@elevenLabsScreenTitle": {
-    "description": "Title of the ElevenLabs setup screen."
-  },
-  "elevenLabsIntro": "Az ElevenLabs egy külső, a Mondomtól független felhőszolgáltatás. Használatához saját ElevenLabs API-kulcs és internetkapcsolat kell. A felolvasandó szövegeket a Mondom elküldi az ElevenLabs szervereire, ezekre az ElevenLabs adatkezelési feltételei vonatkoznak.",
+  "elevenLabsIntro": "Külső felhőszolgáltatás: saját ElevenLabs API-kulcs és internetkapcsolat kell hozzá. A kimondott szövegek az ElevenLabs szervereire kerülnek.",
   "@elevenLabsIntro": {
     "description": "Setup screen: what the ElevenLabs voice means."
   },

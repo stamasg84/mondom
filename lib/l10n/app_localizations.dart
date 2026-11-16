@@ -1022,16 +1022,10 @@ abstract class AppLocalizations {
   /// **'Az ElevenLabs-hangok most nem érhetők el. Nézd meg a beállításokat.'**
   String get elevenLabsListFailed;
 
-  /// Title of the ElevenLabs setup screen.
-  ///
-  /// In hu, this message translates to:
-  /// **'ElevenLabs-hang'**
-  String get elevenLabsScreenTitle;
-
   /// Setup screen: what the ElevenLabs voice means.
   ///
   /// In hu, this message translates to:
-  /// **'Az ElevenLabs egy külső, a Mondomtól független felhőszolgáltatás. Használatához saját ElevenLabs API-kulcs és internetkapcsolat kell. A felolvasandó szövegeket a Mondom elküldi az ElevenLabs szervereire, ezekre az ElevenLabs adatkezelési feltételei vonatkoznak.'**
+  /// **'Külső felhőszolgáltatás: saját ElevenLabs API-kulcs és internetkapcsolat kell hozzá. A kimondott szövegek az ElevenLabs szervereire kerülnek.'**
   String get elevenLabsIntro;
 
   /// Setup screen: label of the link to the README's ElevenLabs section.

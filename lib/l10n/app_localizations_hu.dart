@@ -541,11 +541,8 @@ class AppLocalizationsHu extends AppLocalizations {
       'Az ElevenLabs-hangok most nem érhetők el. Nézd meg a beállításokat.';
 
   @override
-  String get elevenLabsScreenTitle => 'ElevenLabs-hang';
-
-  @override
   String get elevenLabsIntro =>
-      'Az ElevenLabs egy külső, a Mondomtól független felhőszolgáltatás. Használatához saját ElevenLabs API-kulcs és internetkapcsolat kell. A felolvasandó szövegeket a Mondom elküldi az ElevenLabs szervereire, ezekre az ElevenLabs adatkezelési feltételei vonatkoznak.';
+      'Külső felhőszolgáltatás: saját ElevenLabs API-kulcs és internetkapcsolat kell hozzá. A kimondott szövegek az ElevenLabs szervereire kerülnek.';
 
   @override
   String get elevenLabsManualLink => 'Részletek a súgóban';

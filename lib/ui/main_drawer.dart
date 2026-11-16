@@ -12,6 +12,7 @@ import '../voices/voice.dart';
 import 'about_screen.dart';
 import 'app_theme.dart';
 import 'lists_screen.dart';
+import 'elevenlabs_section.dart';
 import 'settings_screen.dart';
 import 'speak_glyph.dart';
 
@@ -30,12 +31,14 @@ class MainDrawer extends StatelessWidget {
     required this.recorderFactory,
     this.backup,
     this.catalog,
+    this.elevenLabs,
   });
 
   final BackupService? backup;
 
   /// The voice catalog, for the About screen's credits.
   final Catalog Function()? catalog;
+  final ElevenLabsSettings? elevenLabs;
 
   final VoiceRecorder Function() recorderFactory;
   final AlarmVolume alarmVolume;
@@ -116,6 +119,7 @@ class MainDrawer extends StatelessWidget {
                       alarmVolume: alarmVolume,
                       speaker: speaker,
                       backup: backup,
+                      elevenLabs: elevenLabs,
                     ),
                   ),
                 );

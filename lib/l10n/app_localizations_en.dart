@@ -545,11 +545,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'The ElevenLabs voices aren\'t available right now. Check the settings.';
 
   @override
-  String get elevenLabsScreenTitle => 'ElevenLabs voice';
-
-  @override
   String get elevenLabsIntro =>
-      'ElevenLabs is an external cloud service, independent of Mondom. It needs your own ElevenLabs API key and an internet connection. Mondom sends the texts to be spoken to ElevenLabs\' servers; ElevenLabs\' privacy terms apply to them.';
+      'An external cloud service: it needs your own ElevenLabs API key and an internet connection. The spoken texts are sent to ElevenLabs\' servers.';
 
   @override
   String get elevenLabsManualLink => 'More in the manual';

@@ -16,6 +16,8 @@ import 'storage/database.dart';
 import 'storage/lists_repository.dart';
 import 'ui/about_licenses.dart';
 import 'ui/app_theme.dart';
+import 'ui/elevenlabs_section.dart';
+import 'ui/settings_screen.dart';
 import 'ui/speaking_screen.dart';
 import 'ui/voice_picker.dart';
 import 'voices/catalog.dart';
@@ -81,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _appVersion = '0.0.0';
 
   Voice _voice = Voice.system('hu');
+  ElevenLabsSettings? _elevenLabs;
 
   @override
   void initState() {
@@ -100,9 +103,21 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
     final db = AppDatabase.open();
     final repo = ListsRepository(db);
+    final support = await getApplicationSupportDirectory();
+    if (!mounted) return;
     setState(() {
       _db = db;
       _repo = repo;
+      _elevenLabs = ElevenLabsSettings(
+        access: ElevenLabsAccess(
+          keyStore: SecureElevenLabsKeyStore(),
+          cache: ElevenLabsCache(Directory('${support.path}/elevenlabs_cache')),
+        ),
+        catalog: () => _catalog,
+        installer: _installer,
+        voice: () => _voice,
+        onSelect: _selectVoice,
+      );
     });
     unawaited(_sweepRecordings(repo));
     await _installer.cleanupStaging();
@@ -159,13 +174,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return _catalog;
   }
 
+  /// Settings scrolled to the ElevenLabs section (from the voice picker,
+  /// whose [onSelect] also marks the new voice in its list).
+  Future<void> _openElevenLabsSettings(
+    Future<void> Function(Voice voice) onSelect,
+  ) => Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => SettingsScreen(
+        alarmVolume: _alarmVolume,
+        speaker: _speaker,
+        backup: BackupService(repo: _repo!, recordings: _recordings),
+        elevenLabs: _elevenLabs!.withOnSelect(onSelect),
+        showElevenLabs: true,
+      ),
+    ),
+  );
+
   Future<void> _openPicker({bool firstRun = false}) async {
-    final support = await getApplicationSupportDirectory();
-    if (!mounted) return;
-    final access = ElevenLabsAccess(
-      keyStore: SecureElevenLabsKeyStore(),
-      cache: ElevenLabsCache(Directory('${support.path}/elevenlabs_cache')),
-    );
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => VoicePickerScreen(
@@ -176,7 +201,8 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedId: firstRun ? '' : _voice.id,
           firstRun: firstRun,
           onSelect: _selectVoice,
-          elevenLabs: access,
+          elevenLabs: _elevenLabs!.access,
+          openElevenLabsSettings: _openElevenLabsSettings,
           selectedLabel: _voice.label,
           speak: _speaker.speak,
           reloadCatalog: _reloadCatalog,
@@ -288,6 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onOpenVoicePicker: _openPicker,
       catalog: () => _catalog,
       backup: BackupService(repo: repo, recordings: _recordings),
+      elevenLabs: _elevenLabs,
     );
   }
 }

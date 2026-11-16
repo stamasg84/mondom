@@ -12,6 +12,7 @@ import '../voices/elevenlabs_client.dart';
 import '../voices/voice.dart';
 import 'app_theme.dart';
 import 'list_colors.dart';
+import 'elevenlabs_section.dart';
 import 'main_drawer.dart';
 import '../voices/catalog.dart';
 import 'row_badges.dart';
@@ -28,6 +29,7 @@ class SpeakingScreen extends StatefulWidget {
     this.recorderFactory = RecordPackageRecorder.new,
     this.backup,
     this.catalog,
+    this.elevenLabs,
   });
 
   /// Backup and restore in settings; null hides them (tests).
@@ -35,6 +37,9 @@ class SpeakingScreen extends StatefulWidget {
 
   /// The voice catalog, for the About screen's credits.
   final Catalog Function()? catalog;
+
+  /// Null hides the ElevenLabs settings section.
+  final ElevenLabsSettings? elevenLabs;
 
   /// Creates the microphone recorder for the recording screen (tests fake it).
   final VoiceRecorder Function() recorderFactory;
@@ -227,6 +232,7 @@ class _SpeakingScreenState extends State<SpeakingScreen>
             recorderFactory: widget.recorderFactory,
             backup: widget.backup,
             catalog: widget.catalog,
+            elevenLabs: widget.elevenLabs,
           ),
           appBar: AppBar(
             leading: Builder(

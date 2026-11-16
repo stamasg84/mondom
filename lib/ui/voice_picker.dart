@@ -15,7 +15,6 @@ import '../voices/system_tts_info.dart';
 import '../voices/voice.dart';
 import '../voices/voice_installer.dart';
 import 'app_theme.dart';
-import 'elevenlabs_screen.dart';
 
 /// Plays voice previews. Replaceable in tests.
 abstract class VoicePreviewer {
@@ -98,6 +97,7 @@ class VoicePickerScreen extends StatefulWidget {
     this.elevenLabs,
     this.selectedLabel,
     this.speak,
+    this.openElevenLabsSettings,
     this.reloadCatalog,
   });
 
@@ -107,6 +107,11 @@ class VoicePickerScreen extends StatefulWidget {
 
   /// Says [text] with the active voice; used to hear a new speed.
   final Future<void> Function(String text)? speak;
+
+  /// Opens settings at the ElevenLabs section; [onSelect] makes a voice
+  /// active (deleting the key switches away from an ElevenLabs voice).
+  final Future<void> Function(Future<void> Function(Voice voice) onSelect)?
+  openElevenLabsSettings;
 
   final Catalog catalog;
   final VoiceInstaller installer;
@@ -304,23 +309,13 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
     );
   }
 
-  Future<void> _openElevenLabs(String lang) async {
-    final access = widget.elevenLabs!;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ElevenLabsScreen(
-          access: access,
-          catalog: _catalog,
-          installer: widget.installer,
-          language: lang,
-          selected: _selectedVoice,
-          onSelect: (v) async {
-            if (mounted) setState(() => _selectedId = v.id);
-            await widget.onSelect(v);
-          },
-        ),
-      ),
-    );
+  Future<void> _openElevenLabs() async {
+    final open = widget.openElevenLabsSettings;
+    if (open == null) return;
+    await open((v) async {
+      if (mounted) setState(() => _selectedId = v.id);
+      await widget.onSelect(v);
+    });
     if (mounted) await _loadElevenLabs();
   }
 
@@ -663,7 +658,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
                 tooltip: l10n.elevenLabsSettings,
                 color: scheme.primary,
                 icon: const Icon(Icons.settings),
-                onPressed: () => _openElevenLabs(lang),
+                onPressed: () => _openElevenLabs(),
               ),
           ],
         ),
@@ -678,7 +673,7 @@ class _VoicePickerScreenState extends State<VoicePickerScreen>
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             key: const Key('elevenlabs-setup'),
-            onTap: () => _openElevenLabs(lang),
+            onTap: () => _openElevenLabs(),
             child: ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 64),
               child: Padding(

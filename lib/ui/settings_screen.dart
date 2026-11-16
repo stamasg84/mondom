@@ -6,16 +6,27 @@ import '../speech/alarm_volume.dart';
 import '../speech/loudness.dart';
 import '../speech/speaker.dart';
 import '../storage/backup.dart';
+import 'app_theme.dart';
+import 'elevenlabs_section.dart';
 
-/// Small sound settings: speech boost, and the alarm volume (the phone's own
-/// level, or Mondom's own level raised while an alarm plays, restored after).
+/// Settings: speech boost, the optional ElevenLabs voice, the alarm volume
+/// (the phone's own level, or Mondom's own level raised while an alarm
+/// plays, restored after) and backup.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
     required this.alarmVolume,
     required this.speaker,
     this.backup,
+    this.elevenLabs,
+    this.showElevenLabs = false,
   });
+
+  /// Null hides the ElevenLabs section.
+  final ElevenLabsSettings? elevenLabs;
+
+  /// Opened from the voice picker: scroll to the ElevenLabs section.
+  final bool showElevenLabs;
 
   final AlarmVolume alarmVolume;
   final Speaker speaker;
@@ -32,6 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _level = 1.0;
   bool _boost = true;
   bool _busy = false;
+  final _elevenLabsKey = GlobalKey();
 
   @override
   void initState() {
@@ -50,6 +62,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _level = level;
       _boost = boost;
     });
+    if (widget.showElevenLabs) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ctx = _elevenLabsKey.currentContext;
+        if (ctx != null) Scrollable.ensureVisible(ctx);
+      });
+    }
   }
 
   void _changed() {
@@ -126,140 +144,195 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final muted = TextStyle(fontSize: 16, color: scheme.onSurfaceVariant);
     final mode = _mode;
     final playing = widget.speaker.alarmPlaying;
+    final elevenLabs = widget.elevenLabs;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: SafeArea(
         child: mode == null
             ? const Center(child: CircularProgressIndicator())
             : ListView(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 children: [
-                  _header(l10n.settingsSpeechSection),
-                  SwitchListTile(
-                    value: _boost,
-                    onChanged: _setBoost,
-                    title: Text(
-                      l10n.settingsBoostTitle,
-                      style: const TextStyle(fontSize: 22),
-                    ),
-                    subtitle: Text(
-                      l10n.settingsBoostHelp,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
+                  _heading(l10n.settingsSpeechSection),
+                  _card(
+                    SwitchListTile(
+                      value: _boost,
+                      onChanged: _setBoost,
+                      title: Text(l10n.settingsBoostTitle, style: _title),
+                      subtitle: Text(l10n.settingsBoostHelp, style: muted),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                     ),
                   ),
-                  _header(l10n.settingsAlarmSection),
-                  RadioGroup<AlarmVolumeMode>(
-                    groupValue: mode,
-                    onChanged: _setMode,
-                    child: Column(
-                      children: [
-                        _radio(AlarmVolumeMode.system, l10n.alarmVolumeSystem),
-                        _radio(AlarmVolumeMode.custom, l10n.alarmVolumeCustom),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Slider(
-                      value: _level,
-                      onChanged: mode == AlarmVolumeMode.custom
-                          ? (v) => setState(() => _level = v)
-                          : null,
-                      onChangeEnd: widget.alarmVolume.setLevel,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SizedBox(
-                      height: 64,
-                      child: playing
-                          ? FilledButton.icon(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: Colors.red.shade700,
-                              ),
-                              onPressed: widget.speaker.stop,
-                              icon: const Icon(Icons.stop, size: 32),
-                              label: Text(
-                                l10n.stopAlarm,
-                                style: const TextStyle(fontSize: 22),
-                              ),
-                            )
-                          : FilledButton.icon(
-                              onPressed: _test,
-                              icon: const Icon(Icons.campaign, size: 32),
-                              label: Text(
-                                l10n.alarmVolumeTest,
-                                style: const TextStyle(fontSize: 22),
-                              ),
+                  _heading(l10n.settingsAlarmSection),
+                  _card(
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4, bottom: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          RadioGroup<AlarmVolumeMode>(
+                            groupValue: mode,
+                            onChanged: _setMode,
+                            child: Column(
+                              children: [
+                                _radio(
+                                  AlarmVolumeMode.system,
+                                  l10n.alarmVolumeSystem,
+                                ),
+                                _radio(
+                                  AlarmVolumeMode.custom,
+                                  l10n.alarmVolumeCustom,
+                                ),
+                              ],
                             ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Slider(
+                              value: _level,
+                              onChanged: mode == AlarmVolumeMode.custom
+                                  ? (v) => setState(() => _level = v)
+                                  : null,
+                              onChangeEnd: widget.alarmVolume.setLevel,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                            child: SizedBox(
+                              height: 64,
+                              child: playing
+                                  ? FilledButton.icon(
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Colors.red.shade700,
+                                      ),
+                                      onPressed: widget.speaker.stop,
+                                      icon: const Icon(Icons.stop, size: 32),
+                                      label: Text(
+                                        l10n.stopAlarm,
+                                        style: const TextStyle(fontSize: 22),
+                                      ),
+                                    )
+                                  : FilledButton.icon(
+                                      onPressed: _test,
+                                      icon: const Icon(
+                                        Icons.campaign,
+                                        size: 32,
+                                      ),
+                                      label: Text(
+                                        l10n.alarmVolumeTest,
+                                        style: const TextStyle(fontSize: 22),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  if (widget.backup != null) ..._backupSection(l10n),
+                  if (widget.backup != null) ..._backupSection(l10n, muted),
+                  // Last: optional, and depends on an external provider.
+                  if (elevenLabs != null) ...[
+                    _heading(l10n.elevenLabsSection, key: _elevenLabsKey),
+                    ElevenLabsSection(settings: elevenLabs),
+                  ],
                 ],
               ),
       ),
     );
   }
 
-  List<Widget> _backupSection(AppLocalizations l10n) => [
-    _header(l10n.backupSection),
-    if (_busy)
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  static const _title = TextStyle(fontSize: 20, fontWeight: FontWeight.w600);
+
+  List<Widget> _backupSection(AppLocalizations l10n, TextStyle muted) {
+    final scheme = Theme.of(context).colorScheme;
+    return [
+      _heading(l10n.backupSection),
+      _card(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const LinearProgressIndicator(),
-            const SizedBox(height: 8),
-            Text(l10n.backupWorking, style: const TextStyle(fontSize: 18)),
+            if (_busy)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const LinearProgressIndicator(),
+                    const SizedBox(height: 8),
+                    Text(l10n.backupWorking, style: muted),
+                  ],
+                ),
+              ),
+            _backupRow(
+              Icons.save_alt,
+              l10n.backupCreate,
+              l10n.backupCreateHelp,
+              _export,
+              muted,
+            ),
+            Divider(height: 1, color: scheme.outlineVariant),
+            _backupRow(
+              Icons.restore,
+              l10n.backupRestore,
+              l10n.backupRestoreHelp,
+              _restore,
+              muted,
+            ),
           ],
         ),
       ),
-    ListTile(
-      enabled: !_busy,
-      leading: const Icon(Icons.save_alt, size: 32),
-      title: Text(l10n.backupCreate, style: const TextStyle(fontSize: 22)),
-      subtitle: Text(
-        l10n.backupCreateHelp,
-        style: const TextStyle(fontSize: 16),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      onTap: _export,
-    ),
-    ListTile(
-      enabled: !_busy,
-      leading: const Icon(Icons.restore, size: 32),
-      title: Text(l10n.backupRestore, style: const TextStyle(fontSize: 22)),
-      subtitle: Text(
-        l10n.backupRestoreHelp,
-        style: const TextStyle(fontSize: 16),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      onTap: _restore,
-    ),
-  ];
+    ];
+  }
 
-  Widget _header(String text) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-    child: Text(
-      text,
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Theme.of(context).colorScheme.primary,
-      ),
-    ),
+  Widget _backupRow(
+    IconData icon,
+    String title,
+    String help,
+    VoidCallback onTap,
+    TextStyle muted,
+  ) {
+    final scheme = Theme.of(context).colorScheme;
+    return ListTile(
+      enabled: !_busy,
+      leading: Icon(icon, size: 32, color: scheme.primary),
+      title: Text(title, style: _title),
+      subtitle: Text(help, style: muted),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      onTap: onTap,
+    );
+  }
+
+  Widget _heading(String text, {Key? key}) => Padding(
+    key: key,
+    padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
+    child: Text(text, style: _title),
   );
+
+  Widget _card(Widget child) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(
+        borderRadius: kBorderRadius,
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: child,
+    );
+  }
 
   Widget _radio(AlarmVolumeMode value, String title) =>
       RadioListTile<AlarmVolumeMode>(
         value: value,
-        title: Text(title, style: const TextStyle(fontSize: 22)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        title: Text(title, style: const TextStyle(fontSize: 20)),
+        // The radio's own padding puts the circle in line with card text.
+        contentPadding: const EdgeInsets.fromLTRB(6, 4, 16, 4),
       );
 }

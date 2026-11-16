@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mondom/l10n/app_localizations.dart';
+import 'package:mondom/ui/elevenlabs_section.dart';
 import 'package:mondom/ui/voice_picker.dart';
 import 'package:mondom/voices/catalog.dart';
 import 'package:mondom/voices/elevenlabs_access.dart';
@@ -165,17 +166,43 @@ void main() {
       ),
     );
     final nav = tester.state<NavigatorState>(find.byType(Navigator));
+    final acc = access();
+    final installer = _Installer(dir, {'imre'});
+    final active = selectedId.startsWith('elevenlabs:')
+        ? Voice.elevenLabs('hu', selectedId.split(':').last, label ?? '')
+        : Voice.system('hu');
     nav.push(
       MaterialPageRoute<void>(
         builder: (_) => VoicePickerScreen(
           catalog: catalog,
-          installer: _Installer(dir, {'imre'}),
+          installer: installer,
           systemInfo: _SystemInfo(),
           previewer: previewer,
           selectedId: selectedId,
           selectedLabel: label,
-          elevenLabs: access(),
+          elevenLabs: acc,
           onSelect: (v) async => selected.add(v),
+          openElevenLabsSettings: (onSelect) => nav.push(
+            MaterialPageRoute<void>(
+              builder: (_) => Scaffold(
+                appBar: AppBar(),
+                body: ListView(
+                  children: [
+                    ElevenLabsSection(
+                      settings: ElevenLabsSettings(
+                        access: acc,
+                        catalog: () => catalog,
+                        installer: installer,
+                        voice: () => active,
+                        onSelect: onSelect,
+                      ),
+                      openUrl: (_) async => false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -243,7 +270,7 @@ void main() {
     expect(find.byKey(const Key('elevenlabs-gear')), findsOneWidget);
   });
 
-  group('setup screen', () {
+  group('settings section', () {
     Future<void> openSetup(WidgetTester tester) async {
       final button = find.byKey(const Key('elevenlabs-setup'));
       await tester.ensureVisible(button);
@@ -258,18 +285,28 @@ void main() {
       await settle(tester);
     }
 
-    testWidgets('setup screen: short intro, manual link, permission hint', (
+    testWidgets('no key: short note, manual link, permission hint', (
       tester,
     ) async {
       await pumpPicker(tester);
       await openSetup(tester);
-      expect(
-        find.textContaining('külső, a Mondomtól független'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Külső felhőszolgáltatás'), findsOneWidget);
       expect(find.text('Részletek a súgóban'), findsOneWidget);
-      expect(find.byKey(const Key('elevenlabs-manual-url')), findsOneWidget);
       expect(find.textContaining('Szükséges jogosultságok'), findsOneWidget);
+      // The URL only shows when the browser can't be opened.
+      expect(find.byKey(const Key('elevenlabs-manual-url')), findsNothing);
+      await tester.tap(find.byKey(const Key('elevenlabs-manual')));
+      await settle(tester);
+      expect(find.byKey(const Key('elevenlabs-manual-url')), findsOneWidget);
+    });
+
+    testWidgets('saved key: no note and no key field', (tester) async {
+      await keys.write(_key);
+      await pumpPicker(tester);
+      await openViaGear(tester);
+      expect(find.byKey(const Key('elevenlabs-saved')), findsOneWidget);
+      expect(find.byKey(const Key('elevenlabs-key')), findsNothing);
+      expect(find.textContaining('Külső felhőszolgáltatás'), findsNothing);
     });
 
     testWidgets('a bad key is not stored', (tester) async {
@@ -297,6 +334,7 @@ void main() {
       await settle(tester);
       expect(await keys.read(), _key);
       expect(find.byKey(const Key('elevenlabs-saved')), findsOneWidget);
+      expect(find.byKey(const Key('elevenlabs-key')), findsNothing);
       expect(
         find.textContaining('Felhasznált kredit: 1 234 / 10 000'),
         findsOneWidget,
