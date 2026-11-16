@@ -5,6 +5,7 @@ import '../speech/speaker.dart';
 import '../speech/voice_recorder.dart';
 import '../storage/lists_repository.dart';
 import 'app_theme.dart';
+import 'list_colors.dart';
 import 'recording_screen.dart';
 import 'row_badges.dart';
 
@@ -103,8 +104,13 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
                         return ListView.builder(
                           padding: const EdgeInsets.all(12),
                           itemCount: rows.length,
-                          itemBuilder: (context, i) =>
-                              _row(l10n, rows[i], i, isHistory: true),
+                          itemBuilder: (context, i) => _row(
+                            l10n,
+                            rows[i],
+                            i,
+                            list?.color,
+                            isHistory: true,
+                          ),
                         );
                       }
                       return ReorderableListView.builder(
@@ -116,8 +122,13 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
                           ids.insert(to, ids.removeAt(from));
                           widget.repo.reorderSentences(widget.listId, ids);
                         },
-                        itemBuilder: (context, i) =>
-                            _row(l10n, rows[i], i, isHistory: false),
+                        itemBuilder: (context, i) => _row(
+                          l10n,
+                          rows[i],
+                          i,
+                          list?.color,
+                          isHistory: false,
+                        ),
                       );
                     },
                   ),
@@ -174,72 +185,101 @@ class _ListEditorScreenState extends State<ListEditorScreen> {
   Widget _row(
     AppLocalizations l10n,
     Sentence s,
-    int index, {
+    int index,
+    String? colorKey, {
     required bool isHistory,
   }) {
     final scheme = Theme.of(context).colorScheme;
+    final tones = listColor(context, colorKey);
+    // Same card as the speaking screen and the lists overview.
     return Padding(
       key: ValueKey(s.id),
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: kBorderRadius,
-        child: InkWell(
+        color: scheme.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(
           borderRadius: kBorderRadius,
+          side: BorderSide(color: scheme.outlineVariant),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
           onTap: isHistory ? null : () => _edit(l10n, s),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 72),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-              child: Row(
-                children: [
-                  // What plays (own recording, else built-in sound), then the
-                  // alarm flag; the two are independent.
-                  if (s.recordingPath != null)
-                    const Padding(
-                      padding: EdgeInsets.only(right: 12),
-                      child: Icon(Icons.mic, size: 30),
-                    )
-                  else if (soundIcon(s.soundKey) case final icon?)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Icon(icon, size: 30),
-                    ),
-                  if (s.alarm)
-                    const Padding(
-                      padding: EdgeInsets.only(right: 12),
-                      child: AlarmBadge(),
-                    ),
-                  Expanded(
-                    child: Text(s.body, style: const TextStyle(fontSize: 22)),
-                  ),
-                  IconButton(
-                    iconSize: 28,
-                    constraints: const BoxConstraints(
-                      minWidth: 48,
-                      minHeight: 48,
-                    ),
-                    tooltip: l10n.moreActions,
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () => _actions(l10n, s, isHistory: isHistory),
-                  ),
-                  if (isHistory)
-                    const SizedBox(width: 4)
-                  else
-                    ReorderableDragStartListener(
-                      index: index,
-                      child: Semantics(
-                        label: l10n.reorderHandle,
-                        child: const SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Icon(Icons.drag_handle, size: 28),
-                        ),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 8, color: tones.stripe),
+                Expanded(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 72),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 14,
+                        top: 8,
+                        bottom: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          // What plays (own recording, else built-in sound), then the
+                          // alarm flag; the two are independent.
+                          if (s.recordingPath != null)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 12),
+                              child: Icon(Icons.mic, size: 30),
+                            )
+                          else if (soundIcon(s.soundKey) case final icon?)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: Icon(icon, size: 30),
+                            ),
+                          if (s.alarm)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 12),
+                              child: AlarmBadge(),
+                            ),
+                          Expanded(
+                            child: Text(
+                              s.body,
+                              style: const TextStyle(fontSize: 22),
+                            ),
+                          ),
+                          IconButton(
+                            iconSize: 28,
+                            constraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
+                            tooltip: l10n.moreActions,
+                            color: scheme.onSurfaceVariant,
+                            icon: const Icon(Icons.more_vert),
+                            onPressed: () =>
+                                _actions(l10n, s, isHistory: isHistory),
+                          ),
+                          if (isHistory)
+                            const SizedBox(width: 4)
+                          else
+                            ReorderableDragStartListener(
+                              index: index,
+                              child: Semantics(
+                                label: l10n.reorderHandle,
+                                child: SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: Icon(
+                                    Icons.drag_indicator,
+                                    size: 28,
+                                    color: scheme.outline,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(width: 4),
+                        ],
                       ),
                     ),
-                  const SizedBox(width: 4),
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
