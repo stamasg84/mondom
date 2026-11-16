@@ -155,6 +155,18 @@ Editing screens (used with no time pressure, e.g. the evening before a visit):
 - From any list or history: copy or move a sentence to another list (one per-row ⋮ sheet, same everywhere). There is no "save free text" button on the speaking screen: spoken free text is in history, and is saved from there.
 - Conversation lists: "reset" (clear `said`) for reuse; carry unsaid sentences over to the next conversation.
 
+## UI design (restyle, 2026-11-16)
+Goal: look professional and calm without changing screen layouts. All tokens live in `lib/ui/app_theme.dart`; reuse them instead of hard-coding colours.
+- **Colours:** one strong colour, the icon's brand blue (`#1D5DB0` light; lightened to `#9DC3FF` in dark so text and icons in it stay readable). Cool-grey background (`surface`), white cards (`surfaceContainerLowest`), `outlineVariant` for borders and dividers, `onSurfaceVariant` for secondary text. Use `scheme.error` for destructive actions; the only fixed red is the alarm (`Colors.red.shade700` with white text/icon).
+- **Shape:** one radius everywhere, `kRadius` = 16 (`kBorderRadius`, `kShape`); dialogs 24.
+- **Font:** Atkinson Hyperlegible Next (bundled). When a style sets `textStyle` on a button, include `fontFamily`, or it falls back to Roboto.
+- **Cards:** `Material(color: surfaceContainerLowest, shape: RoundedRectangleBorder(borderRadius: kBorderRadius, side: BorderSide(color: outlineVariant)), clipBehavior: Clip.antiAlias)`. Selected = 2 px primary border.
+- **Text sizes:** titles 20 w600; section headings 20 w600 above the cards (padding 4,20,4,8); secondary text 16 `onSurfaceVariant`; buttons 18 w600 (from the theme).
+- **Rows and links:** link rows = primary icon + primary w600 label + `outline` `chevron_right`. Radio tiles in cards use `contentPadding` left 6 so the circle lines up with card text.
+- **Buttons:** one solid `FilledButton` per screen for the main action; secondary actions are white `OutlinedButton`s with blue text (not tonal: the seed's tonal colour is an off-brand lavender).
+- **⋮ menus:** bottom sheets of `SheetAction` rows (`lib/ui/sheet_action.dart`): primary outline icon + 20 w600 label, `danger: true` for delete. The sheet and dialog colours come from the theme.
+- **Dark theme:** follows the phone by default; Settings → Megjelenés can force light or dark (`lib/ui/theme_mode.dart`, pref `themeMode`). List colours have their own dark palette in `list_colors.dart`. Check any new screen in both themes.
+
 ## Speech speed (T40, 2026-11-14)
 Stored per voice in `shared_preferences` (`speechSpeed:<voiceId>`, default 1.0, range 0.7-1.3; see `lib/speech/speech_speed.dart`). `Speaker` reads it on each utterance, passes it to `VoiceEngine.synthesizeToWav(speed:)` and includes it in the replay key, so a speed change re-synthesizes. No model reload is needed.
 - Piper: `generate(speed:)` (the configured `lengthScale` 1.2 stays the baseline).

@@ -40,7 +40,7 @@ Flutter (Dart), sherpa-onnx via its official `sherpa_onnx` Flutter package (Pipe
 Flutter was chosen over Kotlin/Compose to keep iOS open later. Android is still the only target for now: don't spend effort on iOS until it's actually feasible. Platform-specific bits (emergency call/SMS, bell notifications, audio routing) go behind small platform channels/plugins so an iOS version only has to fill those in. Known iOS differences: SMS can't be sent in the background (the user has to confirm each message).
 
 ## Working docs
-- `docs/architecture.md`: code layout, TTS pipeline, Android asset gotcha.
+- `docs/architecture.md`: code layout, TTS pipeline, Android asset gotcha, **UI design rules** ("UI design": colours, cards, buttons, dark theme). Follow them for any UI change.
 - `docs/TODO.md`: loose ideas and reminders not yet in a task (e.g. APK size / per-ABI builds).
 - `docs/tasks.md`: open tasks (current phase). Finished phases go to `docs/done.md`. Agent tasks are run by Sonnet sessions; "You" tasks are manual tests by the human (new to Flutter; tests on a Pixel 6a).
 
